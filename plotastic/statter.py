@@ -6,10 +6,11 @@ import pandas as pd
 
 from IPython.display import display
 
+from analysis import Analysis
 from test import Test
 
 
-class Statter(ut.Analysis):
+class Statter(Analysis):
     def __init__(
         self,
         data: pd.DataFrame,

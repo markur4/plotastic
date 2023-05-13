@@ -12,7 +12,8 @@ __author__          = 'markur4'
 
 
 '''# Flatten module access .....................................................'''
-
+from .analysis import *
+from .statter import *
 
 
 '''# Cleanup Namespace ....................................................... '''
