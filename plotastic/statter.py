@@ -84,18 +84,29 @@ stat.levels_rowcol_flat
 stat.levels_xhue_flat
 stat.levels_tuples
 
-### We need to refill the empty levels with all possible values
+### We need to refill the empty levels with all possible values so that groupby won't skip them
 
-### Construct empty DF but with complete index
+### Construct empty DF but with complete 'index' (index made out of Factors)
 index = pd.MultiIndex.from_product(stat.levels_tuples, names=stat.factors_all)
 empty_DF = pd.DataFrame(index=index, columns=stat.columns_not_factor)
 
+
 ### Fill empty DF with data
-empty_DF.update(DF.set_index(stat.factors_all))
+newDF = (
+    pd.concat([
+        empty_DF,
+        DF.set_index(stat.factors_all)
+        ], join="outer")
+    .sort_index()
+    .reset_index()
+)
+newDF
 
 
 # %%
+grouped = DF.groupby([DIMS["col"], DIMS["row"], DIMS["hue"], DIMS["x"]], dropna=False)
 
-
+grouped.get_group(('Sat', 'Lunch', '1-2', 'Yes')) #* WORKING NOW !!!
+# grouped.get_group(('Sat', 'Dinner', '1-2', 'Yes')) #* works, not empty
 
 # %%

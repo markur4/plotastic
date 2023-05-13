@@ -13,8 +13,12 @@ __author__          = 'markur4'
 
 '''# Flatten module access .....................................................'''
 from .analysis import *
-from .statter import *
+from .dataanalysis import *
+from .plothelper import *
+from .plotsnippets import *
+from .stattester import *
 
+from .statter import *
 
 '''# Cleanup Namespace ....................................................... '''
 #del requirements, missing_hard, #tobe_linked, source, path
