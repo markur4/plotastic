@@ -37,13 +37,6 @@ def catchstate(df, var_name: str = "df"):
 
 # @dataclass
 class Dims:
-    # y: str =None
-    # x: str =None
-    # hue: str =None
-    # row: str =None
-    # col: str =None
-    # _by: tuple[str]|tuple[str,str]|None =None #=field(init=False, repr=False)
-
     def __init__(
         self,
         y: str = None,
@@ -67,13 +60,9 @@ class Dims:
         elif self.row and self.col:
             return [self.row, self.col]
         elif self.row:
-            return [
-                self.row,
-            ]
+            return [self.row]
         elif self.col:
-            return [
-                self.col,
-            ]
+            return [self.col]
         else:
             return None
 
@@ -386,14 +375,12 @@ class Analysis:
 
     def factor_from_level(self, level: str):
         """Gets the factor from a level"""
-        # return [k for k, v in self.levels.items() if v == level][0]
         for factor, levels in self.levels.items():
             if level in levels:
                 return factor
 
     def rank_from_level(self, level: str):
         """Gets the factor from a level"""
-        # return [k for k, v in self.levels.items() if v == level][0]
         for rank, levels in self.hierarchy.items():
             if level in levels:
                 return rank
@@ -458,12 +445,6 @@ class Analysis:
         return [tuple(l) for l in self.hierarchy.values() if not l is None]
 
     ### DESCRIBE DATA ...............................................................................................'''
-
-    # @property
-    # def tree(self) -> 'Node':
-    #    # print(self.hierarchy_levels)
-    #    self._tree = ut.Tree().from_unique_tuples(lists=self.hierarchy_levels, value=None)
-    #    return self._tree
 
     def describe_data(self, verbose=False):
         from scipy.stats import skew as skewness
@@ -555,7 +536,7 @@ class Analysis:
 
         if len(empties) != 0:
             warnings.warn(
-                f"#! These groups contain no values: \n"
+                f"#! These groups contain no values: {empties.columns}\n"
                 f"   Seaborn works, but statistics might raise KeyError!",
                 stacklevel=10000,
             )
@@ -627,29 +608,23 @@ class Analysis:
         self.is_transformed = True
         self.transform_funcs.append(func)
 
-        # if self.transform_func  and   not self.dv in self.data:
-        #     self.add_transform_col()
-        # self.transform_func = func
-        # self.dv_untransformed = self.dims.y
-        # if transform:
-        #     self.add_transform_col()
         return a
 
     def reset_y(self, inplace=False):
         a = self if inplace else ut.copy_by_pickling(self)
         a = a.set(y=self._y_untransformed, inplace=inplace)
         self.is_transformed = False
-        # self.transform_func = []  ### KEEP HISTORY OF TRANSFORMATION
+        # self.transform_func = []  #* KEEP HISTORY OF TRANSFORMATION
         return a
 
-    """ EDIT DIMS ..................................................................................................."""
+    ### EDIT DIMS ..................................................................................................."""
 
     def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
     ) -> "Analysis":
         a = self if inplace else copy(self)
 
-        """NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply"""
+        # * NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply"""
         a.dims = a.dims.switch(*keys, inplace=inplace, verbose=verbose, **kwarg)
         # a.dims.switch(*keys, inplace=inplace, verbose=verbose, **kwarg) # NOT WORKIN IN-CHAIN
 
@@ -667,12 +642,12 @@ class Analysis:
 
     def set(
         self,
-        dims: "Dims" = None,
-        y=None,
-        x=None,
-        hue=None,
-        row=None,
-        col=None,
+        dims: "Dims" | dict = None,
+        y: str = None,
+        x: str = None,
+        hue: str = None,
+        row: str = None,
+        col: str = None,
         data: "pd.DataFrame" = None,
         transform: str | Callable = None,
         title: str = None,
@@ -681,7 +656,7 @@ class Analysis:
     ) -> "Analysis":
         """Redefines values of Analysis.dims (y,x,hue,row,col) and also title,"""
 
-        """HANDLE COPY"""
+        ### HANDLE COPY"""
         a = self if inplace else ut.copy_by_pickling(self)
 
         if not dims is None:
@@ -700,7 +675,7 @@ class Analysis:
                 ### WE ALSO ALLOW "none" TO REMOVE A DIMENSION
             }
 
-            """NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply"""
+            ### NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply"""
             a.dims = a.dims.set(inplace=inplace, verbose=verbose, **kwargs)
             # a.dims.set(inplace=inplace, verbose=verbose, **kwargs) # NOT WORKIN IN-CHAIN
 
@@ -768,7 +743,7 @@ class Analysis:
         kws = {f: "none" for f in facet}
         return a.set(**kws)
 
-    """ EXPERIMENTAL ################################################################################################"""
+    ### EXPERIMENTAL ################################################################################################"""
     # def pool_levels(self):
     #     """pools certain levels within a factor together"""
     #

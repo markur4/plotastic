@@ -265,7 +265,7 @@ classDiagram
 
    WorkingDirectory <|-- Filer
 
-   PlotSnippets --* PlotHelper
+   PlotHelper *-- PlotSnippets
 
    Filer *-- DataAnalysis
    PlotHelper *-- DataAnalysis
