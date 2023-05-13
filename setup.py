@@ -12,6 +12,7 @@ REQUIREMENTS = (
     "numpy",
     "pandas",
     "statannot",
+    "statannotations",
     "pingouin",
     # "statsmodels",
     # "joblib", "pyperclip", "ipynbname",

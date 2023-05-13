@@ -11,9 +11,10 @@ import warnings
 
 # from collections import OrderedDict
 
-import markurutils.UTILS as ut
-from markurutils.builtin_types import printable_dict
-from markurutils.filer import Filer
+# import markurutils.UTILS as ut
+# from markurutils.builtin_types import printable_dict
+# from markurutils.filer import Filer
+import markurutils as ut
 
 df = None  # * Prevent warning when using catchstate
 
@@ -192,7 +193,7 @@ class Analysis:
             if (
                 not a.startswith("_")
                 and not callable(getattr(self, a))
-                and not isinstance(getattr(self, a), Filer)
+                and not isinstance(getattr(self, a), ut.Filer)
             )
         }
 
@@ -204,7 +205,7 @@ class Analysis:
         # if "ax" in D:
         #     D["ax"] = len(self.ax)
 
-        return printable_dict(D=D, start_message=f"{type(self)}: ")
+        return ut.printable_dict(D=D, start_message=f"{type(self)}: ")
 
     def __init__(
         self,
@@ -247,7 +248,7 @@ class Analysis:
         # else:
         # from markurutils.filer import Filer
 
-        self.filer = Filer(title=title)
+        self.filer = ut.Filer(title=title)
 
     ### TITLE .......................................................................................................'''
 
@@ -306,11 +307,24 @@ class Analysis:
         else:
             return result
 
+    def get_factor_from_level(self, level: str):
+        """Gets the factor from a level"""
+        for factor, levels in self.levels.items():
+            if level in levels:
+                return factor
+
+    def get_rank_from_level(self, level: str):
+        """Gets the factor from a level"""
+        for rank, levels in self.hierarchy.items():
+            if level in levels:
+                return rank
+
+            
     @property
     def factors_all(self) -> list[str]:
         # f = list(np.concatenate((self.factors, self.dims.by)).flat )
         # self._factors_all = list(set(f) )
-        f = (self.dims.x, self.dims.hue, self.dims.row, self.dims.col)
+        f = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
         self._factors_all = [e for e in f if (not e is None)]
         return self._factors_all
 
@@ -333,6 +347,10 @@ class Analysis:
         else:
             self._factors_rowcol = None
         return self._factors_rowcol
+
+    @property
+    def columns_not_factor(self) -> list[str]:
+        return [c for c in self.data.columns if c not in self.factors_all]
 
     ### Levels ......................................................................................................'''
 
@@ -372,18 +390,11 @@ class Analysis:
                 D[factor] = S.unique()
         self._levels = D
         return self._levels
+    
+    @property
+    def levels_tuples(self) -> "list[tuple]":
+        return [tuple(l) for l in self.levels.values() if not l is None]
 
-    def factor_from_level(self, level: str):
-        """Gets the factor from a level"""
-        for factor, levels in self.levels.items():
-            if level in levels:
-                return factor
-
-    def rank_from_level(self, level: str):
-        """Gets the factor from a level"""
-        for rank, levels in self.hierarchy.items():
-            if level in levels:
-                return rank
 
     @property
     def levels_xhue_flat(self) -> tuple:
@@ -422,7 +433,7 @@ class Analysis:
     @property
     def hierarchy(self) -> "dict":
         """
-
+        Has ROW (not the factor) as keys!
         :return:
         >>> {"ROW":["r_l1", "row_l2"], "COL":["col_l1", "col_l2"], "HUE":["hue_lvl1", "hue_lvl2"], "X":["..."]}
         """
@@ -435,14 +446,15 @@ class Analysis:
             "X": D.get(self.dims.x),
         }
 
-    @property
-    def hierarchy_levels(self) -> "list[tuple]":
-        """
+    # @property
+    # def hierarchy_levels_tuples(self) -> "list[tuple]":
+    #     """
+    #     :return:
+    #     >>> [("row_lvl1", "row_lvl2"), ("col_lvl1", "col_lvl2"), ("hue_lvl1", "hue_lvl2"), ("hue_lvl1", "hue_lvl2")]
+    #     """
+    #     return [tuple(l) for l in self.hierarchy.values() if not l is None]
+    
 
-        :return:
-        >>> [("row_lvl1", "row_lvl2"), ("col_lvl1", "col_lvl2"), ("hue_lvl1", "hue_lvl2"), ("hue_lvl1", "hue_lvl2")]
-        """
-        return [tuple(l) for l in self.hierarchy.values() if not l is None]
 
     ### DESCRIBE DATA ...............................................................................................'''
 
@@ -508,7 +520,7 @@ class Analysis:
             ut.pp(df)
         return df
 
-    ### DATA  .......................................................................................................'''
+    ### Iterate through DATA  .......................................................................................................'''
 
     def get_empty_groups(self):
         """Detects Facets with empty groups"""
@@ -542,13 +554,22 @@ class Analysis:
             )
             ut.pp(empties)
 
+    # def groupby(self):
+    #     """We nee our own groupby function that does not drop empty groups"""
+    #     for 
+
     def iter_rowcol(self, skip_empty=True):
         """
         A generator that iterates through data grouped by facets/row-col
         :return:
         """
-        for name, df in self.data.groupby(self.factors_rowcol):
-            yield name, df
+        for factor in ut.ensure_list(self.factors_rowcol):
+            pass
+            
+            
+            
+        # for name, df in self.data.groupby(self.factors_rowcol):
+        #     yield name, df
 
     def iter_allgroups(self, skip_empty=True):
         """

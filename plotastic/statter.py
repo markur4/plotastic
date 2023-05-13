@@ -7,7 +7,7 @@ import pandas as pd
 from IPython.display import display
 
 from analysis import Analysis
-from test import Test
+
 
 
 class Statter(Analysis):
@@ -21,7 +21,7 @@ class Statter(Analysis):
         super().__init__(data, dims, title)
         self.plot = plot
         ### Statistics
-        self.test = Test()
+        # self.test = Test()
 
     def show_plot(self):
         display(self.plot)
@@ -32,7 +32,8 @@ class Statter(Analysis):
 # %%
 ### Load Data
 DF, dims = ut.load_dataset("tips")
-DIMS = dict(y="tip", x="sex", hue="size-cut", col="smoker", row="time")
+# DIMS = dims
+DIMS = dict(y="tip", x="smoker", hue="size-cut", col="day", row="time")
 ut.pp(DF.head(5))
 print(DIMS)
 
@@ -59,5 +60,42 @@ print(stat)
 # %%
 
 stat.show_plot()
+
+# %%
+
+grouped = DF.groupby([DIMS["col"], DIMS["row"], DIMS["hue"], DIMS["x"]], dropna=False)
+
+for name, df in grouped:
+    print(name) # *skips empty frames!
+
+
+#%%
+
+# grouped.groups[('Sat', 'Lunch', '1-2', 'Yes')] #* KeyError, because empty
+grouped.groups[('Sat', 'Dinner', '1-2', 'Yes')] #* works, not empty
+
+# %%
+# grouped.get_group(('Sat', 'Lunch', '1-2', 'Yes')) #* KeyError, because empty, too!
+grouped.get_group(('Sat', 'Dinner', '1-2', 'Yes')) #* works, not empty
+# %%
+
+### get all combos
+stat.levels_rowcol_flat
+stat.levels_xhue_flat
+stat.levels_tuples
+
+### We need to refill the empty levels with all possible values
+
+### Construct empty DF but with complete index
+index = pd.MultiIndex.from_product(stat.levels_tuples, names=stat.factors_all)
+empty_DF = pd.DataFrame(index=index, columns=stat.columns_not_factor)
+
+### Fill empty DF with data
+empty_DF.update(DF.set_index(stat.factors_all))
+
+
+# %%
+
+
 
 # %%

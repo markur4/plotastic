@@ -63,7 +63,7 @@ The author is not a dedicated statistician. He derives his knowledge from ...
 
 ### 🧮 Prepare your data in a long-format DataFrame
 
-lorem
+- `row`, `col` (and `x`) have to be of type `pd.Categorical`!
 
 ### 🔀 Initialize `DataAnalysis`
 
@@ -196,21 +196,24 @@ classDiagram
  
 
    class StatTester{
-      parametric: bool
+      ...
+      ....()
    }
    class Assumptions{
-      -OVR- results: dict
+      ...
       normality()
       sphericity()
       homoscedasticity()
       test_all()
    }
    class Omnibus{
+      ...
       ANOVA()
       RM_ANOVA()
       kruskal()
    }
    class PostHoc{
+      ...
       tukey()
       dunn()
       multiple_paired_ttests()
@@ -223,29 +226,36 @@ classDiagram
    class PlotSnippets{
       ...
       get()
+      list()
 
       ....()
    }
    class PlotHelper{
-      snippets: PlotSnippets
       ...
-      init_figure() -> str
-      figure_load() -> plt.Figure
-      figure_show() -> None
+      init_fig() -> (fig, axes)
+      fill_axes(fig, axes, kind="bar") -> (fig, axes)
+      plot() -> (fig, axes)
+      load_fig() -> (fig, axes)
+      show_fig() -> None
       ....()
    }
 
    class DataAnalysis{
+      filer: Filer !!!!!
       plothelper: PlotHelper
+      snippets: PlotSnippets
+      fig: plt.Figure
+      axes: plt.Axes
+
+      parametric = True
       assumptions: Assumptions
       omnibus: Omnibus
       posthoc: PostHoc
       results: dict =None
-      fig: plt.Figure
-      filer: Filer !!!!!
       ...
-      get_snippet()
-      annot_stars()
+      _axes_dict(property): dict(str plt.Axes)
+      plot() -> (fig, axes)
+      annot_stars(axes) -> (fig, axes)
       show_plot()
       save_all()
       ....()
@@ -257,6 +267,7 @@ classDiagram
    Dims *-- Analysis
    Analysis <|-- DataAnalysis
    Analysis <|-- PlotHelper
+   Analysis <|-- PlotSnippets
    Analysis <|-- StatTester
 
    StatTester <|-- Assumptions
@@ -265,10 +276,10 @@ classDiagram
 
    WorkingDirectory <|-- Filer
 
-   PlotHelper *-- PlotSnippets
 
-   Filer *-- DataAnalysis
+   PlotSnippets *-- DataAnalysis
    PlotHelper *-- DataAnalysis
+   Filer *-- DataAnalysis
    Assumptions *-- DataAnalysis
    Omnibus *-- DataAnalysis
    PostHoc *-- DataAnalysis
