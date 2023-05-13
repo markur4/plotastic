@@ -11,14 +11,13 @@ pip install git+https://github.com/markur4/plotastic.git
 ## Why use plotastic?
 
 **Fast** 
-    * Make figures and statistics with just a few lines!
+Make figures and statistics with just a few lines!
 **Controllable**
-    * Outputs common matplotlib figures 
-    * Captures hidden state of matplotlib so that plot is re-usable and modifyable at any point in your notebook/script!
+Plotastic outputs common matplotlib figures. We also captures hidden state of matplotlib so that plot is re-usable and modifyable at any point in your notebook/script!
 **Easy**
-    * Don't google/remember code, print out pre-built snippets of complex plots and modify them!
+Don't google/remember code, print out pre-built snippets of complex plots and modify them!
 **Sturdy**
-    * plotastic doesn't re-invent the wheel: It's combining these packages (maplotlib, seaborn, pingouin, statannotator) 
+plotastic doesn't re-invent the wheel: It's combining these packages (maplotlib, seaborn, pingouin, statannotator) 
 
 
 ## 👉 Workflow
