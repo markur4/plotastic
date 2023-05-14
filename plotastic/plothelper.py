@@ -8,24 +8,28 @@ import seaborn as sns
 from IPython.display import display
 
 from analysis import Analysis
-from test import Test
 
 
-class Plothelper(Analysis):
+
+
+class PlotHelper(Analysis):
     def __init__(
         self,
         data: pd.DataFrame,
         dims: dict,
         title: str,
-        plot: so.Plot | sns.axisgrid.FacetGrid = None,
+        verbose = True,
+        plot = None,
     ):
-        super().__init__(data, dims, title)
+        super().__init__(data=data, dims=dims, title=title, verbose=verbose)
+        
         self.plot = plot
-        ### Statistics
-        self.test = Test()
-
+        
+        
     def show_plot(self):
         display(self.plot)
+
+
 
 
 ### Testing #.......................................................................................................

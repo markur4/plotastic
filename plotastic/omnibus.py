@@ -1,7 +1,8 @@
 import pandas as pd
 from plotastic.analysis import Analysis
 
-class StatTester(Analysis):
+
+class Omnibus(StatTester):
     def __init__(
         self,
         data: pd.DataFrame,
@@ -10,3 +11,4 @@ class StatTester(Analysis):
         verbose = True
     ):
         super().__init__(data=data, dims=dims, title=title, verbose=verbose)
+        

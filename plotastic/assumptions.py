@@ -1,7 +1,7 @@
 import pandas as pd
 from plotastic.analysis import Analysis
 
-class StatTester(Analysis):
+class Assumptions(StatTester):
     def __init__(
         self,
         data: pd.DataFrame,

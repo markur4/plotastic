@@ -13,6 +13,7 @@ from requests import get
 import seaborn as sns
 from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
+from zmq import has
 
 # import markurutils.UTILS as ut
 # from markurutils.builtin_types import printable_dict
@@ -67,17 +68,17 @@ class Analysis:
         dims: dict | Dims,
         title="untitled",
         # transform=None
+        verbose=False,
     ):
         self.data = data
-
         self.dims = dims if type(dims) is Dims else Dims(**dims)
         self._title = title  # needed as property so that setter updates filer
-        
-        self._NaN, self._empty_groups = self.get_empties(verbose=False) #* shows empty groups
 
         self.is_transformed = False
         self.transform_funcs = []  # * HISTORY OF TRANSFORMATIONS
-        self._y_untransformed = self.dims.y  # * STORE IT SO WE CAN RESET IT AFTER TRANSFORMATION
+        self._y_untransformed = (
+            self.dims.y
+        )  # * STORE IT SO WE CAN RESET IT AFTER TRANSFORMATION
 
         self._factors_all = None  # [x, hue, row, col] defined in dims
         self._factors_xhue = None
@@ -87,6 +88,10 @@ class Analysis:
         self._vartypes = None  # * Categorical or Continuous? (Nominal? Ordinal? Discrete? Contiuous?)
 
         self.filer = ut.Filer(title=title)
+
+        if verbose:
+            self.warn_about_empties_and_NaNs()
+
         # if importlib.util.find_spec("pyrectories"):
         #    from pyrectories import Filer
         # else:
@@ -369,50 +374,40 @@ class Analysis:
             ut.pp(df)
         return df
 
-    def get_empties(self, verbose=False):
-        """Returns a list of all groups/facets that are missing in the Dataframe.
-        :return: _description_"""
+    def get_rows_with_NaN(self):
         ### Make complete df with all possible groups/facets and with factors as index
         df = self.data_ensure_allgroups().set_index(self.factors_all)
-
-        # * Rows with single NaNs
-        allNaN_df = df[df.isna().all(axis=1)]
-        # * Rows with only NaNs (these are completely missing in self.data)
+        # * Pick only rows where some datapoints are missing, not all
         hasNaN_df: "pd.DataFrame" = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
+        return hasNaN_df
 
-        allNaN_list = allNaN_df.index.to_list()
-        hasNaN_list = hasNaN_df.index.to_list()
+    def get_empty_groupkeys(self):
+        ### Make complete df with all possible groups/facets and with factors as index
+        df = self.data_ensure_allgroups().set_index(self.factors_all)
+        # * Rows with only NaNs (these are completely missing in self.data)
+        allNaN_df = df[df.isna().all(axis=1)]
+        return allNaN_df.index.to_list()
 
-        if verbose:
-            if len(allNaN_df) > 0:
-                print(
-                    "❗️ Among all combinations of selected factors, these groups/facets are missing in the Dataframe:"
-                )
-                print(allNaN_list, "\n")
-            else:
-                print(
-                    "✅ All combinations of selected factors are present in the Dataframe"
-                )
+    def warn_about_empties_and_NaNs(self):
+        allNaN_list = self.get_empty_groupkeys()
+        hasNaN_df = self.get_rows_with_NaN()
 
-            if len(hasNaN_df) > 0:
-                print("!!! These groups/facets contain single NaNs:")
-                print(hasNaN_list, "\n")
-                ut.pp(hasNaN_df)
-            else:
-                print("✅ No groups with single NaNs")
+        if len(allNaN_list) > 0:
+            print(
+                "❗️ Among all combinations of selected factors, these groups/facets are missing in the Dataframe:"
+            )
+            for key in allNaN_list:
+                print(key)
+        else:
+            print("✅ All combinations of selected factors are present in the Dataframe")
 
-        ### Return DF for NaNs, and list for empty groups
-        return allNaN_df, hasNaN_list
-
-    @property
-    def empty_groups(self) -> list:
-        self._empty_groups = self.get_empties()[0]
-        return
-
-    @property
-    def NaNs(self) -> "pd.DataFrame":
-        self._NaNs = self.get_empties()[1]
-        return self._NaNs
+        if len(hasNaN_df) > 0:
+            print(
+                "❗️ These groups/facets contain single NaNs: (use .get_rows_with_NaN() to see them)"
+            )
+            ut.pp(hasNaN_df)
+        else:
+            print("✅ No groups with single NaNs")
 
     # ... Iterate through DATA  .......................................................................................................'''
 
@@ -520,7 +515,8 @@ class Analysis:
 
     # ... SETTERS ..................................................................................................."""
 
-    def switch(
+    # !
+    def switch(  
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
     ) -> "Analysis":
         a = self if inplace else copy(self)
@@ -530,6 +526,7 @@ class Analysis:
 
         return a
 
+    # !
     def set(
         self,
         dims: "Dims" | dict = None,
@@ -540,7 +537,7 @@ class Analysis:
         col: str = None,
         data: "pd.DataFrame" = None,
         transform: str | Callable = None,
-        title: str = None, # type: ignore
+        title: str = None,  # type: ignore
         inplace=False,
         verbose=True,
     ) -> "Analysis":
