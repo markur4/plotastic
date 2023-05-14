@@ -15,11 +15,10 @@ class PlotHelper(Analysis):
         self,
         data: pd.DataFrame,
         dims: dict,
-        title: str,
         verbose=True,
         plot=None,
     ):
-        super().__init__(data=data, dims=dims, title=title, verbose=verbose)
+        super().__init__(data=data, dims=dims, verbose=verbose)
 
         self.plot = plot
 
@@ -52,7 +51,6 @@ print(g)
 stat = PlotHelper(
     data=DF,
     dims=DIMS,
-    title="Tips Analysis",
     plot=g,  # * Only works with Facetgrid
 )
 print(stat)

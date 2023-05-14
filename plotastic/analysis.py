@@ -13,7 +13,8 @@ from requests import get
 import seaborn as sns
 from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
-from zmq import has
+
+# from zmq import has
 
 # import markurutils.UTILS as ut
 # from markurutils.builtin_types import printable_dict
@@ -66,13 +67,11 @@ class Analysis:
         self,
         data: pd.DataFrame,
         dims: dict | Dims,
-        title="untitled",
         # transform=None
         verbose=False,
     ):
         self.data = data
         self.dims = dims if type(dims) is Dims else Dims(**dims)
-        self._title = title  # needed as property so that setter updates filer
 
         self.is_transformed = False
         self.transform_funcs = []  # * HISTORY OF TRANSFORMATIONS
@@ -80,53 +79,10 @@ class Analysis:
             self.dims.y
         )  # * STORE IT SO WE CAN RESET IT AFTER TRANSFORMATION
 
-        self._factors_all = None  # [x, hue, row, col] defined in dims
-        self._factors_xhue = None
-        self._factors_rowcol = None
-        self._levels = None
-
-        self._vartypes = None  # * Categorical or Continuous? (Nominal? Ordinal? Discrete? Contiuous?)
-
-        self.filer = ut.Filer(title=title)
+        # * Categorical or Continuous? (Nominal? Ordinal? Discrete? Contiuous?)
 
         if verbose:
             self.warn_about_empties_and_NaNs()
-
-        # if importlib.util.find_spec("pyrectories"):
-        #    from pyrectories import Filer
-        # else:
-        # from markurutils.filer import Filer
-
-    ### TITLE .......................................................................................................'''
-
-    @property
-    def title(self):
-        return self._title
-
-    @title.setter
-    def title(self, value):
-        self._title = value
-        self.filer.title = value
-
-    def add_to_title(
-        self, to_end: str = "", to_start: str = "", con: str = "_", inplace=False
-    ) -> "Analysis":
-        """
-        :param to_start: str, optional (default="")
-        String to add to start of title
-        :param to_end: str, optional (default="")
-        String to add to end of title
-        :param con: str, optional (default="_")
-        Conjunction-character to put between string addition and original title
-        :return: str
-        """
-        a = self if inplace else ut.copy_by_pickling(self)
-
-        if to_start:
-            a.title = f"{to_start}{con}{a.title}"
-        if to_end:
-            a.title = f"{a.title}{con}{to_end}"
-        return a
 
     ### FACTORS .....................................................................................................'''
 
@@ -168,11 +124,8 @@ class Analysis:
 
     @property
     def factors_all(self) -> list[str]:
-        # f = list(np.concatenate((self.factors, self.dims.by)).flat )
-        # self._factors_all = list(set(f) )
         F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
-        self._factors_all = [e for e in F if (not e is None)]
-        return self._factors_all
+        return [e for e in F if (not e is None)]
 
     @property
     def factors_as_kwargs(self) -> dict:
@@ -188,22 +141,22 @@ class Analysis:
     @property
     def factors_xhue(self) -> str | list[str]:
         if self.dims.hue:
-            self._factors_xhue = (self.dims.x, self.dims.hue)
+            xhue = (self.dims.x, self.dims.hue)
         else:
-            self._factors_xhue = self.dims.x
-        return self._factors_xhue
+            xhue = self.dims.x
+        return xhue
 
     @property
     def factors_rowcol(self) -> str | tuple[str] | None:
         if self.dims.row and self.dims.col:
-            self._factors_rowcol = (self.dims.row, self.dims.col)
+            rowcol = (self.dims.row, self.dims.col)
         elif self.dims.row:
-            self._factors_rowcol = self.dims.row
+            rowcol = self.dims.row
         elif self.dims.col:
-            self._factors_rowcol = self.dims.col
+            rowcol = self.dims.col
         else:
-            self._factors_rowcol = None
-        return self._factors_rowcol
+            rowcol = None
+        return rowcol
 
     @property
     def columns_not_factor(self) -> list[str]:
@@ -214,7 +167,7 @@ class Analysis:
     @property
     def vartypes(self) -> dict:
         D = dict()
-        for factor in self._factors_all:
+        for factor in self.factors_all:
             type = self.data[factor].dtype.name
             if type == "object":
                 D[factor] = "object"
@@ -228,8 +181,7 @@ class Analysis:
             else:
                 print(f"#!!! factor '{factor}' is of unknown type '{type}'")
                 D[factor] = "unknown"
-        self._vartypes = D
-        return self._vartypes
+        return D
 
     @property
     def levels(self) -> dict:
@@ -245,8 +197,7 @@ class Analysis:
                 D[factor] = S.cat.categories.to_list()
             else:
                 D[factor] = S.unique()
-        self._levels = D
-        return self._levels
+        return D
 
     @property
     def levels_tuples(self) -> "list[tuple]":
@@ -289,7 +240,7 @@ class Analysis:
         return tuple(l)
 
     @property
-    def levels_hierarchy(self) -> "dict":
+    def levels_hierarchy(self) -> dict:
         """Has ROW (not the factor) as keys!
         :return: {"ROW":[ror_l1, row_l2, ...], "COL":[c_l1, c_l2, ...], "HUE":[...], "X":[...]}
         """
@@ -304,7 +255,7 @@ class Analysis:
 
     # ... DESCRIBE DATA ...............................................................................................'''
 
-    def plot_data(self):
+    def plot_quick(self):
         """Simple plot that shows the data points separated by dimensions"""
         sns.catplot(kind="swarm", data=self.data, **self.factors_as_kwargs)
         plt.show()
@@ -312,7 +263,7 @@ class Analysis:
     def describe_data(self, verbose=False, plot=False):
         ### Plot Data
         if plot:
-            self.plot_data
+            self.plot_quick
 
         ### Define Functions
         def NaNs(s: "pd.Series"):
@@ -516,7 +467,7 @@ class Analysis:
     # ... SETTERS ..................................................................................................."""
 
     # !
-    def switch(  
+    def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
     ) -> "Analysis":
         a = self if inplace else copy(self)

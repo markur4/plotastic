@@ -35,7 +35,7 @@ print(A)
 
 # %%
 ### Make a basic plot
-A.plot_data()
+A.plot_quick()
 
 # %%
 
@@ -43,5 +43,3 @@ A.plot_data()
 A.describe_data()
 
 # %%
-
-

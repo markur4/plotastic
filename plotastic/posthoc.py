@@ -4,5 +4,5 @@ from stattester import StatTester
 
 
 class PostHoc(StatTester):
-    def __init__(self, data: pd.DataFrame, dims: dict, title: str, verbose=False):
-        super().__init__(data=data, dims=dims, title=title, verbose=verbose)
+    def __init__(self, data: pd.DataFrame, dims: dict, verbose=False):
+        super().__init__(data=data, dims=dims, verbose=verbose)

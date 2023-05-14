@@ -176,7 +176,6 @@ classDiagram
    }
    
    class Analysis {
-      title: str ="untitled"
       data: pd.DataFrame
       dims: Dims
       subject: str =None !!!!
@@ -245,7 +244,8 @@ classDiagram
    }
 
    class DataAnalysis{
-      filer: Filer !!!!!
+      title = "untitled"
+      filer: Filer 
       
       %% plothelper: PlotHelper
       %% snippets: PlotSnippets
