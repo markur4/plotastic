@@ -69,29 +69,28 @@ class Analysis:
         # transform=None
     ):
         self.data = data
-        self._NaN, self._empty_groups = self.get_empties()
-        
+
         self.dims = dims if type(dims) is Dims else Dims(**dims)
         self._title = title  # needed as property so that setter updates filer
+        
+        self._NaN, self._empty_groups = self.get_empties(verbose=False) #* shows empty groups
 
         self.is_transformed = False
-        self.transform_funcs = []  #* HISTORY OF TRANSFORMATIONS
-        self._y_untransformed = (self.dims.y)  #* STORE IT SO WE CAN RESET IT AFTER TRANSFORMATION
+        self.transform_funcs = []  # * HISTORY OF TRANSFORMATIONS
+        self._y_untransformed = self.dims.y  # * STORE IT SO WE CAN RESET IT AFTER TRANSFORMATION
 
         self._factors_all = None  # [x, hue, row, col] defined in dims
         self._factors_xhue = None
         self._factors_rowcol = None
         self._levels = None
-        
-        #* WARN USER IF SOME FACETS ARE EMPTY
-        
+
         self._vartypes = None  # * Categorical or Continuous? (Nominal? Ordinal? Discrete? Contiuous?)
 
+        self.filer = ut.Filer(title=title)
         # if importlib.util.find_spec("pyrectories"):
         #    from pyrectories import Filer
         # else:
         # from markurutils.filer import Filer
-        self.filer = ut.Filer(title=title)
 
     ### TITLE .......................................................................................................'''
 
@@ -379,7 +378,7 @@ class Analysis:
         # * Rows with single NaNs
         allNaN_df = df[df.isna().all(axis=1)]
         # * Rows with only NaNs (these are completely missing in self.data)
-        hasNaN_df:'pd.DataFrame' = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
+        hasNaN_df: "pd.DataFrame" = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
 
         allNaN_list = allNaN_df.index.to_list()
         hasNaN_list = hasNaN_df.index.to_list()
@@ -387,7 +386,7 @@ class Analysis:
         if verbose:
             if len(allNaN_df) > 0:
                 print(
-                    "!!! Among all combinations of selected factors, these groups/facets are missing in the Dataframe:"
+                    "❗️ Among all combinations of selected factors, these groups/facets are missing in the Dataframe:"
                 )
                 print(allNaN_list, "\n")
             else:
@@ -404,17 +403,16 @@ class Analysis:
 
         ### Return DF for NaNs, and list for empty groups
         return allNaN_df, hasNaN_list
-    
+
     @property
     def empty_groups(self) -> list:
         self._empty_groups = self.get_empties()[0]
-        return 
-    
+        return
+
     @property
-    def NaNs(self) -> 'pd.DataFrame':
+    def NaNs(self) -> "pd.DataFrame":
         self._NaNs = self.get_empties()[1]
-        return self._NaNs 
-    
+        return self._NaNs
 
     # ... Iterate through DATA  .......................................................................................................'''
 
@@ -542,7 +540,7 @@ class Analysis:
         col: str = None,
         data: "pd.DataFrame" = None,
         transform: str | Callable = None,
-        title: str = None,
+        title: str = None, # type: ignore
         inplace=False,
         verbose=True,
     ) -> "Analysis":

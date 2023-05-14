@@ -76,6 +76,7 @@ DA = plst.DataAnalysis(data = DF, x, y, hue, row, col)
 ```
 
 **Why is that useful?**
+
 - See how data is organized for each groups
   - group = A sample with a unique combination of `x`, `hue`, `row` and `col`, that shows the technical/biological distribution of a dependent variable `y`. Its samplesize *n* contributes to statistical power.
   - Show levels and n-count for each group
