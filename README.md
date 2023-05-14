@@ -182,6 +182,8 @@ classDiagram
       is_transformed: bool =False
       ...
       title.setter()
+      _NaNs(property) 
+      _empty_groups(property)
       _factors_all(property) [x,y,hue,row,col]
       _factors_xhue(property) [x,hue]
       _factors_rowcol(property) [row,col]

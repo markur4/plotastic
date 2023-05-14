@@ -73,7 +73,6 @@ for name, df in grouped:
     print(name) # *skips empty frames!
 
 
-
 newDF = stat.data_ensure_allgroups()
 
 

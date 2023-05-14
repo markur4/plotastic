@@ -8,6 +8,7 @@ from typing import Dict, List, Callable, TYPE_CHECKING
 # import importlib
 
 import warnings
+from requests import get
 
 import seaborn as sns
 from scipy.stats import skew as skewness
@@ -21,6 +22,8 @@ from dims import Dims
 
 
 df = None  # * Prevent warning when using catchstate
+
+
 def catchstate(df, var_name: str = "df"):
     ## THIS FUNCTIONS DOESN'T WORK WHEN IMPORTED FROM MODULE
     """
@@ -33,8 +36,6 @@ def catchstate(df, var_name: str = "df"):
     globals()[var_name] = df
 
     return df
-
-
 
 
 class Analysis:
@@ -68,39 +69,28 @@ class Analysis:
         # transform=None
     ):
         self.data = data
+        self._NaN, self._empty_groups = self.get_empties()
+        
         self.dims = dims if type(dims) is Dims else Dims(**dims)
         self._title = title  # needed as property so that setter updates filer
 
         self.is_transformed = False
-        self.transform_funcs = []  ### HISTORY OF TRANSFORMATIONS
-        self._y_untransformed = (
-            self.dims.y
-        )  ### STORE IT SO WE CAN RESET IT AFTER TRANSFORMATION
-        # self._dv = self.dims.y
-        # self.transform_func = transform
-        # self.dv_untransformed = self.dims.y
-        # if transform:
-        #     self.add_transform_col()
+        self.transform_funcs = []  #* HISTORY OF TRANSFORMATIONS
+        self._y_untransformed = (self.dims.y)  #* STORE IT SO WE CAN RESET IT AFTER TRANSFORMATION
 
         self._factors_all = None  # [x, hue, row, col] defined in dims
         self._factors_xhue = None
         self._factors_rowcol = None
-
         self._levels = None
-        ### WARN USER IF SOME FACETS ARE EMPTY """
-        self.get_empties()
-        self._vartypes = (
-            None  # Categorical or Continuous? (Nominal? Ordinal? Discrete? Contiuous?)
-        )
+        
+        #* WARN USER IF SOME FACETS ARE EMPTY
+        
+        self._vartypes = None  # * Categorical or Continuous? (Nominal? Ordinal? Discrete? Contiuous?)
 
-        self._tree = None
-
-        """# Use the pyrectories Filer object if pyrectories is installed"""
         # if importlib.util.find_spec("pyrectories"):
         #    from pyrectories import Filer
         # else:
         # from markurutils.filer import Filer
-
         self.filer = ut.Filer(title=title)
 
     ### TITLE .......................................................................................................'''
@@ -308,7 +298,7 @@ class Analysis:
             "X": D.get(self.dims.x),
         }
 
-    #... DESCRIBE DATA ...............................................................................................'''
+    # ... DESCRIBE DATA ...............................................................................................'''
 
     def plot_data(self):
         """Simple plot that shows the data points separated by dimensions"""
@@ -380,6 +370,52 @@ class Analysis:
             ut.pp(df)
         return df
 
+    def get_empties(self, verbose=False):
+        """Returns a list of all groups/facets that are missing in the Dataframe.
+        :return: _description_"""
+        ### Make complete df with all possible groups/facets and with factors as index
+        df = self.data_ensure_allgroups().set_index(self.factors_all)
+
+        # * Rows with single NaNs
+        allNaN_df = df[df.isna().all(axis=1)]
+        # * Rows with only NaNs (these are completely missing in self.data)
+        hasNaN_df:'pd.DataFrame' = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
+
+        allNaN_list = allNaN_df.index.to_list()
+        hasNaN_list = hasNaN_df.index.to_list()
+
+        if verbose:
+            if len(allNaN_df) > 0:
+                print(
+                    "!!! Among all combinations of selected factors, these groups/facets are missing in the Dataframe:"
+                )
+                print(allNaN_list, "\n")
+            else:
+                print(
+                    "✅ All combinations of selected factors are present in the Dataframe"
+                )
+
+            if len(hasNaN_df) > 0:
+                print("!!! These groups/facets contain single NaNs:")
+                print(hasNaN_list, "\n")
+                ut.pp(hasNaN_df)
+            else:
+                print("✅ No groups with single NaNs")
+
+        ### Return DF for NaNs, and list for empty groups
+        return allNaN_df, hasNaN_list
+    
+    @property
+    def empty_groups(self) -> list:
+        self._empty_groups = self.get_empties()[0]
+        return 
+    
+    @property
+    def NaNs(self) -> 'pd.DataFrame':
+        self._NaNs = self.get_empties()[1]
+        return self._NaNs 
+    
+
     # ... Iterate through DATA  .......................................................................................................'''
 
     def data_ensure_allgroups(self) -> pd.DataFrame:
@@ -388,54 +424,23 @@ class Analysis:
         :rtype: _type_
         """
 
-        #* Index with incomplete set of groups
+        # * Index with incomplete set of groups
         reindex_DF = self.data.set_index(self.factors_all)
         index_old = reindex_DF.index
 
-        #* Index with complete set of groups
+        # * Index with complete set of groups
         index_new = pd.MultiIndex.from_product(
             self.levels_tuples, names=self.factors_all
         )
-        
+
         ### Construct empty DF but with complete 'index' (index made out of Factors)
         empty_DF = pd.DataFrame(
             index=pd.Index.difference(index_new, index_old),
             columns=self.columns_not_factor,
         )
-        #* Fill empty DF with data
+        # * Fill empty DF with data
         newDF = pd.concat([empty_DF, reindex_DF]).sort_index().reset_index()
         return newDF
-
-    def get_empties(self, verbose=False):
-        """Returns a list of all groups/facets that are missing in the Dataframe.
-        :return: _description_"""
-        ### Make complete df with all possible groups/facets and with factors as index
-        df = self.data_ensure_allgroups().set_index(self.factors_all)
-        
-        #* Rows with single NaNs
-        allNaN = df[df.isna().all(axis=1)]
-        #* Rows with only NaNs (these are completely missing in self.data)
-        hasNaN = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
-        
-        allNaN_list= allNaN.index.to_list()
-        hasNaN_list= hasNaN.index.to_list()
-        
-        if verbose:
-            if len(allNaN) > 0:
-                print("!!! Among all combinations of selected factors, these groups/facets are missing in the Dataframe:")
-                print(allNaN_list, "\n")
-            else:
-                print("✅ All combinations of selected factors are present in the Dataframe")
-            
-            if len(hasNaN) > 0:
-                print("!!! These groups/facets contain single NaNs:")
-                print(hasNaN_list, "\n")
-                ut.pp(hasNaN)
-            else:
-                print("✅ No groups with single NaNs")
-        
-        return allNaN_list, hasNaN_list
-
 
     def iter_rowcol(self, skip_empty=True):
         """
@@ -456,7 +461,7 @@ class Analysis:
         for name, df in self.data.groupby(self.factors_all):
             yield name, df
 
-    #... TRANSFORM  ..................................................................................................'''
+    # ... TRANSFORM  ..................................................................................................'''
 
     def transform(self, func: str | Callable, inplace=False):
         """Transforms the data, changes dv property"""
@@ -515,28 +520,17 @@ class Analysis:
         # self.transform_func = []  #* KEEP HISTORY OF TRANSFORMATION
         return a
 
-    #... EDIT DIMS ..................................................................................................."""
+    # ... SETTERS ..................................................................................................."""
 
     def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
     ) -> "Analysis":
         a = self if inplace else copy(self)
 
-        # * NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply"""
+        # * NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply
         a.dims = a.dims.switch(*keys, inplace=inplace, verbose=verbose, **kwarg)
-        # a.dims.switch(*keys, inplace=inplace, verbose=verbose, **kwarg) # NOT WORKIN IN-CHAIN
 
         return a
-
-        # newdims = self.dims.switch(*keys, inplace=inplace, verbose=verbose, **kwarg)
-        #
-        # if inplace:
-        #     self.dims = newdims
-        #     return self
-        # else:
-        #     newobj = copy(self)
-        #     newobj.dims = newdims
-        #     return newobj
 
     def set(
         self,
@@ -570,26 +564,20 @@ class Analysis:
                     ("y", "x", "hue", "row", "col"), (y, x, hue, row, col)
                 )
                 if not arg is None
-                ### WE ALSO ALLOW "none" TO REMOVE A DIMENSION
+                # * WE ALSO ALLOW "none" TO REMOVE A DIMENSION
             }
 
-            ### NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply"""
+            # * NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply"""
             a.dims = a.dims.set(inplace=inplace, verbose=verbose, **kwargs)
             # a.dims.set(inplace=inplace, verbose=verbose, **kwargs) # NOT WORKIN IN-CHAIN
-
         if not data is None:
             a.data = data
             # print(data)
-
         if not transform is None:
             a.transform(func=transform)
-
         if not title is None:
             a.title = title
-
         return a
-
-    #... An Alias
 
     def update_analysis(
         self,
@@ -641,7 +629,7 @@ class Analysis:
         kws = {f: "none" for f in facet}
         return a.set(**kws)
 
-    #... EXPERIMENTAL ################################################################################################"""
+    # ... EXPERIMENTAL ################################################################################################"""
     # def pool_levels(self):
     #     """pools certain levels within a factor together"""
     #
