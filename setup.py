@@ -11,6 +11,7 @@ REQUIREMENTS = (
     "matplotlib",
     "numpy",
     "pandas",
+    "scipy",
     "statannot",
     "statannotations",
     "pingouin",

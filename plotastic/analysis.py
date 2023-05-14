@@ -10,11 +10,16 @@ from typing import Dict, List, Callable, TYPE_CHECKING
 import warnings
 
 # from collections import OrderedDict
+import seaborn as sns
+from scipy.stats import skew as skewness
+import matplotlib.pyplot as plt
 
 # import markurutils.UTILS as ut
 # from markurutils.builtin_types import printable_dict
 # from markurutils.filer import Filer
 import markurutils as ut
+
+
 
 df = None  # * Prevent warning when using catchstate
 
@@ -319,7 +324,6 @@ class Analysis:
             if level in levels:
                 return rank
 
-            
     @property
     def factors_all(self) -> list[str]:
         # f = list(np.concatenate((self.factors, self.dims.by)).flat )
@@ -327,6 +331,17 @@ class Analysis:
         f = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
         self._factors_all = [e for e in f if (not e is None)]
         return self._factors_all
+
+    @property
+    def factors_as_kwargs(self) -> dict:
+        """
+        gets the dimensions in forms of a dictinary to be passed onto seaborn functions
+        :return:
+        {"y": self.dims.y, "x": self.dims.x,"hue": self.dims.hue, "col": self.dims.col, "row": self.dims.row}
+        :rtype: dict
+        """
+        return self.dims.asdict(incl_by=False, incl_None=False)
+        # return {dim: factor for dim, factor in self.dims.asdict().items() if not factor is None}
 
     @property
     def factors_xhue(self) -> str | list[str]:
@@ -390,11 +405,10 @@ class Analysis:
                 D[factor] = S.unique()
         self._levels = D
         return self._levels
-    
+
     @property
     def levels_tuples(self) -> "list[tuple]":
         return [tuple(l) for l in self.levels.values() if not l is None]
-
 
     @property
     def levels_xhue_flat(self) -> tuple:
@@ -431,7 +445,7 @@ class Analysis:
         return tuple(l)
 
     @property
-    def hierarchy(self) -> "dict":
+    def levels_hierarchy(self) -> "dict":
         """
         Has ROW (not the factor) as keys!
         :return:
@@ -453,14 +467,22 @@ class Analysis:
     #     >>> [("row_lvl1", "row_lvl2"), ("col_lvl1", "col_lvl2"), ("hue_lvl1", "hue_lvl2"), ("hue_lvl1", "hue_lvl2")]
     #     """
     #     return [tuple(l) for l in self.hierarchy.values() if not l is None]
-    
-
 
     ### DESCRIBE DATA ...............................................................................................'''
 
-    def describe_data(self, verbose=False):
-        from scipy.stats import skew as skewness
+    def plot_data(self):
+        """Simple plot that shows the data points separated by dimensions"""
+        sns.catplot(kind="swarm", data=self.data, **self.factors_as_kwargs)
+        plt.show()
+        
 
+    def describe_data(self, verbose=False, plot=False):
+        
+        ### Plot Data
+        if plot:
+            self.plot_data
+
+        ### Define Functions
         def NaNs(s: "pd.Series"):
             result = int(s.isna().sum())
             if not result is None and result != 0:
@@ -488,12 +510,12 @@ class Analysis:
             q3, q1 = np.percentile(s, [75, 25])
             return q3 - q1
 
-        # @ut.ignore_warnings
         def skew(s: "pd.Series"):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 return skewness(s)
 
+        ### Build DataFrame
         df = (
             pd.pivot_table(
                 self.data,
@@ -556,7 +578,7 @@ class Analysis:
 
     # def groupby(self):
     #     """We nee our own groupby function that does not drop empty groups"""
-    #     for 
+    #     for
 
     def iter_rowcol(self, skip_empty=True):
         """
@@ -565,9 +587,7 @@ class Analysis:
         """
         for factor in ut.ensure_list(self.factors_rowcol):
             pass
-            
-            
-            
+
         # for name, df in self.data.groupby(self.factors_rowcol):
         #     yield name, df
 

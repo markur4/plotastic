@@ -18,7 +18,7 @@ from .plothelper import *
 from .plotsnippets import *
 from .stattester import *
 
-from .statter import *
+from ._pg import *
 
 '''# Cleanup Namespace ....................................................... '''
 #del requirements, missing_hard, #tobe_linked, source, path
