@@ -9,7 +9,6 @@ from typing import Dict, List, Callable, TYPE_CHECKING
 
 import warnings
 
-# from collections import OrderedDict
 import seaborn as sns
 from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
@@ -18,12 +17,10 @@ import matplotlib.pyplot as plt
 # from markurutils.builtin_types import printable_dict
 # from markurutils.filer import Filer
 import markurutils as ut
-
+from dims import Dims
 
 
 df = None  # * Prevent warning when using catchstate
-
-
 def catchstate(df, var_name: str = "df"):
     ## THIS FUNCTIONS DOESN'T WORK WHEN IMPORTED FROM MODULE
     """
@@ -38,155 +35,6 @@ def catchstate(df, var_name: str = "df"):
     return df
 
 
-### Dims #.......................................................................................................
-
-
-# @dataclass
-class Dims:
-    def __init__(
-        self,
-        y: str = None,
-        x: str = None,
-        hue: str = None,
-        row: str = None,
-        col: str = None,
-    ):
-        self.y = y
-        self.x = x
-        self.hue = hue
-        self.row = row
-        self.col = col
-        self._by = None
-        # self._by_str = None
-
-    @property
-    def by(self) -> list[str] | None:
-        if self._by:
-            return self._by
-        elif self.row and self.col:
-            return [self.row, self.col]
-        elif self.row:
-            return [self.row]
-        elif self.col:
-            return [self.col]
-        else:
-            return None
-
-    def asdict(self, incl_None=True, incl_by=True) -> dict:
-        d = dict(y=self.y, x=self.x, hue=self.hue, row=self.row, col=self.col)
-        if incl_by:
-            d.update(dict(by=self.by))
-        if not incl_None:
-            d = {k: v for (k, v) in d.items() if (not v is None)}
-        return d
-
-    def set(self, inplace=False, **kwargs) -> "Dims":
-        newobj = self if inplace else copy(self)
-        for k, v in kwargs.items():
-            v = v if not v == "none" else None
-            setattr(newobj, k, v)
-        return newobj
-
-    def getvalues(self, keys: list[str] | tuple[str], *args):
-        """
-        Converts a list of dimensions into a list of dimension values, e.g.
-        :param keys: ["x", "y", "col"]
-        :return: e.g. ["smoker", "tips", "day"]
-        """
-        defkeys = ("x", "y", "hue", "row", "col")
-        l = []
-        keys = [keys] + [arg for arg in args]
-        for key in keys:
-            assert key in defkeys, f"#! '{key}' should have been one of {defkeys}"
-            l.append(getattr(self, key))
-        return l
-
-    def switch(
-        self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
-    ) -> "Dims":
-        """
-        Set attributes. Detects Duplicates, switches automatically
-        :param keys: Two dimensions to switch. Only 2 Positional arguments allowed. Use e.g. dims.switch("x", "hue", **kwargs)
-        :param inplace: Decide if this switching should change the dims object permanently (analogously to pandas dataframe). If False, you should pass return value into a variable
-        :param verbose: Whether to print out switched values
-        :param kwarg: e.g. dict(row="smoker")
-        :return: dims object with switched parameters
-        """
-
-        """HANDLE ARGUMENTS if keys are passed, e.g. dims.switch("x","row",**kwargs)"""
-        if len(keys) == 0:
-            pass
-        elif len(keys) == 2:
-            assert (
-                len(kwarg) == 0
-            ), f"#! Can't switch when both keys and kwarg is passed"
-            values = self.getvalues(*keys)
-            kwarg[keys[0]] = values[1]
-        else:
-            raise AssertionError(f"#! '{keys}' should have been of length 2")
-        assert len(kwarg) == 1, f"#! {kwarg} should be of length 1 "
-
-        """PRINT FIRST LINE"""
-        if verbose:
-            todo = "RE-WRITING" if inplace else "TEMPORARY CHANGING:"
-            print(
-                f"#! {todo} {self.__class__.__name__} with keys: '{keys}' and kwarg: {kwarg}:"
-            )
-            print("   (dim =\t'old' -> 'new')")
-
-        ### SWITCH IT
-        ### COPY OBJECT
-        oldby = self.by
-        original: dict = copy(
-            self.asdict(incl_None=True),
-        )
-        newobj = self if inplace else copy(self)
-
-        qK, qV = *kwarg.keys(), *kwarg.values()
-        replace_v = "none"
-        for oK, oV in original.items():  # Original Object
-            if qK == oK:
-                replace_v = oV
-                setattr(newobj, qK, qV)
-            elif qK != oK and oV == qV:
-                replace_v = original[qK]
-                setattr(newobj, oK, replace_v)
-        assert (
-            replace_v != "none"
-        ), f"#! Did not find {list(kwarg.keys())} in dims {list(original.keys())}"
-
-        ### PRINT THE OVERVIEW OF THE NEW MAPPING"""
-        if verbose:
-            for (oK, oV), nV in zip(original.items(), newobj.asdict().values()):
-                pre = "  "
-                if oV != nV and oV == replace_v:  # or replace_v == "none":
-                    printval = f"'{replace_v}' -> '{qV}'"
-                    pre = ">>"
-                elif oK == "by" and newobj.by != oldby:
-                    printval = (
-                        f"'{oldby}' -> '{newobj.by}'"
-                        if type(newobj.by) is str
-                        else f"{oldby} -> {newobj.by}"
-                    )
-                elif oV != nV and oV != replace_v:
-                    printval = f"'{oV}' -> '{replace_v}'"
-                    pre = " <"
-                else:  # oV == nV
-                    printval = f"'{oV}'" if type(oV) is str else f"{oV}"
-                if len(oK) < 3:
-                    oK = oK + "  "
-
-                printval = printval.replace("'None'", "None")  # REMOVE QUOTES
-
-                print(f" {pre} {oK} =\t{printval}")
-
-        ### x AND y MUST NOT BE None"""
-        assert not None in [self.y, self.x], "#! This switch causes x or y to be None"
-
-        return newobj
-
-
-### ANALYSIS ===================================================
 
 
 class Analysis:
@@ -239,8 +87,8 @@ class Analysis:
         self._factors_rowcol = None
 
         self._levels = None
-        """WARN USER IF SOME FACETS ARE EMPTY """
-        self.get_empty_groups()
+        ### WARN USER IF SOME FACETS ARE EMPTY """
+        self.get_empties()
         self._vartypes = (
             None  # Categorical or Continuous? (Nominal? Ordinal? Discrete? Contiuous?)
         )
@@ -286,7 +134,7 @@ class Analysis:
             a.title = f"{a.title}{con}{to_end}"
         return a
 
-    ### Factors .....................................................................................................'''
+    ### FACTORS .....................................................................................................'''
 
     def getfactors(self, putative_factors: str | list[str,]) -> str | list[str]:
         """Get column name, if "x" or "hue" is passed instead of actual column name"""
@@ -328,8 +176,8 @@ class Analysis:
     def factors_all(self) -> list[str]:
         # f = list(np.concatenate((self.factors, self.dims.by)).flat )
         # self._factors_all = list(set(f) )
-        f = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
-        self._factors_all = [e for e in f if (not e is None)]
+        F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
+        self._factors_all = [e for e in F if (not e is None)]
         return self._factors_all
 
     @property
@@ -367,7 +215,7 @@ class Analysis:
     def columns_not_factor(self) -> list[str]:
         return [c for c in self.data.columns if c not in self.factors_all]
 
-    ### Levels ......................................................................................................'''
+    #### LEVELS ......................................................................................................'''
 
     @property
     def vartypes(self) -> dict:
@@ -408,13 +256,15 @@ class Analysis:
 
     @property
     def levels_tuples(self) -> "list[tuple]":
+        """
+        :return: [("row_lvl1", "row_lvl2"), ("col_lvl1", "col_lvl2"), ("hue_lvl1", "hue_lvl2"), ("hue_lvl1", "hue_lvl2")]
+        """
         return [tuple(l) for l in self.levels.values() if not l is None]
 
     @property
     def levels_xhue_flat(self) -> tuple:
         """
-        :return:
-        >>> (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
+        :return: (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
         """
         l = []
         for factor in (self.dims.x, self.dims.hue):
@@ -446,10 +296,8 @@ class Analysis:
 
     @property
     def levels_hierarchy(self) -> "dict":
-        """
-        Has ROW (not the factor) as keys!
-        :return:
-        >>> {"ROW":["r_l1", "row_l2"], "COL":["col_l1", "col_l2"], "HUE":["hue_lvl1", "hue_lvl2"], "X":["..."]}
+        """Has ROW (not the factor) as keys!
+        :return: {"ROW":[ror_l1, row_l2, ...], "COL":[c_l1, c_l2, ...], "HUE":[...], "X":[...]}
         """
 
         D = self.levels
@@ -460,24 +308,14 @@ class Analysis:
             "X": D.get(self.dims.x),
         }
 
-    # @property
-    # def hierarchy_levels_tuples(self) -> "list[tuple]":
-    #     """
-    #     :return:
-    #     >>> [("row_lvl1", "row_lvl2"), ("col_lvl1", "col_lvl2"), ("hue_lvl1", "hue_lvl2"), ("hue_lvl1", "hue_lvl2")]
-    #     """
-    #     return [tuple(l) for l in self.hierarchy.values() if not l is None]
-
-    ### DESCRIBE DATA ...............................................................................................'''
+    #... DESCRIBE DATA ...............................................................................................'''
 
     def plot_data(self):
         """Simple plot that shows the data points separated by dimensions"""
         sns.catplot(kind="swarm", data=self.data, **self.factors_as_kwargs)
         plt.show()
-        
 
     def describe_data(self, verbose=False, plot=False):
-        
         ### Plot Data
         if plot:
             self.plot_data
@@ -542,43 +380,62 @@ class Analysis:
             ut.pp(df)
         return df
 
-    ### Iterate through DATA  .......................................................................................................'''
+    # ... Iterate through DATA  .......................................................................................................'''
 
-    def get_empty_groups(self):
-        """Detects Facets with empty groups"""
+    def data_ensure_allgroups(self) -> pd.DataFrame:
+        """df.groupby() skips empty groups, so we need to ensure that all groups are present in the data.
+        :return: _description_
+        :rtype: _type_
+        """
 
-        def NaNs(s: "pd.Series"):
-            result = int(s.isna().sum())
-            if not result is None and result != 0:
-                return result
-            else:
-                return None
+        #* Index with incomplete set of groups
+        reindex_DF = self.data.set_index(self.factors_all)
+        index_old = reindex_DF.index
 
-        empties = (
-            pd.pivot_table(
-                self.data,
-                values=self.dims.y,
-                index=self.factors_all,
-                aggfunc=["count", NaNs],
-            )
-            .sort_index()
-            # .reset_index()
-            .pipe(ut.flatten_cols)
-            .pipe(catchstate, "df")
-            .loc[df["count | " + self.dims.y] == 0, :]
+        #* Index with complete set of groups
+        index_new = pd.MultiIndex.from_product(
+            self.levels_tuples, names=self.factors_all
         )
+        
+        ### Construct empty DF but with complete 'index' (index made out of Factors)
+        empty_DF = pd.DataFrame(
+            index=pd.Index.difference(index_new, index_old),
+            columns=self.columns_not_factor,
+        )
+        #* Fill empty DF with data
+        newDF = pd.concat([empty_DF, reindex_DF]).sort_index().reset_index()
+        return newDF
 
-        if len(empties) != 0:
-            warnings.warn(
-                f"#! These groups contain no values: {empties.columns}\n"
-                f"   Seaborn works, but statistics might raise KeyError!",
-                stacklevel=10000,
-            )
-            ut.pp(empties)
+    def get_empties(self, verbose=False):
+        """Returns a list of all groups/facets that are missing in the Dataframe.
+        :return: _description_"""
+        ### Make complete df with all possible groups/facets and with factors as index
+        df = self.data_ensure_allgroups().set_index(self.factors_all)
+        
+        #* Rows with single NaNs
+        allNaN = df[df.isna().all(axis=1)]
+        #* Rows with only NaNs (these are completely missing in self.data)
+        hasNaN = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
+        
+        allNaN_list= allNaN.index.to_list()
+        hasNaN_list= hasNaN.index.to_list()
+        
+        if verbose:
+            if len(allNaN) > 0:
+                print("!!! Among all combinations of selected factors, these groups/facets are missing in the Dataframe:")
+                print(allNaN_list, "\n")
+            else:
+                print("✅ All combinations of selected factors are present in the Dataframe")
+            
+            if len(hasNaN) > 0:
+                print("!!! These groups/facets contain single NaNs:")
+                print(hasNaN_list, "\n")
+                ut.pp(hasNaN)
+            else:
+                print("✅ No groups with single NaNs")
+        
+        return allNaN_list, hasNaN_list
 
-    # def groupby(self):
-    #     """We nee our own groupby function that does not drop empty groups"""
-    #     for
 
     def iter_rowcol(self, skip_empty=True):
         """
@@ -599,7 +456,7 @@ class Analysis:
         for name, df in self.data.groupby(self.factors_all):
             yield name, df
 
-    ### TRANSFORM  ..................................................................................................'''
+    #... TRANSFORM  ..................................................................................................'''
 
     def transform(self, func: str | Callable, inplace=False):
         """Transforms the data, changes dv property"""
@@ -658,7 +515,7 @@ class Analysis:
         # self.transform_func = []  #* KEEP HISTORY OF TRANSFORMATION
         return a
 
-    ### EDIT DIMS ..................................................................................................."""
+    #... EDIT DIMS ..................................................................................................."""
 
     def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
@@ -732,7 +589,7 @@ class Analysis:
 
         return a
 
-    ### An Alias
+    #... An Alias
 
     def update_analysis(
         self,
@@ -784,7 +641,7 @@ class Analysis:
         kws = {f: "none" for f in facet}
         return a.set(**kws)
 
-    ### EXPERIMENTAL ################################################################################################"""
+    #... EXPERIMENTAL ################################################################################################"""
     # def pool_levels(self):
     #     """pools certain levels within a factor together"""
     #

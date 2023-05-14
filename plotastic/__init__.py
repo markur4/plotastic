@@ -13,6 +13,7 @@ __author__          = 'markur4'
 
 '''# Flatten module access .....................................................'''
 from .analysis import *
+from .dims import *
 from .dataanalysis import *
 from .plothelper import *
 from .plotsnippets import *
