@@ -10,26 +10,21 @@ from IPython.display import display
 from analysis import Analysis
 
 
-
-
 class PlotHelper(Analysis):
     def __init__(
         self,
         data: pd.DataFrame,
         dims: dict,
         title: str,
-        verbose = True,
-        plot = None,
+        verbose=True,
+        plot=None,
     ):
         super().__init__(data=data, dims=dims, title=title, verbose=verbose)
-        
+
         self.plot = plot
-        
-        
+
     def show_plot(self):
         display(self.plot)
-
-
 
 
 ### Testing #.......................................................................................................
@@ -53,8 +48,8 @@ print(g)
 # )
 
 # %%
-### Make Statter
-stat = Statter(
+### Make PlotHelper Object
+stat = PlotHelper(
     data=DF,
     dims=DIMS,
     title="Tips Analysis",

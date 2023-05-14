@@ -199,6 +199,7 @@ classDiagram
  
 
    class StatTester{
+      parametric = True
       ...
       ....()
    }
@@ -228,8 +229,8 @@ classDiagram
 
    class PlotSnippets{
       ...
-      get()
-      list()
+      get_snippets()
+      list_snippets()
 
       ....()
    }
@@ -245,15 +246,17 @@ classDiagram
 
    class DataAnalysis{
       filer: Filer !!!!!
-      plothelper: PlotHelper
-      snippets: PlotSnippets
+      
+      %% plothelper: PlotHelper
+      %% snippets: PlotSnippets
+
       fig: plt.Figure
       axes: plt.Axes
 
-      parametric = True
-      assumptions: Assumptions
-      omnibus: Omnibus
-      posthoc: PostHoc
+      %% assumptions: Assumptions
+      %% omnibus: Omnibus 
+      %% posthoc: PostHoc
+
       results: dict =None
       ...
       _axes_dict(property): dict(str plt.Axes)
@@ -280,12 +283,12 @@ classDiagram
    WorkingDirectory <|-- Filer
 
 
-   PlotSnippets *-- DataAnalysis
-   PlotHelper *-- DataAnalysis
+   PlotSnippets <|-- DataAnalysis
+   PlotHelper <|-- DataAnalysis
    Filer *-- DataAnalysis
-   Assumptions *-- DataAnalysis
-   Omnibus *-- DataAnalysis
-   PostHoc *-- DataAnalysis
+   Assumptions <|-- DataAnalysis
+   Omnibus <|-- DataAnalysis
+   PostHoc <|-- DataAnalysis
 
  
 

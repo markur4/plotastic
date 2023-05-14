@@ -1,7 +1,7 @@
 # @dataclass
 
 from typing import Dict
-import copy
+from copy import copy, deepcopy
 
 
 class Dims:
@@ -79,9 +79,7 @@ class Dims:
         if len(keys) == 0:
             pass
         elif len(keys) == 2:
-            assert (
-                len(kwarg) == 0
-            ), "#! Can't switch when both keys and kwarg is passed"
+            assert len(kwarg) == 0, "#! Can't switch when both keys and kwarg is passed"
             values = self.getvalues(*keys)
             kwarg[keys[0]] = values[1]
         else:
@@ -99,10 +97,10 @@ class Dims:
         ### SWITCH IT
         ### COPY OBJECT
         oldby = self.by
-        original: dict = copy(
+        original: dict = deepcopy(
             self.asdict(incl_None=True),
         )
-        newobj = self if inplace else copy(self)
+        newobj = self if inplace else deepcopy(self)
 
         qK, qV = *kwarg.keys(), *kwarg.values()
         replace_v = "none"
@@ -146,4 +144,3 @@ class Dims:
         assert not None in [self.y, self.x], "#! This switch causes x or y to be None"
 
         return newobj
-
