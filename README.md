@@ -40,7 +40,6 @@ pip install git+https://github.com/markur4/plotastic.git
 ```mermaid
 classDiagram
    
-   
    class WorkingDirectory{
       <<service>>
       SCRIPT_NAME
@@ -241,12 +240,6 @@ classDiagram
    %%Assumptions --|>  StatResult 
    %%Omnibus --|>  StatResult
    %%PostHoc --|>  StatResult
-
-   
-
-
-
- 
 
 
 ```
