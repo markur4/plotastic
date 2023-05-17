@@ -16,13 +16,13 @@ __author__ = "markur4"
 from .analysis import *
 from .dims import *
 
-from .plothelper import *
-from .plotsnippets import *
-
-from .stattester import *
 from .assumptions import *
 from .posthoc import *
 from .omnibus import *
+# from .old.statresult import *
+
+from .plottool import *
+from .multiplot import *
 
 from .dataanalysis import *
 

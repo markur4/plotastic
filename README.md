@@ -30,7 +30,7 @@ pip install git+https://github.com/markur4/plotastic.git
    - Snippets for better documentation or functions, you choose!
 5. **💿 Save all results at once!**
 
-## Class Diagram
+## Class Diagram 🌳
 
 <details>
 <summary>CLICK TO UNFOLD</summary>
@@ -115,24 +115,21 @@ classDiagram
 
 
 
-   Analysis <|-- DataAnalysis
    Analysis <|-- PlotTool
+   %%Analysis <|-- Assumptions
+   %%Analysis <|-- Omnibus
+   %%Analysis <|-- PostHoc
    Analysis <|-- Assumptions
-   Analysis <|-- Omnibus
-   Analysis <|-- PostHoc
 
 
    %% STATISTICS #......................................................................................
 
-   class StatResult{
-      ...
+
+   class Assumptions{
       normal(property):bool ="unknown"
       homoscedastic(property):bool ="unknown"
       spherical(property):bool ="unknown"
       parametric(property):bool =None
-      ....()
-   }
-   class Assumptions{
       ...
       test_normality()
       snip_normality()
@@ -141,26 +138,28 @@ classDiagram
       test_homoscedasticity()
       snip_homoscedasticity()
       test_all_assumptions()
+      ....()
    }
+
    class Omnibus{
       ...
+      significant_factors(property): dict
       ANOVA()
       RM_ANOVA()
       kruskal()
    }
    class PostHoc{
       ...
+      significant_pairs(property): pd.DataFrame
       tukey()
       dunn()
       multiple_paired_ttests()
       multiple_wilcoxon()
    }
 
-   Assumptions  <|-- StatResult
-   Omnibus  <|-- StatResult
-   PostHoc  <|-- StatResult
-   %%StatResult <|-- Omnibus
-   %%StatResult <|-- PostHoc
+   Assumptions  <|-- PostHoc
+   Assumptions  <|-- Omnibus
+
 
 
    %% PLOTTING #......................................................................................
@@ -220,26 +219,11 @@ classDiagram
    }
    click DataAnalysis href "https://github.com/markur4/plotastic/blob/main/plotastic/dataanalysis.py" "dataanalysis.py"
 
-
-
    MultiPlot <|-- DataAnalysis
-   Assumptions <|-- DataAnalysis
    Omnibus <|-- DataAnalysis
    PostHoc <|-- DataAnalysis
-   
 
 
-
-
-
-
-   %%Analysis <|-- StatResult
-
-
-
-   %%Assumptions --|>  StatResult 
-   %%Omnibus --|>  StatResult
-   %%PostHoc --|>  StatResult
 
 
 ```
@@ -332,7 +316,7 @@ The author is not a dedicated statistician. He derives his knowledge from ...
 
 </details>
 
-## ❗️Cite these papers!
+## Cite these papers!
 
 - *Vallat, R. (2018). Pingouin: statistics in Python. Journal of Open Source Software, 3(31), 1026. <https://doi.org/10.21105/joss.01026>*
 - *Waskom, M. et al. (2021). mwaskom/seaborn: v0.11.1 (January 2021). Zenodo. <http://doi.org/10.5281/zenodo.4547176>*

@@ -10,7 +10,7 @@ from IPython.display import display
 from analysis import Analysis
 
 
-class PlotHelper(Analysis):
+class PlotTool(Analysis):
     def __init__(
         self,
         data: pd.DataFrame,
@@ -21,9 +21,16 @@ class PlotHelper(Analysis):
         super().__init__(data=data, dims=dims, verbose=verbose)
 
         self.plot = plot
-
+        
     def show_plot(self):
         display(self.plot)
+
+    
+    
+    def plot(kind="strip"):
+        """A simple plotter"""
+        g = sns.catplot(kind="swarm", data=DF, **DIMS) # TODO replace it with init_fig and fill_axes
+
 
 
 ### Testing #.......................................................................................................
@@ -48,7 +55,7 @@ print(g)
 
 # %%
 ### Make PlotHelper Object
-stat = PlotHelper(
+stat = PlotTool(
     data=DF,
     dims=DIMS,
     plot=g,  # * Only works with Facetgrid

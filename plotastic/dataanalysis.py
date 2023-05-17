@@ -10,21 +10,20 @@ import pandas as pd
 
 import markurutils as ut
 
-from analysis import Analysis
-from plothelper import PlotHelper
-from plotsnippets import PlotSnippets
-
-from stattester import StatTester
-from assumptions import Assumptions
+# from analysis import Analysis
+from multiplot import MultiPlot
+# from assumptions import Assumptions
 from omnibus import Omnibus
 from posthoc import PostHoc
+# from statresult import StatResult
+
+
+
 
 # %%
 
 
-class DataAnalysis(
-    PlotHelper, PlotSnippets, Assumptions, Omnibus, PostHoc, StatTester, Analysis
-):
+class DataAnalysis(MultiPlot, Omnibus, PostHoc):
     def __init__(
         self, data: pd.DataFrame, dims: dict, title: str = "untitled", verbose=True
     ):
@@ -99,7 +98,7 @@ class TestDataAnalysis(unittest.TestCase):
         print(x, x_inchain, x_after_chaining)
         print(x != x_inchain)
         print(x == x_after_chaining)
-        
+
         self.assertEqual(x, E1)
         self.assertEqual(x_inchain, E2)
         self.assertEqual(x_after_chaining, E3)
@@ -115,7 +114,7 @@ DF, dims = ut.load_dataset("tips")  # * Import Data
 DA = DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
 
 # %%
-# DA.plot_data()
+DA.plot_quick()
 
 # %%
 
