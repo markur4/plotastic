@@ -420,10 +420,12 @@ class Analysis:
         # index_new = pd.MultiIndex(levels=self.levelkeys_rowcol, names=self.factors_all)
 
         ### Construct empty DF but with complete 'index' (index made out of Factors)
+        # * We need to fill it with float("NaN"), since .isnull doesn't recognize np.nan
         empty_DF = pd.DataFrame(
             index=pd.Index.difference(index_new, index_old),
             columns=self.columns_not_factor,
-        )
+        ).fillna(float("NaN"))
+
         # * Fill empty DF with data
         newDF = pd.concat([empty_DF, reindex_DF]).sort_index().reset_index()
         return newDF
@@ -431,8 +433,15 @@ class Analysis:
     @property
     def iter_rowcol(self) -> Generator[tuple, pd.DataFrame]:
         """Returns: A generator that iterates through data grouped by facets/row-col"""
-        for key, df in self.data_ensure_allgroups.groupby(self.factors_rowcol):
+        grouped = self.data_ensure_allgroups.groupby(
+            ut.ensure_list(self.factors_rowcol)
+        )
+        for key in self.levelkeys_rowcol:
+            df = grouped.get_group(key)
             yield key, df
+
+        # for key, df in self.data_ensure_allgroups.groupby(self.factors_rowcol):
+        #     yield key, df
 
         # for name, df in self.data.groupby(self.factors_rowcol):
         #     yield name, df
