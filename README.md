@@ -8,7 +8,7 @@ a wrapper for seaborn plotters for convenient statistics powered by pingouin!
 pip install git+https://github.com/markur4/plotastic.git
 ```
 
-## Why use plotastic?
+## Why use plotastic? 🤔
 
 **Fast**: Make figures and statistics with just a few lines!
 
@@ -18,7 +18,7 @@ pip install git+https://github.com/markur4/plotastic.git
 
 **Sturdy**: plotastic doesn't re-invent the wheel: It's combining these packages (maplotlib, seaborn, pingouin, statannotator). It's just a wrapper that makes it easier to use them together.
 
-## Workflow
+## Workflow ⏳
 
 1. **🧮 Import & Prepare your pandas DataFrame**
 2. **🔀 Make a DataAnalysis Object**
@@ -30,10 +30,10 @@ pip install git+https://github.com/markur4/plotastic.git
    - Snippets for better documentation or functions, you choose!
 5. **💿 Save all results at once!**
 
-## Class Diagram 🌳
+## Class Tree 🌳
 
 <details>
-<summary>CLICK TO UNFOLD</summary>
+<summary>🌳 CLICK TO UNFOLD 🌳</summary>
 
 ### Not everything is implemented. But this is where we're headed. See Features to see what's possible snd what not
 
@@ -231,10 +231,10 @@ classDiagram
 </details>
 
 
-## Features
+## Features ⚙️
 
 <details>
-<summary>CLICK TO UNFOLD</summary>
+<summary>⚙️ CLICK TO UNFOLD ⚙️</summary>
 
 ### Implemented
 
@@ -274,11 +274,11 @@ classDiagram
 
 </details>
 
-## ❗️Disclaimer about Statistics (READ if you're new to statistics)
+## Disclaimer about Statistics (READ if you're new to statistics)
 
 <details>
 
-<summary>CLICK TO UNFOLD</summary>
+<summary>❗️ CLICK TO UNFOLD ❗️</summary>
 
 
 
@@ -316,12 +316,12 @@ The author is not a dedicated statistician. He derives his knowledge from ...
 
 </details>
 
-## Cite these papers!
+## Cite these papers! ✍🏻
 
 - *Vallat, R. (2018). Pingouin: statistics in Python. Journal of Open Source Software, 3(31), 1026. <https://doi.org/10.21105/joss.01026>*
 - *Waskom, M. et al. (2021). mwaskom/seaborn: v0.11.1 (January 2021). Zenodo. <http://doi.org/10.5281/zenodo.4547176>*
 
-## 👉 Step by step
+## Step by step 👈🤞👇👌
 
 ### 🧮 Prepare your data in a long-format DataFrame
 
