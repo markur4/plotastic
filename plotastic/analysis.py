@@ -1,15 +1,19 @@
-from __future__ import annotations  # for type hinting my Class type for return values
-import numpy as np
-import pandas as pd
+from __future__ import annotations
+from operator import index  # for type hinting my Class type for return values
+from typing import Dict, Generator, List, Callable, TYPE_CHECKING
+
 from copy import copy
-from typing import Dict, List, Callable, TYPE_CHECKING
+from itertools import product
 
 # from dataclasses import dataclass
 # import importlib
 
 import warnings
-from requests import get
 
+# from requests import get
+
+import numpy as np
+import pandas as pd
 import seaborn as sns
 from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
@@ -84,7 +88,49 @@ class Analysis:
         if verbose:
             self.warn_about_empties_and_NaNs()
 
-    ### FACTORS .....................................................................................................'''
+    ### List FACTORS .....................................................................................................'''
+
+    @property
+    def factors_all(self) -> list[str]:
+        F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
+        return [e for e in F if (not e is None)]
+
+    @property
+    def factors_as_kwargs(self) -> dict:
+        """
+        gets the dimensions in forms of a dictinary to be passed onto seaborn functions
+        :return:
+        {"y": self.dims.y, "x": self.dims.x,"hue": self.dims.hue, "col": self.dims.col, "row": self.dims.row}
+        :rtype: dict
+        """
+        return self.dims.asdict(incl_by=False, incl_None=False)
+        # return {dim: factor for dim, factor in self.dims.asdict().items() if not factor is None}
+
+    @property
+    def columns_not_factor(self) -> list[str]:
+        return [c for c in self.data.columns if c not in self.factors_all]
+
+    @property
+    def factors_xhue(self) -> str | list[str]:
+        if self.dims.hue:
+            xhue = [self.dims.x, self.dims.hue]
+        else:
+            xhue = self.dims.x
+        return xhue
+
+    @property
+    def factors_rowcol(self) -> str | list[str] | None:
+        if self.dims.row and self.dims.col:
+            rowcol = [self.dims.row, self.dims.col]
+        elif self.dims.row:
+            rowcol = self.dims.row
+        elif self.dims.col:
+            rowcol = self.dims.col
+        else:
+            rowcol = None
+        return rowcol
+
+    ### Retrieve FACTORS .....................................................................................................'''
 
     def getfactors(self, putative_factors: str | list[str,]) -> str | list[str]:
         """Get column name, if "x" or "hue" is passed instead of actual column name"""
@@ -122,50 +168,11 @@ class Analysis:
             if level in levels:
                 return rank
 
-    @property
-    def factors_all(self) -> list[str]:
-        F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
-        return [e for e in F if (not e is None)]
-
-    @property
-    def factors_as_kwargs(self) -> dict:
-        """
-        gets the dimensions in forms of a dictinary to be passed onto seaborn functions
-        :return:
-        {"y": self.dims.y, "x": self.dims.x,"hue": self.dims.hue, "col": self.dims.col, "row": self.dims.row}
-        :rtype: dict
-        """
-        return self.dims.asdict(incl_by=False, incl_None=False)
-        # return {dim: factor for dim, factor in self.dims.asdict().items() if not factor is None}
-
-    @property
-    def factors_xhue(self) -> str | list[str]:
-        if self.dims.hue:
-            xhue = (self.dims.x, self.dims.hue)
-        else:
-            xhue = self.dims.x
-        return xhue
-
-    @property
-    def factors_rowcol(self) -> str | tuple[str] | None:
-        if self.dims.row and self.dims.col:
-            rowcol = (self.dims.row, self.dims.col)
-        elif self.dims.row:
-            rowcol = self.dims.row
-        elif self.dims.col:
-            rowcol = self.dims.col
-        else:
-            rowcol = None
-        return rowcol
-
-    @property
-    def columns_not_factor(self) -> list[str]:
-        return [c for c in self.data.columns if c not in self.factors_all]
-
     #### LEVELS ......................................................................................................'''
 
     @property
     def vartypes(self) -> dict:
+        """Returns: {"f1": "continuous", "f2": "category",}"""
         D = dict()
         for factor in self.factors_all:
             type = self.data[factor].dtype.name
@@ -185,9 +192,7 @@ class Analysis:
 
     @property
     def levels(self) -> dict:
-        """
-        :return: {"f1": [lvl1, lvl2], "f2": [lvl1, lvl2],}
-        """
+        """Returns: {"f1": [lvl1, lvl2], "f2": [lvl1, lvl2],}"""
         D = dict()
         for factor in self.factors_all:
             # f = self.getfactors(factor) # ! makes no sense
@@ -200,17 +205,22 @@ class Analysis:
         return D
 
     @property
-    def levels_tuples(self) -> "list[tuple]":
-        """
-        :return: [("row_lvl1", "row_lvl2"), ("col_lvl1", "col_lvl2"), ("hue_lvl1", "hue_lvl2"), ("hue_lvl1", "hue_lvl2")]
-        """
+    def levels_tuples(self) -> list[tuple]:
+        """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]"""
         return [tuple(l) for l in self.levels.values() if not l is None]
 
     @property
+    def levels_tuples_rowcol(self):
+        """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2) ]"""
+        return [
+            tuple(l)
+            for k, l in self.levels.items()
+            if (not l is None) and (k in ut.ensure_list(self.factors_rowcol))
+        ]
+
+    @property
     def levels_xhue_flat(self) -> tuple:
-        """
-        :return: (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
-        """
+        """Returns: (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)"""
         l = []
         for factor in (self.dims.x, self.dims.hue):
             if factor is None:
@@ -224,10 +234,7 @@ class Analysis:
 
     @property
     def levels_rowcol_flat(self) -> tuple:
-        """
-        :return: (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
-        """
-
+        """Returns: (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)"""
         l = []
         for factor in (self.dims.row, self.dims.col):
             if factor is None:
@@ -241,10 +248,7 @@ class Analysis:
 
     @property
     def levels_hierarchy(self) -> dict:
-        """Has ROW (not the factor) as keys!
-        :return: {"ROW":[ror_l1, row_l2, ...], "COL":[c_l1, c_l2, ...], "HUE":[...], "X":[...]}
-        """
-
+        """Returns: {"ROW":[row_l1, row_l2, ...], "COL":[c_l1, c_l2, ...], "HUE":[...], "X":[...]}"""
         D = self.levels
         return {
             "ROW": D.get(self.dims.row),
@@ -253,12 +257,28 @@ class Analysis:
             "X": D.get(self.dims.x),
         }
 
+    ### Properties of Factors and Levels ............................................................................................
+
+    @property
+    def len_rowlevels(self) -> int:
+        return len(self.levels[self.dims.row])
+
+    @property
+    def len_collevels(self) -> int:
+        return len(self.levels[self.dims.col])
+
     # ... DESCRIBE DATA ...............................................................................................'''
 
-    def plot_quick(self):
-        """Simple plot that shows the data points separated by dimensions"""
-        sns.catplot(kind="swarm", data=self.data, **self.factors_as_kwargs)
+    def catplot(self, kind="strip") -> sns.FacetGrid:
+        """
+        A simple seaborn catplot
+
+        Returns:
+            _type_: sns.FacetGrid
+        """
+        g = sns.catplot(kind=kind, data=self.data, **self.factors_as_kwargs)
         plt.show()
+        return g
 
     def describe_data(self, verbose=False, plot=False):
         ### Plot Data
@@ -362,20 +382,42 @@ class Analysis:
 
     # ... Iterate through DATA  .......................................................................................................'''
 
+    @property
+    def levelkeys(self) -> list[tuple]:
+        """Returns: [
+        (R_lvl1, C_lvl1, x_lvl1, hue_lvl1),
+        (R_lvl1, C_lvl2, x_lvl1, hue_lvl1),
+        (R_lvl2, C_lvl1, x_lvl1, hue_lvl1),
+        ...
+        ]"""
+        return [key for key in product(*self.levels_tuples)]
+
+    @property
+    def levelkeys_rowcol(self) -> list[tuple]:
+        """Returns: [
+        (R_lvl1, C_lvl1),
+        (R_lvl1, C_lvl2),
+        (R_lvl2, C_lvl1),
+        ...
+        ]"""
+        return [key for key in product(*self.levels_tuples_rowcol)]
+
+    @property
     def data_ensure_allgroups(self) -> pd.DataFrame:
         """df.groupby() skips empty groups, so we need to ensure that all groups are present in the data.
         :return: _description_
         :rtype: _type_
         """
 
-        # * Index with incomplete set of groups
+        # * Set columns with factors to index, yielding an index with incomplete keys
         reindex_DF = self.data.set_index(self.factors_all)
         index_old = reindex_DF.index
 
-        # * Index with complete set of groups
+        # * Make index with complete set of keys
         index_new = pd.MultiIndex.from_product(
-            self.levels_tuples, names=self.factors_all
+            iterables=self.levels_tuples, names=self.factors_all
         )
+        # index_new = pd.MultiIndex(levels=self.levelkeys_rowcol, names=self.factors_all)
 
         ### Construct empty DF but with complete 'index' (index made out of Factors)
         empty_DF = pd.DataFrame(
@@ -386,24 +428,20 @@ class Analysis:
         newDF = pd.concat([empty_DF, reindex_DF]).sort_index().reset_index()
         return newDF
 
-    def iter_rowcol(self, skip_empty=True):
-        """
-        A generator that iterates through data grouped by facets/row-col
-        :return:
-        """
-        for factor in ut.ensure_list(self.factors_rowcol):
-            pass
+    @property
+    def iter_rowcol(self) -> Generator[tuple, pd.DataFrame]:
+        """Returns: A generator that iterates through data grouped by facets/row-col"""
+        for key, df in self.data_ensure_allgroups.groupby(self.factors_rowcol):
+            yield key, df
 
         # for name, df in self.data.groupby(self.factors_rowcol):
         #     yield name, df
 
-    def iter_allgroups(self, skip_empty=True):
-        """
-        A generator that iterates through data grouped by row, col, hue and x
-        :return:
-        """
-        for name, df in self.data.groupby(self.factors_all):
-            yield name, df
+    @property
+    def iter_allgroups(self):
+        """Returns: A generator that iterates through data grouped by facets/row-col AND x hue"""
+        for key, df in self.data_ensure_allgroups.groupby(self.factors_all):
+            yield key, df
 
     # ... TRANSFORM  ..................................................................................................'''
 

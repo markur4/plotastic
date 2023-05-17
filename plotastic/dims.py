@@ -22,6 +22,10 @@ class Dims:
         # self._by_str = None
 
     @property
+    def has_hue(self) -> bool:
+        return not self.hue is None
+
+    @property
     def by(self) -> list[str] | None:
         if self._by:
             return self._by
