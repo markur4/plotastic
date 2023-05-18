@@ -26,7 +26,6 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-
 # %%
 # !
 # !
@@ -122,21 +121,30 @@ class PlotTool(Analysis):
     @property
     def iter_keys_and_axes(self):
         """Returns: (R_lvl1, C_lvl1), ax11 / (R_lvl1, C_lv2), ax12 / (R_lvl2, C_lvl1), ax21 / ..."""
-        for key, ax in zip(self.levelkeys_rowcol, self.axes.flatten()):
-            yield key, ax
+        if self.factors_rowcol is None:
+            # * If no row or col, return all axes and data
+            yield None, self.axes  # ! Error for  df.groupby().get_group(None)
+        else:
+            for key, ax in zip(self.levelkeys_rowcol, self.axes.flatten()):
+                yield key, ax
 
     @property
     def iter_axes_and_data(self):
         """Returns:  (ax11, df11) / (ax12, df12) / (ax21, df21) / ..."""
-        for (key_ax, ax), (key_df, df) in zip(
-            self.iter_keys_and_axes, self.iter_rowcol
-        ):
-            assert key_df == key_ax, f"{key_df} != {key_ax}"
-            # * Seaborn breaks on Dataframes that are only NaNs
-            if df[self.dims.y].isnull().all():
-                continue
-            else:
-                yield ax, df
+        if self.factors_rowcol is None:
+            yield self.axes, self.data  # * If no row or col, return all axes and data
+        else:
+            for (key_ax, ax), (key_df, df) in zip(
+                self.iter_keys_and_axes, self.iter_rowcol
+            ):
+                assert (
+                    key_df == key_ax
+                ), f"Mismatch of dataframe_key and ax_key: {key_df} != {key_ax}"
+                # * Seaborn breaks on Dataframes that are only NaNs
+                if df[self.dims.y].isnull().all():
+                    continue
+                else:
+                    yield ax, df
 
     #
     #  ... PLOT ...........................................................................................
@@ -212,10 +220,11 @@ class PlotTool(Analysis):
         Returns:
             mpl.axes.Axes: _description_
         """
-        ### Make sure axes is the same size as the number of row multiplied by column levels
-        assert (
-            self.axes.flatten().size == self.len_rowlevels * self.len_collevels
-        ), f"Axes size mismatch {self.axes.flatten().size} != {self.len_rowlevels * self.len_collevels}"
+        if self.factors_rowcol:  # * If no row or col, return all axes and data
+            ### Make sure axes is the same size as the number of row multiplied by column levels
+            assert (
+                self.axes.flatten().size == self.len_rowlevels * self.len_collevels
+            ), f"Axes size mismatch {self.axes.flatten().size} != {self.len_rowlevels * self.len_collevels}"
 
         ### Handle kwargs
         kws = dict()
@@ -255,7 +264,7 @@ class PlotTool(Analysis):
     # ... EDIT Fig & axes Titles.........................................................................
 
     @staticmethod
-    def _standard_axtitle(key: tuple[str]|str, connect=" | ") -> str:
+    def _standard_axtitle(key: tuple[str] | str, connect=" | ") -> str:
         """make axis title from key
 
         Args:
@@ -303,7 +312,7 @@ class PlotTool(Analysis):
         for ax in self.axes.flatten():
             ax.set_yscale(
                 value="log",  # * "symlog", "linear", "logit", ...
-                base=base,    # * Base of the logarithm
+                base=base,  # * Base of the logarithm
                 nonpositive=nonpositive,  # * "mask": masked as invalid, "clip": clipped to a very small positive number
                 subs=subs,  # * Where to place subticks between major ticks
             )
@@ -312,7 +321,7 @@ class PlotTool(Analysis):
         for ax in self.axes.flatten():
             ax.set_xscale(
                 value="log",  # * "symlog", "linear", "logit", ...
-                base=base,    # * Base of the logarithm
+                base=base,  # * Base of the logarithm
                 nonpositive=nonpositive,  # * "mask": masked as invalid, "clip": clipped to a very small positive number
                 subs=subs,  # * Where to place subticks between major ticks
             )
@@ -341,7 +350,12 @@ class PlotTool(Analysis):
 
     @property
     def legend_handles_and_labels(self):
-        handles, labels = self.axes.flatten()[0].get_legend_handles_labels()
+        if (
+            self.factors_rowcol
+        ):  # * If we have row and col factors, we need to get the legend from the first axes
+            handles, labels = self.axes.flatten()[0].get_legend_handles_labels()
+        else:
+            handles, labels = self.axes.get_legend_handles_labels()
         ### Remove duplicate handles from repeated plot layers
         by_label = dict(zip(labels, handles))
         handles = by_label.values()
@@ -368,7 +382,7 @@ class PlotTool(Analysis):
             s += f"# . . . {self.DOCS['legend']} #\n"
         s += "DA.fig.legend( \n"
         s += f"\ttitle='{self.dims.hue}', #* Hue factor \n"
-        s += "\thandles=DA.legend_handles_and_labels[0], \n"
+        s += "\thandles=DA.legend_handles_and_labels[0], #* If single axes, remove square brackets\n"
         s += "\tlabels=DA.legend_handles_and_labels[1], \n"
         s += "\tloc='center right', #* Rough location \n"
         s += "\tbbox_to_anchor=(1.15, 0.50), #* Exact location in width, height relative to complete figure \n"
@@ -439,12 +453,13 @@ DA.fig.legend(
 )
 plt.close()
 
-#%%
+# %%
 
 DF, dims = ut.load_dataset("fmri")
 PT = PlotTool(data=DF, dims=dims)
 
-PT.switch("row", "col").plot()
+# PT.switch("row", "col").plot()
+PT.set(row="none", col="none").plot()
 
 # %%
 # Summarize
@@ -532,6 +547,14 @@ def main():
 
     # ! Snippets use matplotlib functions, which don't return PlotHelper object, so they can NOT be chained!
     # ! Use them at the end of a layer chain!
+
+    ### Try Different Dataset
+    DF, dims = ut.load_dataset("fmri")
+    PT = PlotTool(data=DF, dims=dims)
+
+    PT.plot()
+    PT.switch("row", "col").plot()
+    PT.set(row="none", col="none").plot()
 
 
 if __name__ == "__main__":
