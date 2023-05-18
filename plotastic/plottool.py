@@ -81,8 +81,40 @@ class PlotTool(Analysis):
         "line": sns.lineplot,
         "rel": sns.relplot,
     }
+
+    SNS_FUNCS_STR = {
+        "bar": "sns.barplot",
+        "point": "sns.pointplot",
+        "strip": "sns.stripplot",
+        "box": "sns.boxplot",
+        "violin": "sns.violinplot",
+        "swarm": "sns.swarmplot",
+        "boxen": "sns.boxenplot",
+        "count": "sns.countplot",
+        "hist": "sns.histplot",
+        "kde": "sns.kdeplot",
+        # "ecdf": "sns.ecdfplot",
+        "rug": "sns.rugplot",
+        "line": "sns.lineplot",
+        "rel": "sns.relplot",
+    }
+
     DOCS = {
         "plt.subplots": "https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots",
+        "bar": "https://seaborn.pydata.org/generated/seaborn.barplot.html#seaborn.barplot",
+        "point": "https://seaborn.pydata.org/generated/seaborn.pointplot.html#seaborn.pointplot",
+        "strip": "https://seaborn.pydata.org/generated/seaborn.stripplot.html#seaborn.stripplot",
+        "box": "https://seaborn.pydata.org/generated/seaborn.boxplot.html#seaborn.boxplot",
+        "violin": "https://seaborn.pydata.org/generated/seaborn.violinplot.html#seaborn.violinplot",
+        "swarm": "https://seaborn.pydata.org/generated/seaborn.swarmplot.html#seaborn.swarmplot",
+        "boxen": "https://seaborn.pydata.org/generated/seaborn.boxenplot.html#seaborn.boxenplot",
+        "count": "https://seaborn.pydata.org/generated/seaborn.countplot.html#seaborn.countplot",
+        "hist": "https://seaborn.pydata.org/generated/seaborn.histplot.html#seaborn.histplot",
+        "kde": "https://seaborn.pydata.org/generated/seaborn.kdeplot.html#seaborn.kdeplot",
+        # "sns.ecdfplot": "https://seaborn.pydata.org/generated/seaborn.ecdfplot.html#seaborn.ecdfplot",
+        "rugt": "https://seaborn.pydata.org/generated/seaborn.rugplot.html#seaborn.rugplot",
+        "line": "https://seaborn.pydata.org/generated/seaborn.lineplot.html#seaborn.lineplot",
+        "rel": "https://seaborn.pydata.org/generated/seaborn.relplot.html#seaborn.relplot",
     }
 
     def __init__(
@@ -194,7 +226,7 @@ class PlotTool(Analysis):
             subplot_kw=None, 
             )\n"""
         s += "DA.reset_axtitles()  # * Add basic titles to axes"
-        s=s.replace("        ", "")
+        s = s.replace("        ", "")
         pyperclip.copy(s)
         print(" ! This was copied to clipboard, press Ctrl+V to paste:")
         print(s)
@@ -219,9 +251,6 @@ class PlotTool(Analysis):
         kws.update(sns_kws)
         # print(dict(y=self.dims.y, x=self.dims.x, hue=self.dims.hue))
 
-        ### Retrieve plotting function
-        sns_func = self.SNS_FUNCS[kind]
-
         ### Iterate through data and axes
         for ax, df in self.iter_keys_and_axes_and_data:
             self.SNS_FUNCS[kind](
@@ -237,9 +266,17 @@ class PlotTool(Analysis):
             ax.legend_.remove()  # ! also: legend=False doesn't work with sns.barplot for some reason..
         return self
 
-    def fillaxes_snip(self):
-        """_summary_"""
-        raise NotImplementedError
+    def fillaxes_snip(self, kind: str = "strip", doclink=True):
+        s = ""
+        s += f"# . . . {self.DOCS[kind]} #\n"
+        s += "kws = dict(alpha=.8) \n"
+        s += "for ax, df in DA.iter_keys_and_axes_and_data: \n"
+        s += f"\t{self.SNS_FUNCS_STR[kind]}(data=df, ax=ax, y='{self.dims.y}', x='{self.dims.x}', hue='{self.dims.hue}', **kws)\n"
+        s += "\tax.legend_.remove() \n"  # * Remove legend from axes"""
+        s += "DA.legend()  # * Add legend to figure \n"
+        pyperclip.copy(s)
+        print(" ! This was copied to clipboard, press Ctrl+V to paste:")
+        print(s)
 
     # ... EDIT TITLES .........................................................................
 
@@ -333,7 +370,15 @@ for i, ax in enumerate(PT.axes.flatten()):
 # %%
 
 ### Don't memorize this, just copy code to the clipboard!
-PT.subplots_snip(doclink=True)
+PT.fillaxes_snip(kind="bar", doclink=True)
+DA = PT
+PT.subplots()
+# . . . https://seaborn.pydata.org/generated/seaborn.barplot.html#seaborn.barplot #
+kws = dict(alpha=0.8)
+for ax, df in DA.iter_keys_and_axes_and_data:
+    sns.barplot(data=df, ax=ax, y="tip", x="day", hue="sex", **kws)
+    ax.legend_.remove()
+DA.legend()  # * Add legend to figure
 
 
 # %%
@@ -385,6 +430,9 @@ def main():
     for i, ax in enumerate(PT.axes.flatten()):
         if i == 2:
             ax.set_title("THIRD!")
+
+    ### Don't memorize this, just copy code to the clipboard!
+    PT.subplots_snip(doclink=True)
 
 
 if __name__ == "__main__":
