@@ -1,5 +1,6 @@
 #
 # %%
+from ast import Not
 from cgitb import reset
 from re import T
 from turtle import width
@@ -23,6 +24,7 @@ from analysis import Analysis
 
 if TYPE_CHECKING:
     import numpy as np
+
 
 
 # %%
@@ -86,8 +88,6 @@ class PlotTool(Analysis):
         "rel": "https://seaborn.pydata.org/generated/seaborn.relplot.html#seaborn.relplot",
     }
 
-    #
-    #
     # ...__INIT__ .....................
 
     def __init__(self, data: pd.DataFrame, dims: dict, verbose=False) -> "PlotTool":
@@ -116,6 +116,7 @@ class PlotTool(Analysis):
     #
     #
     #
+
     # ... ITERATORS #...........................................................................................
 
     @property
@@ -138,7 +139,7 @@ class PlotTool(Analysis):
                 yield ax, df
 
     #
-    # ... PLOT ...........................................................................................
+    #  ... PLOT ...........................................................................................
 
     def plot(
         self, kind: str = "strip", subplot_kws: dict = None, **sns_kws
@@ -249,16 +250,22 @@ class PlotTool(Analysis):
         return s
 
     #
-    # ... EDIT TITLES OF AXES.........................................................................
+    #
+    #
+    # ... EDIT Fig & axes Titles.........................................................................
 
     @staticmethod
-    def _standard_axtitle(key: tuple, connect=" | ") -> str:
+    def _standard_axtitle(key: tuple[str]|str, connect=" | ") -> str:
         """make axis title from key
 
         Args:
             key (tuple): _description_
         """
-        return connect.join(key)
+        if isinstance(key, str):
+            return ut.capitalize(key)
+        elif isinstance(key, tuple):
+            key = [ut.capitalize(k) for k in key]
+            return connect.join(key)
 
     def reset_axtitles(self):
         for key, ax in self.iter_keys_and_axes:
@@ -276,35 +283,61 @@ class PlotTool(Analysis):
                 ax.set_title(axtitles[key])
 
     #
-    ### ... EDIT X- & Y-axis LABELS ............................................................
+    ### ... EDIT x- & y-axis LABELS ............................................................
 
-    #
-    ### ... EDIT X- & Y-axis SCALE ............................................................
-
-    #
-    ### ...
-
-    #
-    # ... EDIT, Ticks and Ticklabels # ......................................................................
-
-    def edit_logscale(self, base=10, **scale_kws):
+    def edit_ylabels(self, **label_kws):
         for ax in self.axes.flatten():
-            ax.set_xscale("log")  # * "symlog", "linear", "logit", ...
-            ax.set_yscale("log")
+            ax.set_ylabel(self.dims.y, **label_kws)
 
-    def edit_scale_snip(self):
+    def edit_xlabels(self, **label_kws):
+        for ax in self.axes.flatten():
+            ax.set_xlabel(self.dims.y, **label_kws)
+
+    def edit_labels_snip():
+        raise NotImplementedError
+
+    #
+    ### ... EDIT x- & y-axis SCALE ............................................................
+
+    def edit_yscale_log(self, base=10, nonpositive="clip", subs=[2, 3, 4, 5]):
+        for ax in self.axes.flatten():
+            ax.set_yscale(
+                value="log",  # * "symlog", "linear", "logit", ...
+                base=base,    # * Base of the logarithm
+                nonpositive=nonpositive,  # * "mask": masked as invalid, "clip": clipped to a very small positive number
+                subs=subs,  # * Where to place subticks between major ticks
+            )
+
+    def edit_xscale_log(self, base=10, nonpositive="clip", subs=[2, 3, 4, 5]):
+        for ax in self.axes.flatten():
+            ax.set_xscale(
+                value="log",  # * "symlog", "linear", "logit", ...
+                base=base,    # * Base of the logarithm
+                nonpositive=nonpositive,  # * "mask": masked as invalid, "clip": clipped to a very small positive number
+                subs=subs,  # * Where to place subticks between major ticks
+            )
+
+    def edit_xyscale_snip(self):
         s = ""
         s += "for ax in DA.axes.flatten(): \n"
         s += "\tax.set_xscale('log') # * 'symlog', 'linear', 'logit', ... \n"
         s += "\tax.set_yscale('log') \n"
         return s
 
+    #
+    # ... EDIT, Ticks and Ticklabels # ......................................................................
+
     def edit_ticks(self, **tick_kws):
         for ax in self.axes.flatten():
             ax.tick_params(**tick_kws)
 
+    def edit_ticks_snip(self):
+        raise NotImplementedError
+
     #
-    # ... LEGEND ............................................................................
+    #
+    #
+    # ... EDIT Legend ............................................................................
 
     @property
     def legend_handles_and_labels(self):
@@ -313,12 +346,13 @@ class PlotTool(Analysis):
         by_label = dict(zip(labels, handles))
         handles = by_label.values()
         labels = by_label.keys()
+        labels = [ut.capitalize(l) for l in labels]
         return handles, labels
 
     def legend(self) -> "PlotTool":
         """Adds standard legend to figure"""
         self.fig.legend(
-            title=self.dims.hue.capitalize(),
+            title=ut.capitalize(self.dims.hue),
             handles=self.legend_handles_and_labels[0],
             labels=self.legend_handles_and_labels[1],
             loc="center right",
@@ -347,6 +381,11 @@ class PlotTool(Analysis):
         print(" ! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
+    #
+    #
+    #
+    #
+
 
 # !
 # !
@@ -363,8 +402,8 @@ DIMS = dict(y="tip", x="day", hue="sex", col="smoker", row="time")
 PT = PlotTool(data=DF, dims=DIMS)
 
 # %%
-PT.plot()
-PT.describe_data()
+# PT.plot()
+# PT.describe_data()
 
 
 # %%
@@ -380,7 +419,8 @@ for i, ax in enumerate(PT.axes.flatten()):
     if i == 2:
         ax.set_title("THIRD!")
 
-PT.legend_snip()
+PT.edit_yscale_log(subs=[2, 3, 4, 5])
+
 DA = PT
 # . . . https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.legend #
 DA.fig.legend(
@@ -397,7 +437,14 @@ DA.fig.legend(
     markerscale=1.5,  # * Marker size relative to plotted datapoint
     frameon=False,  # * Remove frame around legend
 )
+plt.close()
 
+#%%
+
+DF, dims = ut.load_dataset("fmri")
+PT = PlotTool(data=DF, dims=dims)
+
+PT.switch("row", "col").plot()
 
 # %%
 # Summarize

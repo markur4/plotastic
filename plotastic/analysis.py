@@ -261,11 +261,17 @@ class Analysis:
 
     @property
     def len_rowlevels(self) -> int:
-        return len(self.levels[self.dims.row])
+        if not self.dims.row is None:
+            return len(self.levels[self.dims.row])
+        else:
+            return 1  # * Used by subplots, we need minimum of one row
 
     @property
     def len_collevels(self) -> int:
-        return len(self.levels[self.dims.col])
+        if not self.dims.col is None:
+            return len(self.levels[self.dims.col])
+        else:
+            return 1  # * Used by subplots, we need minimum of one col
 
     # ... DESCRIBE DATA ...............................................................................................'''
 
@@ -383,7 +389,9 @@ class Analysis:
     # ... Iterate through DATA  .......................................................................................................'''
 
     @property
-    def levelkeys(self) -> list[tuple]:
+    def levelkeys_all(
+        self,
+    ) -> list[tuple]:  # ! refactored from 'levelkeys' -> 'levelkeys_all'
         """Returns: [
         (R_lvl1, C_lvl1, x_lvl1, hue_lvl1),
         (R_lvl1, C_lvl2, x_lvl1, hue_lvl1),
@@ -393,14 +401,19 @@ class Analysis:
         return [key for key in product(*self.levels_tuples)]
 
     @property
-    def levelkeys_rowcol(self) -> list[tuple]:
+    def levelkeys_rowcol(self) -> list[tuple | str]:
         """Returns: [
         (R_lvl1, C_lvl1),
         (R_lvl1, C_lvl2),
         (R_lvl2, C_lvl1),
         ...
         ]"""
-        return [key for key in product(*self.levels_tuples_rowcol)]
+        return [
+            key
+            if not len(key) == 1
+            else key[0]  # * If only one factor, string is needed, not a tuple
+            for key in product(*self.levels_tuples_rowcol)
+        ]
 
     @property
     def data_ensure_allgroups(self) -> pd.DataFrame:
