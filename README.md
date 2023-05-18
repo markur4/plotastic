@@ -131,30 +131,40 @@ classDiagram
       spherical(property):bool ="unknown"
       parametric(property):bool =None
       ...
-      test_normality()
-      snip_normality()
-      test_sphericity()
-      snip_sphericity()
-      test_homoscedasticity()
-      snip_homoscedasticity()
-      test_all_assumptions()
+      check_normality()
+      check_normality_snip()
+      check_sphericity()
+      check_sphericity_snip()
+      check_homoscedasticity()
+      check_homoscedasticity_snip()
+      check_all_assumptions()
+      check_all_assumptions_snip()
       ....()
    }
 
    class Omnibus{
       ...
       significant_factors(property): dict
-      ANOVA()
-      RM_ANOVA()
-      kruskal()
+      omni_anova()
+      omni_anova_snip()
+      omni_rmanova()
+      omni_rmamova_snip()
+      omni_kruskal()
+      omni_kruskal_snip()
+      ....()
    }
    class PostHoc{
       ...
       significant_pairs(property): pd.DataFrame
-      tukey()
-      dunn()
-      multiple_paired_ttests()
-      multiple_wilcoxon()
+      test_tukey()
+      test_tukey_snip()
+      test_dunn()
+      test_dunn_snip()
+      test_multiple_paired_t()
+      test_multiple_paired_t_snip()
+      test_multiple_wilcoxon()
+      test_multiple_wilcoxon_snip()
+      ....()
    }
 
    Assumptions  <|-- PostHoc
@@ -178,23 +188,24 @@ classDiagram
       axes_flat(property) -> axes
 
       edit_titles(titles:dict) -> None
-      snip_titles() 
+      edit_titles_snip()
       edit_labels(labels:dict) -> None
-      snip_labels()
+      edit_labels_snip()
       edit_ticks(ticks:dict) -> None
-      snip_ticks()
+      edit_ticks_snip()
       ....()
    }
    class MultiPlot{
+      <<Library of pre-built Plots>>
       ...
       plot_box_with_dots(dotkind:str["swarm", "strip"])
-      snip_box_with_dots()
+      plot_box_with_dots_snip()
       plot_mean_with_dots(meankind:str["bar", "point"], dotkind:str["swarm", "strip"])
-      snip_mean_with_dots()
+      plot_mean_with_dots_snip()
       plot_paired_dots()
-      snip_paired_dots()
+      plot_paired_dots_snip()
       plot_scatter_with_line()
-      snip_scatter_with_line()
+      plot_scatter_with_line_snip()
       ....()
    }
 

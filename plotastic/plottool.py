@@ -1,9 +1,10 @@
 #
 # %%
 from cgitb import reset
+from turtle import width
 from typing import Generator, TYPE_CHECKING
 
-from matplotlib import gridspec
+import pyperclip
 
 # from matplotlib import axes
 import markurutils as ut
@@ -80,6 +81,9 @@ class PlotTool(Analysis):
         "line": sns.lineplot,
         "rel": sns.relplot,
     }
+    DOCS = {
+        "plt.subplots": "https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots",
+    }
 
     def __init__(
         self,
@@ -110,95 +114,28 @@ class PlotTool(Analysis):
         )
         plt.close()  # * Close the figure to avoid displaying it
 
-    # ... Iterate through axes #...........................................................................................
+    # ... ITERATORS #...........................................................................................
 
     @property
-    def iter_axes(self):
-        """Associates axes with rowcol keys!
-        Returns: {
-            (R_lvl1, C_lvl1): ax11,
-            (R_lvl1, C_lv2): ax12,
-            (R_lvl2, C_lvl1): ax21,
-            (R_lvl2, C_lvl2): ax22
-        }"""
+    def iter_keys_and_axes(self):
+        """Returns: (R_lvl1, C_lvl1), ax11 / (R_lvl1, C_lv2), ax12 / (R_lvl2, C_lvl1), ax21 / ..."""
         for key, ax in zip(self.levelkeys_rowcol, self.axes.flatten()):
             yield key, ax
 
     @property
-    def iter_axes_and_data(self):
-        """Returns: ( (ax11, df11), (ax12, df12), (ax21, df21), ...)"""
-        for (key_df, df), (key_ax, ax) in zip(self.iter_rowcol, self.iter_axes):
+    def iter_keys_and_axes_and_data(self):
+        """Returns:  (ax11, df11) / (ax12, df12) / (ax21, df21) / ..."""
+        for (key_ax, ax), (key_df, df) in zip(
+            self.iter_keys_and_axes, self.iter_rowcol
+        ):
             assert key_df == key_ax, f"{key_df} != {key_ax}"
-            yield ax, df
-
-    # ... Plotting #...........................................................................................
-
-    def subplots(
-        self, **subplot_kws: dict
-    ) -> tuple["mpl.figure.Figure", "mpl.axes.Axes"]:
-        """Initialise matplotlib figure and axes objects
-
-        Returns:
-            tuple["mpl.figure.Figure", "mpl.axes.Axes"]: matplotlib figure and axes objects
-        """
-
-        # * https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots
-        self.fig, self.axes = plt.subplots(
-            nrows=self.len_rowlevels,
-            ncols=self.len_collevels,
-            **subplot_kws,
-        )
-        ### Add titles to axes to provide basic orientation
-        self.reset_axtitles()
-
-        return self
-
-    def fillaxes(self, kind: str = "strip", **sns_kws: dict) -> mpl.axes.Axes:
-        """_summary_
-
-        Args:
-            axes (mpl.axes.Axes): _description_
-            kind (str, optional): _description_. Defaults to "strip".
-
-        Returns:
-            mpl.axes.Axes: _description_
-        """
-        ### Make sure axes is the same size as the number of row multiplied by column levels
-        assert (
-            self.axes.flatten().size == self.len_rowlevels * self.len_collevels
-        ), f"Axes size mismatch {axes.flatten().size} != {self.len_rowlevels * self.len_collevels}"
-
-        ### Handle kwargs
-        kws = dict()
-        kws.update(sns_kws)
-        # print(dict(y=self.dims.y, x=self.dims.x, hue=self.dims.hue))
-
-        ### Retrieve plotting function
-        sns_func = self.SNS_FUNCS[kind]
-
-        ### Iterate through data and axes
-        for ax, df in self.iter_axes_and_data:
-            if (
-                df[self.dims.y].isnull().all() # * Seaborn breaks on Dataframes that are only NaNs
-            ): 
+            # * Seaborn breaks on Dataframes that are only NaNs
+            if df[self.dims.y].isnull().all():
                 continue
             else:
-                self.SNS_FUNCS[kind](
-                    data=df,
-                    ax=ax,
-                    y=self.dims.y,
-                    x=self.dims.x,
-                    hue=self.dims.hue,
-                    **kws,
-                )
+                yield ax, df
 
-            # * Remove legend per axes, since we want one legend for the whole figure
-            ax.legend_.remove()  # ! also: legend=False doesn't work with sns.barplot for some reason..
-        return self
-
-    def fillaxes_snip():
-        """_summary_"""
-        raise NotImplementedError
+    # ... PLOT ...........................................................................................
 
     def plot(
         self, kind: str = "strip", subplot_kws: dict = None, **sns_kws
@@ -217,15 +154,94 @@ class PlotTool(Analysis):
         subplot_kws = subplot_kws or {}
         sns_kws = sns_kws or {}
 
-        ### Initialise Figure and Axes
-        self.subplots(**subplot_kws)
-
-        ### Fill axes with seaborn graphics
-        self.fillaxes(kind=kind, **sns_kws)
+        self.subplots(**subplot_kws)  # * Initialise Figure and Axes
+        self.fillaxes(kind=kind, **sns_kws)  # * Fill axes with seaborn graphics
+        self.legend()  # * Add legend to figure
+        plt.tight_layout()  # * Make sure everything fits nicely
 
         return self
 
-    # ... Edit Titles .........................................................................
+    def subplots(
+        self, **subplot_kws: dict
+    ) -> tuple["mpl.figure.Figure", "mpl.axes.Axes"]:
+        """Initialise matplotlib figure and axes objects
+
+        Returns:
+            tuple["mpl.figure.Figure", "mpl.axes.Axes"]: matplotlib figure and axes objects
+        """
+        self.fig, self.axes = plt.subplots(
+            nrows=self.len_rowlevels,
+            ncols=self.len_collevels,
+            **subplot_kws,
+        )
+        ### Add titles to axes to provide basic orientation
+        self.reset_axtitles()
+
+        return self
+
+    def subplots_snip(self, doclink=True):
+        s = ""
+        if doclink:
+            s += f"# . . . {self.DOCS['plt.subplots']} #\n"
+        s += "DA = DataAnalysis(data=DF, dims=DIMS)"
+        s += f"""
+        DA.fig, DA.axes = plt.subplots(
+            nrows=DA.len_rowlevels, 
+            ncols=DA.len_collevels,
+            sharex=False, sharey=False, 
+            width_ratios={[1 for _ in range(self.len_collevels)]}, height_ratios={[1 for _ in range(self.len_rowlevels)]},
+            gridspec_kw=dict(wspace=0.2, hspace=0.5),
+            subplot_kw=None, 
+            )\n"""
+        s += "DA.reset_axtitles()  # * Add basic titles to axes"
+        s=s.replace("        ", "")
+        pyperclip.copy(s)
+        print(" ! This was copied to clipboard, press Ctrl+V to paste:")
+        print(s)
+
+    def fillaxes(self, kind: str = "strip", **sns_kws: dict) -> mpl.axes.Axes:
+        """_summary_
+
+        Args:
+            axes (mpl.axes.Axes): _description_
+            kind (str, optional): _description_. Defaults to "strip".
+
+        Returns:
+            mpl.axes.Axes: _description_
+        """
+        ### Make sure axes is the same size as the number of row multiplied by column levels
+        assert (
+            self.axes.flatten().size == self.len_rowlevels * self.len_collevels
+        ), f"Axes size mismatch {self.axes.flatten().size} != {self.len_rowlevels * self.len_collevels}"
+
+        ### Handle kwargs
+        kws = dict()
+        kws.update(sns_kws)
+        # print(dict(y=self.dims.y, x=self.dims.x, hue=self.dims.hue))
+
+        ### Retrieve plotting function
+        sns_func = self.SNS_FUNCS[kind]
+
+        ### Iterate through data and axes
+        for ax, df in self.iter_keys_and_axes_and_data:
+            self.SNS_FUNCS[kind](
+                data=df,
+                ax=ax,
+                y=self.dims.y,
+                x=self.dims.x,
+                hue=self.dims.hue,
+                **kws,
+            )
+
+            # * Remove legend per axes, since we want one legend for the whole figure
+            ax.legend_.remove()  # ! also: legend=False doesn't work with sns.barplot for some reason..
+        return self
+
+    def fillaxes_snip(self):
+        """_summary_"""
+        raise NotImplementedError
+
+    # ... EDIT TITLES .........................................................................
 
     @staticmethod
     def _standard_axtitle(key: tuple, connect=" | "):
@@ -237,7 +253,7 @@ class PlotTool(Analysis):
         return connect.join(key)
 
     def reset_axtitles(self):
-        for key, ax in self.iter_axes:
+        for key, ax in self.iter_keys_and_axes:
             ax.set_title(self._standard_axtitle(key))
 
     def edit_titles(
@@ -248,7 +264,7 @@ class PlotTool(Analysis):
         axes = axes or self.axes
 
         if not axtitles is None:
-            for key, ax in self.iter_axes:
+            for key, ax in self.iter_keys_and_axes:
                 ax.set_title(axtitles[key])
 
     # ... Legend............................................................................
@@ -269,8 +285,9 @@ class PlotTool(Analysis):
             handles=self.legend_handles_and_labels[0],
             labels=self.legend_handles_and_labels[1],
             loc="center right",
-            bbox_to_anchor=(1.05, 0.5),
+            bbox_to_anchor=(1.15, 0.5),
         )
+        return self
 
     def legend_snip(self):
         raise NotImplementedError
@@ -291,47 +308,33 @@ class PlotTool(Analysis):
 
 # %%
 DF, dims = ut.load_dataset("tips")
-DIMS = dict(y="tip", x="day", hue="size-cut", col="smoker", row="time")
+DIMS = dict(y="tip", x="day", hue="sex", col="smoker", row="time")
 PT = PlotTool(data=DF, dims=DIMS)
 
 # %%
+PT.plot()
 PT.describe_data()
 
 
 # %%
-
-for key in PT.levelkeys_rowcol:
-    print(key)
-
-for (key_ax, _), (key_df, _) in zip(PT.iter_axes, PT.iter_rowcol):
-    print(key_ax, key_df)
-
-for (key_ax, _), (key_df, _) in zip(PT.iter_axes, PT.iter_rowcol):
-    print(key_ax, key_df)
-
-for key, sdfsdf in PT.iter_rowcol:
-    print(key)
-
-for key, df in PT.iter_axes_and_data:
-    print(key)
-
-
-# %%
 ### Use Chaining
-PT = (
+(
     PT.switch("x", "col")
     .subplots(sharey=True, gridspec_kw=dict(wspace=0.2, hspace=0.5))
     .fillaxes(kind="box", boxprops=dict(alpha=0.5))
     .fillaxes(kind="swarm", size=3, dodge=True)
+    .legend()  # * Add legend
 )
-
 for i, ax in enumerate(PT.axes.flatten()):
     if i == 2:
         ax.set_title("THIRD!")
 
-PT.legend()  # * Add legend
 
 # %%
+
+### Don't memorize this, just copy code to the clipboard!
+PT.subplots_snip(doclink=True)
+
 
 # %%
 ########... SUMMARIZE INTO TESTS .......................................................................................................
@@ -339,7 +342,7 @@ PT.legend()  # * Add legend
 
 def main():
     DF, dims = ut.load_dataset("tips")  # * Load Data. Dims
-    DIMS = dict(y="tip", x="sex", hue="size-cut", col="smoker", row="time")
+    DIMS = dict(y="tip", x="day", hue="sex", col="smoker", row="time")
     PT = PlotTool(data=DF, dims=DIMS)
 
     ### Test Parts
@@ -365,17 +368,23 @@ def main():
     PT.fillaxes(kind="box", boxprops=dict(alpha=0.5))
     PT.fillaxes(kind="swarm", size=3, dodge=True)
 
-    for i, ax in enumerate(axes.flatten()):  # * Play around with choosing axes
+    for i, ax in enumerate(axes.flatten()):  # * Pick axes as you want!
         if i == 2:
             ax.set_title("THIRD!")
 
     ### Use Chaining
-    PT = (
-        PT.switch("x", "row")  # * Experiment with switching dimensions
+    # * (methods act inplace, so you have to re-initialize PT to start from scratch!)
+    (
+        PT.switch("x", "col")  # * Experiment with switching dimensions!
         .subplots(sharey=True, gridspec_kw=dict(wspace=0.2, hspace=0.5))
         .fillaxes(kind="box", boxprops=dict(alpha=0.5))
         .fillaxes(kind="swarm", size=3, dodge=True)
+        .legend()  # * Add legend
     )
+
+    for i, ax in enumerate(PT.axes.flatten()):
+        if i == 2:
+            ax.set_title("THIRD!")
 
 
 if __name__ == "__main__":
