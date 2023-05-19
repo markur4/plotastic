@@ -27,7 +27,7 @@ print(DIMS)
 A = Analysis(data=DF, dims=DIMS, title="Tips Analysis", verbose=True)
 # %%
 ### Show those groups that are empty
-A.get_empty_groupkeys()
+A.data_get_empty_groupkeys()
 
 # %%
 ### Show content of Analysis object
@@ -40,6 +40,6 @@ A.plot_quick()
 # %%
 
 ### Describe the data
-A.describe_data()
+A.data_describe()
 
 # %%

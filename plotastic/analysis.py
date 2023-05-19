@@ -1,5 +1,5 @@
 from __future__ import annotations
-from operator import index  # for type hinting my Class type for return values
+from operator import index, le  # for type hinting my Class type for return values
 from typing import Dict, Generator, List, Callable, TYPE_CHECKING
 
 from copy import copy
@@ -60,6 +60,10 @@ class Analysis:
         ### Catch unprintable types
         if type(D.get("data")) is pd.DataFrame:
             D["data"] = (D["data"].shape, list(D["data"].columns))
+            D["data_ensure_allgroups"] = (
+                D["data_ensure_allgroups"].shape,
+                list(D["data_ensure_allgroups"].columns),
+            )
         if "fig2nd" in D:
             D["fig2nd"] = f"{len(D['fig2nd'])} axes"
         # if "ax" in D:
@@ -67,28 +71,52 @@ class Analysis:
 
         return ut.printable_dict(D=D, start_message=f"{type(self)}: ")
 
+    # ... INIT ......................
+
     def __init__(
         self,
         data: pd.DataFrame,
         dims: dict | Dims,
         # transform=None
         verbose=False,
-    ):
+        levels: list[tuple[str]] = None,
+        # som: dict[str, str] = None,
+    ) -> Analysis:
+        """_summary_
+
+        Args:
+            data (pd.DataFrame): Pandas dataframe, long-format!
+            dims (dict | Dims): Dims object storing x, y, hue, col, row.
+            verbose (bool, optional): Warns User of empty groups. Defaults to False.
+            levels (list[tuple[str]], optional): If levels are specified, they will be compared \
+                with the dataframe and columns will be set to ordered categorical type automatically. Defaults to None.
+            som (dict[str, str], optional): Scales of measurements. NOT IMPLEMENTED YET. Defaults to None.
+
+        Returns:
+            Analysis: _description_
+        """
         self.data = data
         self.dims = dims if type(dims) is Dims else Dims(**dims)
 
+        ### Transformations
         self.is_transformed = False
-        self.transform_funcs = []  # * HISTORY OF TRANSFORMATIONS
-        self._y_untransformed = (
-            self.dims.y
-        )  # * STORE IT SO WE CAN RESET IT AFTER TRANSFORMATION
+        self.transform_history = []  # * HISTORY OF TRANSFORMATIONS
+        # * Store y so we can reset it after transformations
+        self._y_untransformed = self.dims.y
 
-        # * Categorical or Continuous? (Nominal? Ordinal? Discrete? Contiuous?)
-
+        ### Check for empties or missing group combinations
         if verbose:
             self.warn_about_empties_and_NaNs()
 
-    ### List FACTORS .....................................................................................................'''
+        ### Make Categorical
+        if levels:
+            self.check_levels_with_data(input_lvls=levels, verbose=verbose)
+            self.levels = levels
+            self.data_categorize()
+
+    #
+    #
+    # ... List FACTORS .....................................................................................................'''
 
     @property
     def factors_all(self) -> list[str]:
@@ -130,9 +158,17 @@ class Analysis:
             rowcol = None
         return rowcol
 
-    ### Retrieve FACTORS .....................................................................................................'''
+    @property
+    def factors_categoric(self):
+        """Includes only columns that were defined as nominal or ordinal"""
+        return
 
-    def getfactors(self, putative_factors: str | list[str,]) -> str | list[str]:
+    #
+    # ... Retrieve FACTORS .....................................................................................................'''
+
+    def getfactors_from_dim(
+        self, putative_factors: str | list[str,]
+    ) -> str | list[str]:
         """Get column name, if "x" or "hue" is passed instead of actual column name"""
         if isinstance(putative_factors, str):
             putative_factors = [putative_factors]
@@ -158,9 +194,10 @@ class Analysis:
 
     def get_factor_from_level(self, level: str):
         """Gets the factor from a level"""
-        for factor, levels in self.levels.items():
+        for factor, levels in self.levels_factor_dict.items():
             if level in levels:
                 return factor
+        return None  # * We use this to check if the level is in the data
 
     def get_rank_from_level(self, level: str):
         """Gets the factor from a level"""
@@ -168,53 +205,48 @@ class Analysis:
             if level in levels:
                 return rank
 
-    #### LEVELS ......................................................................................................'''
+    #
+    # ... LEVELS ......................................................................................................'''
+
+    def get_levels_from_column(self, colname: str) -> list[str]:
+        """Returns: [lvl1, lvl2]"""
+        S = self.data[colname]
+        # if S.dtype.name == "category":
+        if isinstance(S.dtype, pd.api.types.CategoricalDtype):
+            return S.cat.categories.to_list()
+        else:
+            return S.unique().tolist()
 
     @property
-    def vartypes(self) -> dict:
-        """Returns: {"f1": "continuous", "f2": "category",}"""
-        D = dict()
-        for factor in self.factors_all:
-            type = self.data[factor].dtype.name
-            if type == "object":
-                D[factor] = "object"
-                print(
-                    f"#! factor '{factor}' is of type object so it's probably a string"
-                )
-            if type == "category":
-                D[factor] = "category"
-            elif type in ["int", "float", "float32", "float64", "int32", "int16"]:
-                D[factor] = "continuous"
-            else:
-                print(f"#!!! factor '{factor}' is of unknown type '{type}'")
-                D[factor] = "unknown"
-        return D
-
-    @property
-    def levels(self) -> dict:
+    def levels_factor_dict(self) -> dict:
         """Returns: {"f1": [lvl1, lvl2], "f2": [lvl1, lvl2],}"""
-        D = dict()
-        for factor in self.factors_all:
-            # f = self.getfactors(factor) # ! makes no sense
-            S = self.data[factor]
-            # if isinstance(S.dtype, pd.api.types.CategoricalDtype):
-            if S.dtype.name == "category":
-                D[factor] = S.cat.categories.to_list()
-            else:
-                D[factor] = S.unique()
-        return D
+        return {
+            factor: self.get_levels_from_column(colname=factor)
+            for factor in self.factors_all
+        }
+
+    @property
+    def levels_dim_dict(self) -> dict:
+        """Returns: {"ROW":[row_l1, row_l2, ...], "COL":[c_l1, c_l2, ...], "HUE":[...], "X":[...]}"""
+        D = self.levels_factor_dict
+        return {
+            "ROW": D.get(self.dims.row),
+            "COL": D.get(self.dims.col),
+            "HUE": D.get(self.dims.hue),
+            "X": D.get(self.dims.x),
+        }
 
     @property
     def levels_tuples(self) -> list[tuple]:
         """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]"""
-        return [tuple(l) for l in self.levels.values() if not l is None]
+        return [tuple(l) for l in self.levels_factor_dict.values() if not l is None]
 
     @property
     def levels_tuples_rowcol(self):
         """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2) ]"""
         return [
             tuple(l)
-            for k, l in self.levels.items()
+            for k, l in self.levels_factor_dict.items()
             if (not l is None) and (k in ut.ensure_list(self.factors_rowcol))
         ]
 
@@ -246,33 +278,171 @@ class Analysis:
                 [l.append(e) for e in S.unique()]
         return tuple(l)
 
-    @property
-    def levels_hierarchy(self) -> dict:
-        """Returns: {"ROW":[row_l1, row_l2, ...], "COL":[c_l1, c_l2, ...], "HUE":[...], "X":[...]}"""
-        D = self.levels
-        return {
-            "ROW": D.get(self.dims.row),
-            "COL": D.get(self.dims.col),
-            "HUE": D.get(self.dims.hue),
-            "X": D.get(self.dims.x),
-        }
+    #
+    # ... Properties of Factors and Levels ............................................................................................
 
-    ### Properties of Factors and Levels ............................................................................................
+    @property
+    def factors_types(self) -> dict:
+        """Returns: {"f1": "continuous", "f2": "category",}"""
+        D = dict()
+        for factor in self.factors_all:
+            type = self.data[factor].dtype.name
+            if type == "object":
+                D[factor] = "object"
+                print(
+                    f"#! factor '{factor}' is of type object so it's probably a string"
+                )
+            if type == "category":
+                D[factor] = "category"
+            elif type in ["int", "float", "float32", "float64", "int32", "int16"]:
+                D[factor] = "continuous"
+            else:
+                print(f"#!!! factor '{factor}' is of unknown type '{type}'")
+                D[factor] = "unknown"
+        return D
 
     @property
     def len_rowlevels(self) -> int:
         if not self.dims.row is None:
-            return len(self.levels[self.dims.row])
+            return len(self.levels_factor_dict[self.dims.row])
         else:
             return 1  # * Used by subplots, we need minimum of one row
 
     @property
     def len_collevels(self) -> int:
         if not self.dims.col is None:
-            return len(self.levels[self.dims.col])
+            return len(self.levels_factor_dict[self.dims.col])
         else:
             return 1  # * Used by subplots, we need minimum of one col
 
+    #
+    # ...  Make Levels Categorical...............................................................................
+
+    def check_levels_with_data(
+        self,
+        input_lvls: list[list[str]],
+        verbose=True,
+        strict=False,
+    ):
+        """Checks input levels with Dataframe and detects dissimilarities
+        Args:
+            all_lvls (list[list[str]]): List of lists of all levels. The order of the lists do not have to match that of the dataframe.
+        """
+        ## TODO: Sometimes x is numerical/cardinal, then this won't work. We need to check if it's numerical and then exclude x.
+        _lvls_fromDF = self.levels_factor_dict
+
+        ### Scan for Matches and Mismatches
+        matchdict: dict[str, tuple(bool, list)] = {}
+        for factor, lvls_fromCOL in _lvls_fromDF.items():
+            matchdict[factor] = (False, lvls_fromCOL)  # * Initialize
+            for lvls in input_lvls:
+                ### Match:
+                if ut.check_unordered_identity(lvls_fromCOL, lvls):
+                    if len(lvls) != len(lvls_fromCOL):
+                        raise AssertionError(
+                            f"#! Levels for factor '{factor}' do not match in length: \
+                        \n\tFrom data:  {lvls_fromCOL} \n\t  vs. \n\tYour input: {lvls}"
+                        )
+
+                    ### Update to True
+                    matchdict[factor] = (True, lvls_fromCOL)
+                    break
+
+        ### Print general results
+        no_error = True
+        for factor, (match, lvls_fromCOL) in matchdict.items():
+            if not match:
+                no_error = False
+                if verbose:
+                    print(
+                        f"🛑 Levels mismatch: For factor '{factor}', your input did not contain levels equal to those in the data:"
+                    )
+
+        ### Print detailed results
+        if no_error:
+            print("✅ Levels complete: All specified levels match with data")
+            return None
+
+        ### Show levels that are in data but not in input
+        if verbose:
+            print("\n   >> Searching levels that are in DATA but not in INPUT...")
+            print("     ", f"DATA LEVELS: ".rjust(15), "DEFINED BY USER?")
+        problems = []  # * Gather problems for error message
+        input_lvl_flat = ut.flatten(input_lvls)
+        for lvl_df in ut.flatten(self.levels_tuples):
+            if lvl_df in input_lvl_flat:  # * MATCH
+                if verbose:
+                    lvl_df = (
+                        f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
+                    )  # * need '' to recognize hiding leading or trailing spaces
+                    print("     ", f"{lvl_df}: ".rjust(15), f"yes")
+            else:
+                problems.append(lvl_df)  # * Gathering
+                if verbose:
+                    lvl_df = (
+                        f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
+                    )  # * need '' to recognize hiding leading or trailing spaces
+                    print(
+                        "     ",
+                        f"{lvl_df}: ".rjust(15),
+                        "<-- UNDEFINED. They'll turn to NaNs in data!",
+                    )
+        ### Show levels that are in input but not in data
+        if verbose:
+            print("\n   >> Searching levels that are in INPUT but not in DATA...")
+            print("     ", f"YOUR INPUT: ".rjust(15), "FOUND IN DATA?")
+        problems = []  # * Gather problems for error message
+        for lvl in ut.flatten(input_lvls):
+            found: str | None = self.get_factor_from_level(
+                lvl
+            )  # * MATCH (returns None if nothing found)
+            if not found:
+                problems.append(lvl)  # * Gathering
+            if verbose:
+                lvl = (
+                    f"'{lvl}'" if isinstance(lvl, str) else lvl
+                )  # * need '' to recognize hiding leading or trailing spaces
+                found = (  # * Overwrite <found> with printable string
+                    f"found in '{found}'"
+                    if found
+                    else "<-- NOT FOUND. This input will be ignored"
+                )
+                print("     ", f"{lvl}: ".rjust(15), found)
+        print()
+
+        if strict and problems:  ## TODO: Strict is never True. Add self.strict..?
+            raise AssertionError(f"Level mismatch ({problems})")
+        elif strict:
+            raise AssertionError(f"Level mismatch or missing")
+
+    def data_make_catdict(self, input_levels: list[list[str]]):
+        """Convert the lazy list inpot of levels into a dictionary with factors as keys and levels as values
+        Args:
+            levels (list[list[str]]): List of list of strings
+        """
+        catdict = {factor: [] for factor in self.factors_all}
+        for lvl in ut.flatten(input_levels):
+            factor = self.get_factor_from_level(lvl)
+            if not factor is None:
+                catdict[factor].append(lvl)
+        return catdict
+
+    def data_categorize(self, verbose=True):
+        """Categorize the data according to the levels specified in the constructor"""
+        catdict = self.data_make_catdict(self.levels)
+        
+        if verbose:
+            nans_before = self.data.isna().sum().sum()
+            print("#! Categorizing data...")
+            print(f"    Applying these levels: {catdict}")
+        self.data = ut.multi_categorical(self.data, catdict)
+        
+        if verbose:
+            nans_after = self.data.isna().sum().sum()
+            print(f"    NaNs before: {str(nans_before).rjust(5)} / {self.data.size} total cells")
+            print(f"    NaNs after:  {str(nans_after).rjust(5)} / {self.data.size} total cells, >> +{nans_after - nans_before} NaNs")
+
+    #
     # ... DESCRIBE DATA ...............................................................................................'''
 
     def catplot(self, kind="strip") -> sns.FacetGrid:
@@ -286,7 +456,7 @@ class Analysis:
         plt.show()
         return g
 
-    def describe_data(self, verbose=False, plot=False):
+    def data_describe(self, verbose=False, plot=False) -> pd.DataFrame:
         ### Plot Data
         if plot:
             self.plot_quick
@@ -351,63 +521,58 @@ class Analysis:
             ut.pp(df)
         return df
 
-    def get_rows_with_NaN(self):
+    def data_get_rows_with_NaN(self) -> pd.DataFrame:
         ### Make complete df with all possible groups/facets and with factors as index
-        df = self.data_ensure_allgroups().set_index(self.factors_all)
+        df = self.data_ensure_allgroups.set_index(self.factors_all)
         # * Pick only rows where some datapoints are missing, not all
         hasNaN_df: "pd.DataFrame" = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
         return hasNaN_df
 
-    def get_empty_groupkeys(self):
+    def data_get_empty_groupkeys(self) -> list[str | tuple[str]]:
         ### Make complete df with all possible groups/facets and with factors as index
-        df = self.data_ensure_allgroups().set_index(self.factors_all)
+        df = self.data_ensure_allgroups.set_index(self.factors_all)
         # * Rows with only NaNs (these are completely missing in self.data)
         allNaN_df = df[df.isna().all(axis=1)]
         return allNaN_df.index.to_list()
 
-    def warn_about_empties_and_NaNs(self):
-        allNaN_list = self.get_empty_groupkeys()
-        hasNaN_df = self.get_rows_with_NaN()
+    def warn_about_empties_and_NaNs(self) -> None:
+        allNaN_list = self.data_get_empty_groupkeys()
+        hasNaN_df = self.data_get_rows_with_NaN()
 
         if len(allNaN_list) > 0:
             print(
-                "❗️ Among all combinations of selected factors, these groups/facets are missing in the Dataframe:"
+                "❗️ Data incomplete: Among all combinations of levels from selected factors, these groups/facets are missing in the Dataframe:"
             )
+            # * Print all empty groups
             for key in allNaN_list:
                 print(key)
         else:
-            print("✅ All combinations of selected factors are present in the Dataframe")
+            print(
+                "✅ Data complete: All combinations of levels from selected factors are present in the Dataframe."
+            )
 
         if len(hasNaN_df) > 0:
             print(
-                "❗️ These groups/facets contain single NaNs: (use .get_rows_with_NaN() to see them)"
+                "❗️ Groups incomplete: These groups/facets contain single NaNs: (Use .get_rows_with_NaN() to see them all):"
             )
-            ut.pp(hasNaN_df)
+            hasNaN_df.head(10)  # * Show df
+            # ut.pp(hasNaN_df)
         else:
-            print("✅ No groups with single NaNs")
+            print("✅ Groups complete: No groups with single NaNs")
 
+    #
     # ... Iterate through DATA  .......................................................................................................'''
 
     @property
     def levelkeys_all(
         self,
     ) -> list[tuple]:  # ! refactored from 'levelkeys' -> 'levelkeys_all'
-        """Returns: [
-        (R_lvl1, C_lvl1, x_lvl1, hue_lvl1),
-        (R_lvl1, C_lvl2, x_lvl1, hue_lvl1),
-        (R_lvl2, C_lvl1, x_lvl1, hue_lvl1),
-        ...
-        ]"""
+        """Returns: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]"""
         return [key for key in product(*self.levels_tuples)]
 
     @property
     def levelkeys_rowcol(self) -> list[tuple | str]:
-        """Returns: [
-        (R_lvl1, C_lvl1),
-        (R_lvl1, C_lvl2),
-        (R_lvl2, C_lvl1),
-        ...
-        ]"""
+        """Returns: [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]"""
         return [
             key
             if not len(key) == 1
@@ -444,8 +609,8 @@ class Analysis:
         return newDF
 
     @property
-    def iter_rowcol(self) -> Generator[tuple, pd.DataFrame]:
-        """Returns: A generator that iterates through data grouped by facets/row-col"""
+    def data_iter__key_rowcol(self) -> Generator[tuple, pd.DataFrame]:
+        """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ..."""
         grouped = self.data_ensure_allgroups.groupby(
             ut.ensure_list(self.factors_rowcol)
         )
@@ -453,21 +618,16 @@ class Analysis:
             df = grouped.get_group(key)
             yield key, df
 
-        # for key, df in self.data_ensure_allgroups.groupby(self.factors_rowcol):
-        #     yield key, df
-
-        # for name, df in self.data.groupby(self.factors_rowcol):
-        #     yield name, df
-
     @property
-    def iter_allgroups(self):
-        """Returns: A generator that iterates through data grouped by facets/row-col AND x hue"""
+    def data_iter__key_allgroups(self):
+        """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ..."""
         for key, df in self.data_ensure_allgroups.groupby(self.factors_all):
             yield key, df
 
+    #
     # ... TRANSFORM  ..................................................................................................'''
 
-    def transform(self, func: str | Callable, inplace=False):
+    def y_transform(self, func: str | Callable, inplace=False):
         """Transforms the data, changes dv property"""
 
         default_trafofuncs = {
@@ -513,17 +673,18 @@ class Analysis:
         a = a.set(y=y_new, inplace=inplace)
         a.data = add_transform_col(df=a.data, y_raw=y_raw, y_new=y_new)
         self.is_transformed = True
-        self.transform_funcs.append(func)
+        self.transform_history.append(func)
 
         return a
 
-    def reset_y(self, inplace=False):
+    def y_reset(self, inplace=False):
         a = self if inplace else ut.copy_by_pickling(self)
         a = a.set(y=self._y_untransformed, inplace=inplace)
         self.is_transformed = False
         # self.transform_func = []  #* KEEP HISTORY OF TRANSFORMATION
         return a
 
+    #
     # ... SETTERS ..................................................................................................."""
 
     # !
@@ -580,7 +741,7 @@ class Analysis:
             a.data = data
             # print(data)
         if not transform is None:
-            a.transform(func=transform)
+            a.y_transform(func=transform)
         if not title is None:
             a.title = title
         return a
@@ -656,3 +817,15 @@ class Analysis:
     #     )
     #
     #     pass
+
+
+# %%
+
+data, dims = ut.load_dataset("fmri")
+levels = [("frontal", "parietal"), ("cue", "stim "), (0, 2, 1, 3, 4, 5, 6, 7, 8, 9)]
+
+#%%
+A = Analysis(data=data, dims=dims, levels=levels, verbose=True)
+
+# %%
+

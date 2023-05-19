@@ -126,7 +126,7 @@ class PlotTool(Analysis):
 
     @property
     def iter_keys_and_axes(self):
-        """Returns: (R_lvl1, C_lvl1), ax11 / (R_lvl1, C_lv2), ax12 / (R_lvl2, C_lvl1), ax21 / ..."""
+        """Returns: >> (R_lvl1, C_lvl1), ax11 >> (R_lvl1, C_lv2), ax12 >> (R_lvl2, C_lvl1), ax21 >> ..."""
         if self.factors_rowcol is None:
             # * If no row or col, return all axes and data
             yield None, self.axes  # ! Error for  df.groupby().get_group(None)
@@ -136,12 +136,12 @@ class PlotTool(Analysis):
 
     @property
     def iter_axes_and_data(self):
-        """Returns:  (ax11, df11) / (ax12, df12) / (ax21, df21) / ..."""
+        """Returns: >> (ax11, df11) >> (ax12, df12) >> (ax21, df21) >> ..."""
         if self.factors_rowcol is None:
             yield self.axes, self.data  # * If no row or col, return all axes and data
         else:
             for (key_ax, ax), (key_df, df) in zip(
-                self.iter_keys_and_axes, self.iter_rowcol
+                self.iter_keys_and_axes, self.data_iter__key_rowcol
             ):
                 assert (
                     key_df == key_ax
@@ -582,14 +582,13 @@ PT = PlotTool(data=DF, dims=DIMS).switch("x", "col")
 
 # %%
 # PT.plot()
-# PT.describe_data()
+# PT.data_describe()
 
 
 # %%
 ### Use Chaining
 PT = (
-    PT
-    .subplots(sharey=True)
+    PT.subplots(sharey=True)
     .fillaxes(kind="box", boxprops=dict(alpha=0.5))
     .fillaxes(kind="swarm", size=3, dodge=True)
     # .legend()  # * Add legend
@@ -597,41 +596,63 @@ PT = (
 for i, ax in enumerate(PT.axes.flatten()):
     ax.set_title(i)
 
+
 def iter_axes_throughrows():
-    """Returns: r_index1, ax11 / r_index1, ax12 / r_index2, ax21 / r_index2, ax22 / ..."""
+    """Returns: >> r_index1, ax11 >> r_index1, ax12 >> r_index2, ax21 >> r_index2, ax22 >> ..."""
     for ri, row in enumerate(PT.axes):
         for ax in row:
             yield ri, ax
 
+
 def iter_axes_throughcols():
-    """Returns: c_index1, ax11 / c_index2, ax21 / c_index1, ax12 / c_index2, ax22 / ..."""
-    for ci, col in enumerate(PT.axes.T): #* mind the T (for Transpose)
+    """Returns: >> c_index1, ax11 >> c_index2, ax21 >> c_index1, ax12 >> c_index2, ax22 >> ..."""
+    for ci, col in enumerate(PT.axes.T):  # * mind the T (for Transpose)
         for ax in col:
             yield ci, ax
 
+
 def iter_axes_leftmost():
-    """Returns: ax11 / ax21 / ax31 / ax41 / ..."""
+    """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
     for row in PT.axes:
         yield row[0]
-        
+
+
 def iter_axes_upperrow():
-    """Returns: ax11 / ax12 / ax13 / ax14 / ..."""
+    """Returns: >> ax11 >> ax12 >> ax13 >> ax14 >> ..."""
     for ax in PT.axes[0]:
         yield ax
 
+
 def iter_axes_lowerrow():
-    """Returns: ax31 / ax32 / ax33 / ax34 / ..."""
+    """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
     for ax in PT.axes[-1]:
         yield ax
 
+
+def iter_axes_notlowerrow():
+    """Returns: >> axes excluding lowest row"""
+    for row in PT.axes[:-1]:
+        for ax in row:
+            yield ax
+
+
 for ax in iter_axes_leftmost():
     ax.set_ylabel("ugawuga")
-    
+
 for ax in iter_axes_upperrow():
     ax.set_ylabel("bumdidumm")
-    
+
 for ax in iter_axes_lowerrow():
     ax.set_title("unterste Reihe")
+
+for ax in iter_axes_notlowerrow():
+    ax.set_title("nicht unterste Reihe")
+
+
+def edit_rename_single():
+    """Renames axestitles, xlabels and ylabels of a single axes"""
+    assert not isinstance(PT.axes, np.ndarray), "PT.axes is a single axes"
+    PT.axes
 
 
 # %%
