@@ -1,5 +1,7 @@
 from __future__ import annotations
-from operator import index, le  # for type hinting my Class type for return values
+from nis import cat
+from operator import index, le
+from re import L  # for type hinting my Class type for return values
 from typing import Dict, Generator, List, Callable, TYPE_CHECKING
 
 from copy import copy
@@ -114,7 +116,7 @@ class Analysis:
         ### Make Categorical
         if levels:
             self.check_inputlevels_with_data(input_lvls=levels, verbose=verbose)
-            self.levels = levels
+            self.input_levels = levels
             self.data_categorize(verbose=verbose)
 
     #
@@ -195,12 +197,16 @@ class Analysis:
         else:
             return result
 
-    def get_factor_from_level(self, level: str):
+    def get_factor_from_level(self, level: str, ret_notfound=None):
         """Gets the factor from a level"""
         for factor, levels in self.levels_factor_dict.items():
             if level in levels:
                 return factor
-        return None  # * We use this to check if the level is in the data
+        ### If nothing returned, nothing was wound
+        if ret_notfound is None:
+            return None  # * We use this to check if the level is in the data
+        elif ret_notfound == "raise":
+            raise AssertionError(f"#! Level '{level}' not found in data.")
 
     def get_rank_from_level(self, level: str):
         """Gets the factor from a level"""
@@ -321,6 +327,29 @@ class Analysis:
     #
     # ...  Make Levels Categorical...............................................................................
 
+    def make_catdict_from_input(self, input_levels: list[list[str]], skip_notfound=True):
+        """Convert the lazy list input of levels into a dictionary with factors as keys and levels as values
+        Args:
+            levels (list[list[str]]): List of list of strings
+            notfound (str, optional): What to do if a level is not found in the dataframe. Defaults to "skip".
+        """
+
+        ### Fill with Results
+        catdict = {factor: [] for factor in self.factors_all}
+        if not skip_notfound:
+            catdict["NOT_FOUND"] = []
+        for input_lvl in ut.flatten(input_levels):
+            factor = self.get_factor_from_level(input_lvl)
+            if not factor is None:
+                catdict[factor].append(input_lvl)
+            else:
+                if not skip_notfound:
+                    catdict["NOT_FOUND"].append(input_lvl)
+            
+        ### Remove empties
+        catdict = {k: v for k, v in catdict.items() if len(v) > 0}
+        return catdict
+
     def check_inputlevels_with_data(
         self,
         input_lvls: list[list[str]],
@@ -331,29 +360,26 @@ class Analysis:
         Args:
             all_lvls (list[list[str]]): List of lists of all levels. The order of the lists do not have to match that of the dataframe.
         """
-        ## TODO: Sometimes x is numerical/cardinal, then this won't work. We need to check if it's numerical and then exclude x.
-        _lvls_fromDF = self.levels_factor_dict
 
+        ### Compare with Dict:
+        # * Keys:   Factors derived from INPUT
+        # * Values: Levels from DATA
+        # * This ensures that we can categorize only those columns whose levels were specified in the input
+        catdict = self.make_catdict_from_input(input_lvls)
+        _LVLs_fromDF = {factor: self.levels_factor_dict[factor] for factor in catdict.keys()}
+        
         ### Scan for Matches and Mismatches
-        matchdict: dict[str, tuple(bool, list)] = {}
-        for factor, lvls_fromCOL in _lvls_fromDF.items():
-            matchdict[factor] = (False, lvls_fromCOL)  # * Initialize
+        matchdict = {}
+        for factor, LVLs_fromCOL in _LVLs_fromDF.items():
+            matchdict[factor] = (False, LVLs_fromCOL)  # * Initialize
             for lvls in input_lvls:
-                ### Match:
-                if ut.check_unordered_identity(lvls_fromCOL, lvls):
-                    if len(lvls) != len(lvls_fromCOL):
-                        raise AssertionError(
-                            f"#! Levels for factor '{factor}' do not match in length: \
-                        \n\tFrom data:  {lvls_fromCOL} \n\t  vs. \n\tYour input: {lvls}"
-                        )
-
-                    ### Update to True
-                    matchdict[factor] = (True, lvls_fromCOL)
+                if ut.check_unordered_identity(LVLs_fromCOL, lvls, ignore_duplicates=False):
+                    matchdict[factor] = (True, LVLs_fromCOL) # * Update if match
                     break
 
         ### Print general results
         problems = []
-        for factor, (match, lvls_fromCOL) in matchdict.items():
+        for factor, (match, LVLs_fromCOL) in matchdict.items():
             if not match:
                 problems.append(factor)
                 if verbose:
@@ -383,67 +409,54 @@ class Analysis:
 
         # ! ALWAYS VERBOSE
 
-        ### Show levels that are in data but not in input
+        RJ = 17  # * Right Justification to have everything aligned nicely
+
+        ### Make a catdict without ignorind the not-found levels
+        print("\n   >> Checking if input levels associate to every factor in data...")
+        catdict = self.make_catdict_from_input(input_lvls)
+        print(catdict)
+
+        ### In DATA (but not in INPUT)
         print("\n   >> Searching levels that are in DATA but not in INPUT...")
-        print("     ", f"DATA LEVELS: ".rjust(15), "DEFINED BY USER?")
-        problems = []  # * Gather problems for error message
+        print("     ", f"LEVELS IN DATA: ".rjust(15), "DEFINED BY USER?")
+
         input_lvl_flat = ut.flatten(input_lvls)
-        for lvl_df in ut.flatten(self.levels_tuples):
-            if lvl_df in input_lvl_flat:  # * MATCH
-                lvl_df = (
-                    f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
-                )  # * need '' to recognize hiding leading or trailing spaces
-                print("     ", f"{lvl_df}: ".rjust(15), f"yes")
-            else:
-                problems.append(lvl_df)  # * Gathering
-                lvl_df = (
-                    f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
-                )  # * need '' to recognize hiding leading or trailing spaces
-                print(
-                    "     ",
-                    f"{lvl_df}: ".rjust(15),
-                    "<-- UNDEFINED. They'll turn to NaNs in data!",
-                )
-        ### Show levels that are in input but not in data
+        for factor, LVLs_from_COL in self.levels_factor_dict.items():
+            for lvl_df in LVLs_from_COL:
+            #* When factor-levels are defined partially, 
+                if not factor in catdict.keys():
+                    message = f"<-- Undefined like all levels from '{factor}'. This will be ignored"
+                elif lvl_df in input_lvl_flat:  # * MATCH
+                    message = "yes"
+                else:
+                    message = "<-- 🚨 UNDEFINED. Other levels from '{factor}' were defined, so this one will turn to NaNs!"
+                # * Add '' to recognize hiding leading or trailing spaces
+                lvl_df = f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
+                print("     " + f"{lvl_df}: ".rjust(RJ), message)
+
+        ### In INPUT (but not in DATA)
         print("\n   >> Searching levels that are in INPUT but not in DATA...")
-        print("     ", f"YOUR INPUT: ".rjust(15), "FOUND IN DATA?")
+        print("     ", f"USER INPUT: ".rjust(RJ), "FOUND IN DATA?")
         problems = []  # * Gather problems for error message
         for lvl in ut.flatten(input_lvls):
-            found: str | None = self.get_factor_from_level(
-                lvl
-            )  # * MATCH (returns None if nothing found)
-            if not found:
-                problems.append(lvl)  # * Gathering
-            lvl = (
-                f"'{lvl}'" if isinstance(lvl, str) else lvl
-            )  # * need '' to recognize hiding leading or trailing spaces
-            found = (  # * Overwrite <found> with printable string
-                f"found in '{found}'"
-                if found
-                else "<-- NOT FOUND. This input will be ignored"
-            )
-            print("     ", f"{lvl}: ".rjust(15), found)
+            # * Returns None if nothing found
+            found: str | None = self.get_factor_from_level(lvl)
+            # * Add '' to recognize hiding leading or trailing spaces
+            lvl = f"'{lvl}'" if isinstance(lvl, str) else lvl
+            if not found is None:
+                message = f"found in '{found}'"
+            else:
+                message = "<-- Not found. This input will be ignored"
+            print("     ", f"{lvl}: ".rjust(RJ), message)
         print()
-
-    def data_make_catdict(self, input_levels: list[list[str]]):
-        """Convert the lazy list inpot of levels into a dictionary with factors as keys and levels as values
-        Args:
-            levels (list[list[str]]): List of list of strings
-        """
-        catdict = {factor: [] for factor in self.factors_all}
-        for lvl in ut.flatten(input_levels):
-            factor = self.get_factor_from_level(lvl)
-            if not factor is None:
-                catdict[factor].append(lvl)
-        return catdict
 
     def data_categorize(self, verbose=True):
         """Categorize the data according to the levels specified in the constructor"""
-        catdict = self.data_make_catdict(self.levels)
+        catdict = self.make_catdict_from_input(self.input_levels)
 
         if verbose:
             nans_before = self.data.isna().sum().sum()
-            print("#! Categorizing data...")
+            print("👉 Categorizing data...")
             print(f"    Applying these levels: {catdict}")
         self.data = ut.multi_categorical(self.data, catdict)
 
@@ -806,8 +819,8 @@ def main():
         dims=dims,
         levels=[
             ("frontal", "parietal"),
-            ("cue", "stim"),
-            (0, 2, 1, 3, 4, 5, 6, 7, 8, 9),
+            ("cue", "stim "),
+            (0, 2, 1, 3, 44, 5, 6, 7, 8, 9),
         ],
         verbose=True,
     )
