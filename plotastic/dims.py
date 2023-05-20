@@ -1,17 +1,20 @@
 # @dataclass
+from __future__ import annotations
 
 from typing import Dict, Literal
 from copy import copy, deepcopy
 
 
-# TODO maybe refactor this to contain 
+# TODO maybe refactor this to contain
 class Dimension:
-    def __init__(self, name:str, scale_of_measurement: Literal["nominal", "ordinal", "cardinal"]) -> 'Dimension':
+    def __init__(
+        self, name: str, scale_of_measurement: Literal["nominal", "ordinal", "cardinal"]
+    ) -> "Dimension":
         """_summary_
 
         Args:
             name (str): _description_
-            scale_of_measurement (str): 
+            scale_of_measurement (str):
             (https://en.wikipedia.org/wiki/Level_of_measurement)
             What's the scale of measurement?
             * Nominal data:
@@ -20,7 +23,7 @@ class Dimension:
             * Ordinal data:
                 * Categorical data that has order
                 * e.g. grades, sizes, etc.
-                * This works independently from ordered pd.Categorical type. That is used to place plots in the right order. 
+                * This works independently from ordered pd.Categorical type. That is used to place plots in the right order.
             * Cardinal data:
                 * Numerical data that has order
                 * Three types: interval, ratio, and absolute
@@ -34,24 +37,22 @@ class Dimension:
                     * e.g.  temperature [Kelvin], height, weight, etc.
                 * Absolute data:
                     * Numerical data that has order, equal intervals, a true zero, and an absolute scale
-                
+
         Returns:
             Dimension: _description_
         """
-        #* "nominal", "ordinal", "interval", "ratio
-        
+        # * "nominal", "ordinal", "interval", "ratio
+
         self.name = name
         self.som = scale_of_measurement
-        
-        
+
     #
     #
 
 
 class Dims:
-    
     # ... Init ....
-    
+
     def __init__(
         self,
         y: str = None,
@@ -59,49 +60,46 @@ class Dims:
         hue: str = None,
         row: str = None,
         col: str = None,
-
-    )-> 'Dims':
+    ) -> "Dims":
         ### Define Dims
         self.y = y
         self.x = x
         self.hue = hue
         self.row = row
         self.col = col
-        self._by = None
-        
+        # self._by = None
+
         # self.som = dict(y="interval", x="ordinal", row="")
-        
+
         # if som:  # * SOM = Scale of Measurement / Skalenniveau
         #     self.som = som
         # else:
         #     self.som = dict(y= "continuous", )
 
     #
-    # 
-    # 
+    #
+    #
     # ... Properties ....
 
     @property
     def has_hue(self) -> bool:
         return not self.hue is None
 
-    @property
-    def by(self) -> list[str] | None:
-        if self._by:
-            return self._by
-        elif self.row and self.col:
-            return [self.row, self.col]
-        elif self.row:
-            return [self.row]
-        elif self.col:
-            return [self.col]
-        else:
-            return None
+    # @property
+    # def by(self) -> list[str] | None:
+    #     if self._by:
+    #         return self._by
+    #     elif self.row and self.col:
+    #         return [self.row, self.col]
+    #     elif self.row:
+    #         return [self.row]
+    #     elif self.col:
+    #         return [self.col]
+    #     else:
+    #         return None
 
-    def asdict(self, incl_None=True, incl_by=True) -> dict:
+    def asdict(self, incl_None=True) -> dict:
         d = dict(y=self.y, x=self.x, hue=self.hue, row=self.row, col=self.col)
-        if incl_by:
-            d.update(dict(by=self.by))
         if not incl_None:
             d = {k: v for (k, v) in d.items() if (not v is None)}
         return d
@@ -129,7 +127,7 @@ class Dims:
 
     def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
-    ) -> "Dims":
+    ) -> Dims:
         """
         Set attributes. Detects Duplicates, switches automatically
         :param keys: Two dimensions to switch. Only 2 Positional arguments allowed. Use e.g. dims.switch("x", "hue", **kwargs)
@@ -160,7 +158,7 @@ class Dims:
 
         ### SWITCH IT
         ### COPY OBJECT
-        oldby = self.by
+
         original: dict = deepcopy(
             self.asdict(incl_None=True),
         )
@@ -186,12 +184,6 @@ class Dims:
                 if oV != nV and oV == replace_v:  # or replace_v == "none":
                     printval = f"'{replace_v}' -> '{qV}'"
                     pre = ">>"
-                elif oK == "by" and newobj.by != oldby:
-                    printval = (
-                        f"'{oldby}' -> '{newobj.by}'"
-                        if type(newobj.by) is str
-                        else f"{oldby} -> {newobj.by}"
-                    )
                 elif oV != nV and oV != replace_v:
                     printval = f"'{oV}' -> '{replace_v}'"
                     pre = " <"

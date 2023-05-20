@@ -171,6 +171,18 @@ class Analysis:
         return rowcol
 
     @property
+    def factors_rowcol_nested(self) -> str | list[str] | None:
+        if self.dims.row and self.dims.col:
+            rowcol = [self.dims.row, self.dims.col]
+        elif self.dims.row:
+            rowcol = [self.dims.row]
+        elif self.dims.col:
+            rowcol = [self.dims.col]
+        else:
+            rowcol = [""]
+        return rowcol
+
+    @property
     def factors_categoric(self):
         """Includes only columns that were defined as nominal or ordinal"""
         return
@@ -246,9 +258,9 @@ class Analysis:
         """Returns: {"row":[row_l1, row_l2, ...], "col":[c_l1, c_l2, ...], "hue":[...], "x":[...]}"""
         D = self.levels_factor_dict
         return {
-            "row": D.get(self.dims.row),
-            "col": D.get(self.dims.col),
-            "hue": D.get(self.dims.hue),
+            "row": D.get(self.dims.row, ""),
+            "col": D.get(self.dims.col, ""),
+            "hue": D.get(self.dims.hue, ""),
             "x": D.get(self.dims.x),
         }
 

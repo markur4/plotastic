@@ -120,12 +120,25 @@ class PlotTool(Analysis):
         ### Initialise figure and axes
         fig, axes = plt.subplots(nrows=self.len_rowlevels, ncols=self.len_collevels)
         self.fig: mpl.figure.Figure = fig
-        self.axes: np.ndarray[mpl.axes._subplots.AxesSubplot] = axes
+        self.axes = axes
         plt.close()  # * Close the figure to avoid displaying it
 
     #
     #
     #
+
+    # ... handle shape of axes
+    
+    @property
+    def axes_nested(self) -> np.ndarray:
+        """Always returns a 2D nested array of axes, even if there is only one row or column."""
+        if self.dims.row and self.dims.col: # * both row and col
+            return self.axes
+        elif self.dims.row or self.dims.col: # * either or
+            return np.array([self.axes])
+        else: #* Single figure
+            return np.array([self.axes]).reshape(1,1)
+
 
     # ... ITERATORS #...........................................................................................
 
@@ -145,14 +158,16 @@ class PlotTool(Analysis):
     @property
     def axes_iter__row_axes(self):
         """Returns: row_lvl1, (ax11, ax21, ...) >> row_lvl2, (ax12, ax22, ...) >> ..."""
-        for rowkey, axes in zip(self.levels_dim_dict["ROW"], self.axes):
+        for rowkey, axes in zip(self.levels_dim_dict["row"], self.axes_nested):
             yield rowkey, axes
+
 
     @property
     def axes_iter__col_axes(self):
         """Returns: col_lvl1, (ax11, ax21, ...) >> col_lvl2, (ax12, ax22, ...) >> ..."""
-        for colkey, axes in zip(self.levels_dim_dict["COL"], self.axes.T):
+        for colkey, axes in zip(self.levels_dim_dict["col"], self.axes_nested.T):
             yield colkey, axes
+
 
     #
     ### Iterator yielding axes and DF
@@ -181,26 +196,26 @@ class PlotTool(Analysis):
     @property
     def axes_iter_leftmost(self):
         """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
-        for row in self.axes:
+        for row in self.axes_nested:
             yield row[0]
 
     @property
     def axes_iter_notleftmost(self):
         """Returns: >> axes excluding leftmost column"""
-        for row in self.axes:
+        for row in self.axes_nested:
             for ax in row[1:]:
                 yield ax
 
     @property
     def axes_iter_lowerrow(self):
         """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
-        for ax in self.axes[-1]:
+        for ax in self.axes_nested[-1]:
             yield ax
 
     @property
     def axes_iter_notlowerrow(self):
         """Returns: >> axes excluding lowest row"""
-        for row in self.axes[:-1]:
+        for row in self.axes_nested[:-1]:
             for ax in row:
                 yield ax
 
@@ -323,7 +338,8 @@ class PlotTool(Analysis):
                 **kws,
             )
             # * Remove legend per axes, since we want one legend for the whole figure
-            ax.legend_.remove()  # ! also: legend=False doesn't work with sns.barplot for some reason..
+            if self.dims.hue:
+                ax.legend_.remove()  # ! also: legend=False doesn't work with sns.barplot for some reason..
 
         return self
 
@@ -363,9 +379,10 @@ class PlotTool(Analysis):
             key = [ut.capitalize(k) for k in key]
             return connect.join(key)
 
-    def reset_axtitles(self):
+    def reset_axtitles(self) -> PlotTool:
         for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))
+        return self
 
     def edit_titles(
         self,
@@ -415,7 +432,7 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def edit_replace_titles(self, titles: list):
+    def edit_replace_titles(self, titles: list) -> PlotTool:
         """Edits axes titles. If list is longer than axes, the remaining titles are ignored
 
         Args:
@@ -425,9 +442,9 @@ class PlotTool(Analysis):
             PlotTool: The object itselt
         """
 
-        for ax, title in zip(self.axes.flatten(), titles):
+        for ax, title in zip(self.axes_nested.flatten(), titles):
             ax.set_title(title)
-        return PT
+        return self
 
     def edit_replace_titles_snip(self):
         s = ""
@@ -441,11 +458,9 @@ class PlotTool(Analysis):
     #
     ### ... EDIT x- & y-axis LABELS ............................................................
 
-    def edit_labels_snip() -> str:
-        raise NotImplementedError
 
     def edit_xyaxis_labels(
-        self, leftmost: str, notleftmost: str, lowerrow: str, notlowerrow: str
+        self, leftmost: str ="", notleftmost: str="", lowerrow: str="", notlowerrow: str=""
     ) -> PlotTool:
         """Edits x- and y-axis labels
 
@@ -455,6 +470,11 @@ class PlotTool(Analysis):
             lowerrow (str): x-axis label for lower row of axes
             notlowerrow (str): x-axis label for not-lower row of axes
         """
+        leftmost = leftmost or self.dims.y
+        notleftmost = notleftmost or ""
+        lowerrow = lowerrow or self.dims.x
+        notlowerrow = notlowerrow or ""
+        
         ### y-axis labels
         for ax in self.axes_iter_leftmost:
             ax.set_ylabel(leftmost)
@@ -490,7 +510,7 @@ class PlotTool(Analysis):
     def edit_log_yscale(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
     ) -> PlotTool:
-        for ax in self.axes.flatten():
+        for ax in self.axes_nested.flatten():
             ax.set_yscale(
                 value="log",  # * "symlog", "linear", "logit", ...
                 base=base,  # * Base of the logarithm
@@ -534,7 +554,7 @@ class PlotTool(Analysis):
     def edit_yticklabel_percentage(
         self, decimals_major: int = 0, decimals_minor: int = 0
     ) -> PlotTool:
-        for ax in self.axes.flatten():
+        for ax in self.axes_nested.flatten():
             ax.yaxis.set_major_formatter(
                 mpl.ticker.PercentFormatter(xmax=1, decimals=decimals_major)
             )
@@ -563,7 +583,7 @@ class PlotTool(Analysis):
         Returns:
             _type_: _description_
         """
-        for ax in self.axes.flatten():
+        for ax in self.axes_nested.flatten():
             # * Set minor ticks, we need ScalarFormatter, others can't get casted into float
             ax.yaxis.set_minor_formatter(
                 mpl.ticker.ScalarFormatter(useOffset=0, useMathText=False)
@@ -654,7 +674,7 @@ class PlotTool(Analysis):
 
     # ... EDIT Gridlines! # ......................................................................
     def edit_grid(self) -> PlotTool:
-        for ax in self.axes.flatten():
+        for ax in self.axes_nested.flatten():
             ax.yaxis.grid(True, which="major", ls="-", linewidth=0.5, c="grey")
             ax.yaxis.grid(True, which="minor", ls="-", linewidth=0.2, c="grey")
             ax.xaxis.grid(True, which="major", ls="-", linewidth=0.3, c="grey")
@@ -783,12 +803,58 @@ PT = PlotTool(data=DF, dims=DIMS).switch("x", "col")
 # PT.plot()
 
 # %% Experiments:
-PT: PlotTool = (
-    PT.subplots(sharey=True)
-    .fillaxes(kind="box", boxprops=dict(alpha=0.5))
-    .fillaxes(kind="swarm", size=3, dodge=True)
-    # .legend()  # * Add legend
-)
+def tester(DF, dims):
+    PT = PlotTool(data=DF, dims=dims)#.switch("x", "col")
+    
+    PT: PlotTool = (
+        PT.subplots(sharey=True)
+        .fillaxes(kind="box", boxprops=dict(alpha=0.5))
+        .fillaxes(kind="swarm", size=3, dodge=True)
+        .reset_axtitles()
+    )
+    PT = (
+        PT
+        .edit_titles()
+        .edit_format_titles()
+        .edit_xyaxis_labels()
+        .edit_log_yscale(base=10)
+        .edit_yticklabel_percentage()
+        .edit_add_minorticklabels(subs=[2, 3, 5, 7])
+        .edit_xticklabels()
+        .edit_grid()
+        .edit_fontsizes(9, 10, 7)
+        # .edit_replace_titles(titles = ["1", "2", "3", "4", "5", "6", "7", "8"])
+
+    )
+    if PT.dims.hue: #* Only when legend
+        PT = PT.edit_legend()
+    # plt.close()
+
+
+dimses = [
+    dict(y="tip", x="day", hue="sex", col="smoker", row="time"),
+    dict(y="tip", x="sex", hue="day", col="smoker", row="time"),
+    dict(y="tip", x="sex", hue="day", col="time", row="smoker"),
+    dict(y="tip", x="sex", hue="day", col="time"),
+    dict(y="tip", x="sex", hue="day", row="time"),
+    dict(y="tip", x="sex", hue="day", row="size-cut"),
+    dict(y="tip", x="sex", hue="day"),
+    dict(y="tip", x="sex"),
+
+]
+
+DF, dims = ut.load_dataset("tips")
+for dim in dimses:
+    tester(DF, dim)
+
+#%%
+
+fig, axes = plt.subplots(1, 1)
+print(axes)
+axes = np.array([axes]).reshape(1, 1)
+print(axes)
+### make a 2D 1x1 array with 1 column and 1 row
+# axes = np.array([axes]).reshape(1, 1) 
 
 
 # %% New Dataset . . . . . .
