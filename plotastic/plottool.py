@@ -1,5 +1,5 @@
-#
-# %%
+ 
+# %% Imports
 
 import decimal
 from distutils.fancy_getopt import WS_TRANS
@@ -12,7 +12,6 @@ import pyperclip
 
 # from matplotlib import axes
 import numpy as np
-import markurutils as ut
 import pandas as pd
 
 import matplotlib as mpl
@@ -21,6 +20,8 @@ import seaborn as sns
 
 from IPython.display import display
 
+
+import markurutils as ut
 from analysis import Analysis
 
 if TYPE_CHECKING:
@@ -28,10 +29,7 @@ if TYPE_CHECKING:
     from matplotlib import axes
 
 
-# %%
-# !
-# !
-# !
+# %% Class: PlotTool ...................................................................................
 
 
 class PlotTool(Analysis):
@@ -202,21 +200,23 @@ class PlotTool(Analysis):
         Returns:
             tuple["mpl.figure.Figure", "mpl.axes.Axes"]: matplotlib figure and axes objects
         """
-        width_ratios = width_ratios or [1] * self.len_collevels
-        height_ratios = height_ratios or [1] * self.len_rowlevels
-
-        self.fig, self.axes = plt.subplots(
+        ### Define standard kws
+        KWS = dict(
             nrows=self.len_rowlevels,
             ncols=self.len_collevels,
+            figsize=figsize,
             gridspec_kw=dict(
                 wspace=wspace,
                 hspace=hspace,
-                width_ratios=width_ratios,
-                height_ratios=height_ratios,
+                width_ratios=width_ratios or [1] * self.len_collevels,
+                height_ratios=height_ratios or [1] * self.len_rowlevels,
             ),
-            figsize=figsize,
-            **subplot_kws,
         )
+        KWS = ut.update_dict_recursive(KWS, subplot_kws)
+
+        ### SUBPLOTS
+        self.fig, self.axes = plt.subplots(**KWS)
+
         ### Add titles to axes to provide basic orientation
         self.reset_axtitles()
 
@@ -289,6 +289,12 @@ class PlotTool(Analysis):
         pyperclip.copy(s)
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
+
+    #
+    # ... Fig properties ...........................................................
+    @property
+    def figsize(self) -> tuple[int]:
+        return self.fig.get_size_inches()
 
     #
     #
@@ -573,20 +579,17 @@ class PlotTool(Analysis):
 # !
 # !
 
-# %%
-# ... PLAY AROUND .......................................................................................................
+# %% Initialize Data and PlotTool . . . . . . . . . . . . . . . . . . . . . . .
 
 DF, dims = ut.load_dataset("tips")
 DIMS = dict(y="tip", x="day", hue="sex", col="smoker", row="time")
 PT = PlotTool(data=DF, dims=DIMS).switch("x", "col")
 
-# %%
-# PT.plot()
 # PT.data_describe()
+# PT.plot()
 
 
-# %%
-### Use Chaining
+# %% Experiments: Iterating over axes 
 PT = (
     PT.subplots(sharey=True)
     .fillaxes(kind="box", boxprops=dict(alpha=0.5))
@@ -655,8 +658,7 @@ def edit_rename_single():
     PT.axes
 
 
-# %%
-### New Dataset
+# %% New Dataset . . . . . .
 DF, dims = ut.load_dataset("fmri")
 PT = PlotTool(data=DF, dims=dims)
 
@@ -675,20 +677,11 @@ PT = (
     .edit_yticklabel_percentage(decimals_minor=1, decimals_major=1)
 )
 
+
 plt.close()
 
-# plt.subplots_adjust(wspace=0.2, hspace=0.5)
 
-for ax in PT.axes.flatten():
-    pass
-
-
-# %%
-# ! # Summarize
-# !
-# !
-# %%
-########... SUMMARIZE .......................................................................................................
+# %% main ................................................................................
 
 
 def main():
@@ -839,5 +832,3 @@ def main():
 if __name__ == "__main__":
     # main()
     pass
-
-# %%

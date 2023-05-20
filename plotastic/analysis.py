@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import markurutils as ut
 from dims import Dims
 
-
+# %% Utils
 df = None  # * Prevent warning when using catchstate
 
 
@@ -42,6 +42,9 @@ def catchstate(df, var_name: str = "df"):
     globals()[var_name] = df
 
     return df
+
+
+# %% Class Analysis ..........................................................
 
 
 class Analysis:
@@ -110,9 +113,9 @@ class Analysis:
 
         ### Make Categorical
         if levels:
-            self.check_levels_with_data(input_lvls=levels, verbose=verbose)
+            self.check_inputlevels_with_data(input_lvls=levels, verbose=verbose)
             self.levels = levels
-            self.data_categorize()
+            self.data_categorize(verbose=verbose)
 
     #
     #
@@ -318,7 +321,7 @@ class Analysis:
     #
     # ...  Make Levels Categorical...............................................................................
 
-    def check_levels_with_data(
+    def check_inputlevels_with_data(
         self,
         input_lvls: list[list[str]],
         verbose=True,
@@ -349,48 +352,61 @@ class Analysis:
                     break
 
         ### Print general results
-        no_error = True
+        problems = []
         for factor, (match, lvls_fromCOL) in matchdict.items():
             if not match:
-                no_error = False
+                problems.append(factor)
                 if verbose:
                     print(
                         f"🛑 Levels mismatch: For factor '{factor}', your input did not contain levels equal to those in the data:"
                     )
-
-        ### Print detailed results
-        if no_error:
-            print("✅ Levels complete: All specified levels match with data")
+        if not problems:
+            if verbose:
+                print("✅ Levels complete: All specified levels match with data")
             return None
 
-        ### Show levels that are in data but not in input
         if verbose:
-            print("\n   >> Searching levels that are in DATA but not in INPUT...")
-            print("     ", f"DATA LEVELS: ".rjust(15), "DEFINED BY USER?")
+            self.check_inputlevels_with_data_detailed(input_lvls)
+
+        if strict and problems:  ## TODO: Strict is never True. Add self.strict..?
+            raise AssertionError(
+                f"Specified levels were not found for factors: ({problems})"
+            )
+
+    def check_inputlevels_with_data_detailed(self, input_lvls):
+        """Prints out detailed summary of level mismatches between user input and data
+
+        Args:
+            input_lvls (_type_): _description_
+            verbose (bool, optional): _description_. Defaults to True.
+        """
+
+        # ! ALWAYS VERBOSE
+
+        ### Show levels that are in data but not in input
+        print("\n   >> Searching levels that are in DATA but not in INPUT...")
+        print("     ", f"DATA LEVELS: ".rjust(15), "DEFINED BY USER?")
         problems = []  # * Gather problems for error message
         input_lvl_flat = ut.flatten(input_lvls)
         for lvl_df in ut.flatten(self.levels_tuples):
             if lvl_df in input_lvl_flat:  # * MATCH
-                if verbose:
-                    lvl_df = (
-                        f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
-                    )  # * need '' to recognize hiding leading or trailing spaces
-                    print("     ", f"{lvl_df}: ".rjust(15), f"yes")
+                lvl_df = (
+                    f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
+                )  # * need '' to recognize hiding leading or trailing spaces
+                print("     ", f"{lvl_df}: ".rjust(15), f"yes")
             else:
                 problems.append(lvl_df)  # * Gathering
-                if verbose:
-                    lvl_df = (
-                        f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
-                    )  # * need '' to recognize hiding leading or trailing spaces
-                    print(
-                        "     ",
-                        f"{lvl_df}: ".rjust(15),
-                        "<-- UNDEFINED. They'll turn to NaNs in data!",
-                    )
+                lvl_df = (
+                    f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
+                )  # * need '' to recognize hiding leading or trailing spaces
+                print(
+                    "     ",
+                    f"{lvl_df}: ".rjust(15),
+                    "<-- UNDEFINED. They'll turn to NaNs in data!",
+                )
         ### Show levels that are in input but not in data
-        if verbose:
-            print("\n   >> Searching levels that are in INPUT but not in DATA...")
-            print("     ", f"YOUR INPUT: ".rjust(15), "FOUND IN DATA?")
+        print("\n   >> Searching levels that are in INPUT but not in DATA...")
+        print("     ", f"YOUR INPUT: ".rjust(15), "FOUND IN DATA?")
         problems = []  # * Gather problems for error message
         for lvl in ut.flatten(input_lvls):
             found: str | None = self.get_factor_from_level(
@@ -398,22 +414,16 @@ class Analysis:
             )  # * MATCH (returns None if nothing found)
             if not found:
                 problems.append(lvl)  # * Gathering
-            if verbose:
-                lvl = (
-                    f"'{lvl}'" if isinstance(lvl, str) else lvl
-                )  # * need '' to recognize hiding leading or trailing spaces
-                found = (  # * Overwrite <found> with printable string
-                    f"found in '{found}'"
-                    if found
-                    else "<-- NOT FOUND. This input will be ignored"
-                )
-                print("     ", f"{lvl}: ".rjust(15), found)
+            lvl = (
+                f"'{lvl}'" if isinstance(lvl, str) else lvl
+            )  # * need '' to recognize hiding leading or trailing spaces
+            found = (  # * Overwrite <found> with printable string
+                f"found in '{found}'"
+                if found
+                else "<-- NOT FOUND. This input will be ignored"
+            )
+            print("     ", f"{lvl}: ".rjust(15), found)
         print()
-
-        if strict and problems:  ## TODO: Strict is never True. Add self.strict..?
-            raise AssertionError(f"Level mismatch ({problems})")
-        elif strict:
-            raise AssertionError(f"Level mismatch or missing")
 
     def data_make_catdict(self, input_levels: list[list[str]]):
         """Convert the lazy list inpot of levels into a dictionary with factors as keys and levels as values
@@ -430,17 +440,21 @@ class Analysis:
     def data_categorize(self, verbose=True):
         """Categorize the data according to the levels specified in the constructor"""
         catdict = self.data_make_catdict(self.levels)
-        
+
         if verbose:
             nans_before = self.data.isna().sum().sum()
             print("#! Categorizing data...")
             print(f"    Applying these levels: {catdict}")
         self.data = ut.multi_categorical(self.data, catdict)
-        
+
         if verbose:
             nans_after = self.data.isna().sum().sum()
-            print(f"    NaNs before: {str(nans_before).rjust(5)} / {self.data.size} total cells")
-            print(f"    NaNs after:  {str(nans_after).rjust(5)} / {self.data.size} total cells, >> +{nans_after - nans_before} NaNs")
+            print(
+                f"    NaNs before: {str(nans_before).rjust(5)} / {self.data.size} total cells"
+            )
+            print(
+                f"    NaNs after:  {str(nans_after).rjust(5)} / {self.data.size} total cells, >> +{nans_after - nans_before} NaNs"
+            )
 
     #
     # ... DESCRIBE DATA ...............................................................................................'''
@@ -754,7 +768,7 @@ class Analysis:
         row=None,
         col=None,
         data: "pd.DataFrame" = None,
-        transform: str | Callable = None,
+        # transform: str | Callable = None,
         title: str = None,
         inplace=False,
         verbose=True,
@@ -773,59 +787,31 @@ class Analysis:
             verbose=verbose,
         )
 
-    def pool_facet(self, facet: str | tuple | list, inplace=False):
-        """
-        Sets e.g. col to None so that dataset is no longer splitted into subdata
-        :param facet:
-        :return:
-        """
-        a = self if inplace else copy(self)
 
-        facet = ut.ensure_tuple(facet)
-        facets = (
-            "row",
-            "col",
-            "hue",
-            # self.dims.row, self.dims.col, self.dims.hue
-        )
-        for f in facet:
-            assert (
-                f in facets
-            ), f"#! {facet} should have been one of {[f for f in facets if not f is None]}"
+# !
+# !
+# !
 
-        kws = {f: "none" for f in facet}
-        return a.set(**kws)
-
-    # ... EXPERIMENTAL ################################################################################################"""
-    # def pool_levels(self):
-    #     """pools certain levels within a factor together"""
-    #
-    #
-    #     # SEE 3_VWELLS-ADHESION/21ZF_NEW
-    #     DF["Time_pool"] = (
-    #         DF["Time"]
-    #         .cat.add_categories("1-3")
-    #         .mask(DF["Time"].isin(["1", "2", "3"]),"1-3")
-    #         .cat.remove_unused_categories()
-    #         .cat.reorder_categories(new_categories=["1-3", "24"], ordered=True))
-    #
-    #     '''!! WE ALSO NEED NEW COLUMN FOR SUBJECTS!!!'''
-    #     DF["Replicate | Time"] = (
-    #         DF[['Replicate', 'Time']]
-    #         .astype(str)
-    #         .apply(" | ".join, axis=1)# .astype("category")
-    #     )
-    #
-    #     pass
+# %% Experiments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 
-# %%
+# %% main()............................................................
 
-data, dims = ut.load_dataset("fmri")
-levels = [("frontal", "parietal"), ("cue", "stim "), (0, 2, 1, 3, 4, 5, 6, 7, 8, 9)]
 
-#%%
-A = Analysis(data=data, dims=dims, levels=levels, verbose=True)
+def main():
+    data, dims = ut.load_dataset("fmri")
 
-# %%
+    A = Analysis(
+        data=data,
+        dims=dims,
+        levels=[
+            ("frontal", "parietal"),
+            ("cue", "stim"),
+            (0, 2, 1, 3, 4, 5, 6, 7, 8, 9),
+        ],
+        verbose=True,
+    )
 
+
+if __name__ == "__main__":
+    main()

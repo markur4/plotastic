@@ -69,12 +69,12 @@ class Dims:
         self.col = col
         self._by = None
         
-        self.som = dict(y="interval", x="ordinal", row="")
+        # self.som = dict(y="interval", x="ordinal", row="")
         
-        if som:  # * SOM = Scale of Measurement / Skalenniveau
-            self.som = som
-        else:
-            self.som = dict(y= "continuous", )
+        # if som:  # * SOM = Scale of Measurement / Skalenniveau
+        #     self.som = som
+        # else:
+        #     self.som = dict(y= "continuous", )
 
     #
     # 
