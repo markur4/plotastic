@@ -1,12 +1,18 @@
- 
+# !
 # %% Imports
 
-import decimal
-from distutils.fancy_getopt import WS_TRANS
-from keyword import kwlist
-from shutil import which
-from turtle import width
-from typing import TYPE_CHECKING
+from __future__ import annotations
+
+# import decimal
+# from distutils.fancy_getopt import WS_TRANS
+# from keyword import kwlist
+# from shutil import which
+# from turtle import width
+from turtle import left
+from typing import TYPE_CHECKING, Callable
+from pyparsing import col
+
+# from click import edit
 
 import pyperclip
 
@@ -26,7 +32,8 @@ from analysis import Analysis
 
 if TYPE_CHECKING:
     import numpy as np
-    from matplotlib import axes
+
+    # from matplotlib import axes
 
 
 # %% Class: PlotTool ...................................................................................
@@ -93,7 +100,7 @@ class PlotTool(Analysis):
 
     # ...__INIT__ .....................
 
-    def __init__(self, data: pd.DataFrame, dims: dict, verbose=False) -> "PlotTool":
+    def __init__(self, data: pd.DataFrame, dims: dict, verbose=False) -> PlotTool:
         """
         _summary_
 
@@ -123,7 +130,7 @@ class PlotTool(Analysis):
     # ... ITERATORS #...........................................................................................
 
     @property
-    def iter_keys_and_axes(self):
+    def axes_iter__keys_ax(self):
         """Returns: >> (R_lvl1, C_lvl1), ax11 >> (R_lvl1, C_lv2), ax12 >> (R_lvl2, C_lvl1), ax21 >> ..."""
         if self.factors_rowcol is None:
             # * If no row or col, return all axes and data
@@ -132,14 +139,32 @@ class PlotTool(Analysis):
             for key, ax in zip(self.levelkeys_rowcol, self.axes.flatten()):
                 yield key, ax
 
+    #
+    ### Iterators returning axes groups
+
     @property
-    def iter_axes_and_data(self):
+    def axes_iter__row_axes(self):
+        """Returns: row_lvl1, (ax11, ax21, ...) >> row_lvl2, (ax12, ax22, ...) >> ..."""
+        for rowkey, axes in zip(self.levels_dim_dict["ROW"], self.axes):
+            yield rowkey, axes
+
+    @property
+    def axes_iter__col_axes(self):
+        """Returns: col_lvl1, (ax11, ax21, ...) >> col_lvl2, (ax12, ax22, ...) >> ..."""
+        for colkey, axes in zip(self.levels_dim_dict["COL"], self.axes.T):
+            yield colkey, axes
+
+    #
+    ### Iterator yielding axes and DF
+
+    @property
+    def axes_iter__ax_df(self):
         """Returns: >> (ax11, df11) >> (ax12, df12) >> (ax21, df21) >> ..."""
         if self.factors_rowcol is None:
             yield self.axes, self.data  # * If no row or col, return all axes and data
         else:
             for (key_ax, ax), (key_df, df) in zip(
-                self.iter_keys_and_axes, self.data_iter__key_rowcol
+                self.axes_iter__keys_ax, self.data_iter__key_rowcol
             ):
                 assert (
                     key_df == key_ax
@@ -150,17 +175,41 @@ class PlotTool(Analysis):
                 else:
                     yield ax, df
 
+    #
+    ### Selective Iterators:
+
     @property
-    def iter_axes(self):
-        """Iterates through rows, then columns, yielding axes"""
-        pass
+    def axes_iter_leftmost(self):
+        """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
+        for row in self.axes:
+            yield row[0]
+
+    @property
+    def axes_iter_notleftmost(self):
+        """Returns: >> axes excluding leftmost column"""
+        for row in self.axes:
+            for ax in row[1:]:
+                yield ax
+
+    @property
+    def axes_iter_lowerrow(self):
+        """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
+        for ax in self.axes[-1]:
+            yield ax
+
+    @property
+    def axes_iter_notlowerrow(self):
+        """Returns: >> axes excluding lowest row"""
+        for row in self.axes[:-1]:
+            for ax in row:
+                yield ax
 
     #
     #  ... PLOT ...........................................................................................
 
     def plot(
         self, kind: str = "strip", subplot_kws: dict = None, **sns_kws
-    ) -> "PlotTool":
+    ) -> PlotTool:
         """Quick plotting initialising mpl.subplots and filling its axes with seaborn graphics
 
         Args:
@@ -188,13 +237,13 @@ class PlotTool(Analysis):
 
     def subplots(
         self,
-        wspace=0.5,
-        hspace=0.5,
+        wspace=0.4,
+        hspace=0.7,
         width_ratios: list[int] = None,
         height_ratios: list[int] = None,
         figsize: tuple[int] = None,
         **subplot_kws: dict,
-    ) -> "PlotTool":
+    ) -> PlotTool:
         """Initialise matplotlib figure and axes objects
 
         Returns:
@@ -243,7 +292,7 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def fillaxes(self, kind: str = "strip", **sns_kws: dict) -> "PlotTool":
+    def fillaxes(self, kind: str = "strip", **sns_kws: dict) -> PlotTool:
         """_summary_
 
         Args:
@@ -264,7 +313,7 @@ class PlotTool(Analysis):
         kws.update(sns_kws)
 
         ### Iterate through data and axes
-        for ax, df in self.iter_axes_and_data:
+        for ax, df in self.axes_iter__ax_df:
             self.SNS_FUNCS[kind](
                 data=df,
                 ax=ax,
@@ -302,7 +351,7 @@ class PlotTool(Analysis):
     # ... EDIT Titles of fig & axes.........................................................................
 
     @staticmethod
-    def _standard_axtitle(key: tuple[str] | str, connect=" | ") -> str:
+    def _standard_axtitle(key: tuple[str] | str, connect="\n") -> str:
         """make axis title from key
 
         Args:
@@ -315,43 +364,132 @@ class PlotTool(Analysis):
             return connect.join(key)
 
     def reset_axtitles(self):
-        for key, ax in self.iter_keys_and_axes:
+        for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))
 
     def edit_titles(
         self,
         axes: mpl.axes.Axes = None,
         axtitles: dict = None,
-    ) -> "PlotTool":
+    ) -> PlotTool:
         axes = axes or self.axes
 
         if not axtitles is None:
-            for key, ax in self.iter_keys_and_axes:
+            for key, ax in self.axes_iter__keys_ax:
                 ax.set_title(axtitles[key])
         return self
+
+    def edit_format_titles(
+        self,
+        row_format: Callable = None,
+        col_format: Callable = None,
+        connect="\n",
+    ) -> PlotTool:
+        row_format = row_format or (lambda x: x)
+        col_format = col_format or (lambda x: x)
+
+        for rowkey, axes in self.axes_iter__row_axes:
+            for ax in axes:
+                title = row_format(rowkey)
+                ax.set_title(title)
+        for colkey, axes in self.axes_iter__col_axes:
+            for ax in axes:
+                title = ax.get_title() + connect + col_format(colkey)
+                ax.set_title(title)
+        return self
+
+    def edit_format_titles_snip(self) -> str:
+        s = ""
+        s += "row_format = lambda x: x #* e.g. try lambda x: x.upper() \n"
+        s += "col_format = lambda x: x \n"
+        s += "connect = '\\n' #* newline. Try ' | ' as a separator in the same line\n"
+        s += "for rowkey, axes in DA.axes_iter__row_axes: \n"
+        s += "\tfor ax in axes: \n"
+        s += "\t\ttitle = row_format(rowkey) \n"
+        s += "\t\tax.set_title(title) \n"
+        s += "for colkey, axes in DA.axes_iter__col_axes: \n"
+        s += "\tfor ax in axes: \n"
+        s += "\t\ttitle = ax.get_title() + connect + col_format(colkey) \n"
+        s += "\t\tax.set_title(title) \n"
+        pyperclip.copy(s)
+        print("#! Code copied to clipboard, press Ctrl+V to paste:")
+        return s
+
+    def edit_replace_titles(self, titles: list):
+        """Edits axes titles. If list is longer than axes, the remaining titles are ignored
+
+        Args:
+            titles (list): Titles to be set. The order of the titles should be the same as the order of the axes, which is from left to right for row after row (like reading).
+
+        Returns:
+            PlotTool: The object itselt
+        """
+
+        for ax, title in zip(self.axes.flatten(), titles):
+            ax.set_title(title)
+        return PT
+
+    def edit_replace_titles_snip(self):
+        s = ""
+        s += f"titles = {[ax.get_title() for ax in self.axes.flatten()]} \n"
+        s += "for ax, title in zip(DA.axes.flatten(), titles): \n"
+        s += "\tax.set_title(title) \n"
+        pyperclip.copy(s)
+        print("#! Code copied to clipboard, press Ctrl+V to paste:")
+        return s
 
     #
     ### ... EDIT x- & y-axis LABELS ............................................................
 
-    def edit_ylabels(self, **label_kws) -> "PlotTool":
-        for ax in self.axes.flatten():
-            ax.set_ylabel(self.dims.y, **label_kws)
-        return self
-
-    def edit_xlabels(self, **label_kws) -> "PlotTool":
-        for ax in self.axes.flatten():
-            ax.set_xlabel(self.dims.y, **label_kws)
-        return self
-
     def edit_labels_snip() -> str:
         raise NotImplementedError
+
+    def edit_xyaxis_labels(
+        self, leftmost: str, notleftmost: str, lowerrow: str, notlowerrow: str
+    ) -> PlotTool:
+        """Edits x- and y-axis labels
+
+        Args:
+            leftmost (str): Y-axis label for leftmost axes
+            notleftmost (str): Y-axis label for not-leftmost axes
+            lowerrow (str): x-axis label for lower row of axes
+            notlowerrow (str): x-axis label for not-lower row of axes
+        """
+        ### y-axis labels
+        for ax in self.axes_iter_leftmost:
+            ax.set_ylabel(leftmost)
+        for ax in self.axes_iter_notleftmost:
+            ax.set_ylabel(notleftmost)
+
+        ### x-axis labels
+        for ax in self.axes_iter_lowerrow:
+            ax.set_xlabel(lowerrow)
+        for ax in self.axes_iter_notlowerrow:
+            ax.set_xlabel(notlowerrow)
+        return self
+
+    def edit_xyaxis_labels_snip(self) -> str:
+        s = ""
+        s += "### y-axis labels \n"
+        s += "for ax in DA.axes_iter_leftmost: \n"
+        s += f"\tax.set_ylabel('{self.dims.y}') \n"
+        s += "for ax in DA.axes_iter_notleftmost: \n"
+        s += "\tax.set_ylabel('') \n"
+        s += "### x-axis labels \n"
+        s += "for ax in DA.axes_iter_lowerrow: \n"
+        s += f"\tax.set_xlabel('{self.dims.x}') \n"
+        s += "for ax in DA.axes_iter_notlowerrow: \n"
+        s += "\tax.set_xlabel('') \n"
+        pyperclip.copy(s)
+        print("#! Code copied to clipboard, press Ctrl+V to paste:")
+        return s
 
     #
     ### ... EDIT x- & y-axis SCALE ............................................................
 
     def edit_log_yscale(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
-    ) -> "PlotTool":
+    ) -> PlotTool:
         for ax in self.axes.flatten():
             ax.set_yscale(
                 value="log",  # * "symlog", "linear", "logit", ...
@@ -365,7 +503,7 @@ class PlotTool(Analysis):
 
     def edit_log_xscale(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
-    ) -> "PlotTool":
+    ) -> PlotTool:
         for ax in self.axes.flatten():
             ax.set_xscale(
                 value="log",  # * "symlog", "linear", "logit", ...
@@ -395,7 +533,7 @@ class PlotTool(Analysis):
 
     def edit_yticklabel_percentage(
         self, decimals_major: int = 0, decimals_minor: int = 0
-    ) -> "PlotTool":
+    ) -> PlotTool:
         for ax in self.axes.flatten():
             ax.yaxis.set_major_formatter(
                 mpl.ticker.PercentFormatter(xmax=1, decimals=decimals_major)
@@ -458,8 +596,64 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
+    def edit_xticklabels(
+        self,
+        lowerrow: list = None,
+        notlowerrow: list = None,
+        rotation: int = 0,
+        ha: str = "center",
+        va: str = "top",
+        pad: float = 1,
+        **text_kws,
+    ) -> PlotTool:
+        """Edits x- ticklabels
+
+        Args:
+            lowerrow (list): x-axis ticklabels for lower row of axes
+            notlowerrow (list): x-axis ticklabels for not-lower row of axes
+            etc.
+        """
+        notlowerrow = notlowerrow or self.levels_dim_dict["x"]
+        lowerrow = lowerrow or self.levels_dim_dict["x"]
+
+        kws = dict(
+            rotation=rotation,  # * Rotation in degrees
+            ha=ha,  # * Horizontal alignment [ 'center' | 'right' | 'left' ]
+            va=va,  # * Vertical Alignment   [ 'center' | 'top' | 'bottom' | 'baseline' ]
+        )
+        kws.update(text_kws)
+
+        ticks = [i for i in range(len(lowerrow))]
+        for ax in self.axes_iter_notlowerrow:
+            ax.set_xticks(ticks=ticks, labels=notlowerrow, **kws)
+            ax.tick_params(axis="x", pad=pad)
+        for ax in self.axes_iter_lowerrow:
+            ax.set_xticks(ticks=ticks, labels=lowerrow, **kws)
+            ax.tick_params(axis="x", pad=pad)  # * Sets distance to figure
+        return self
+
+    def edit_xticklabels_snip(self) -> str:
+        s = ""
+        s += f"notlowerrow = {self.levels_dim_dict['x']} \n"
+        s += f"lowerrow = {self.levels_dim_dict['x']} \n"
+        s += "kws = dict( \n"
+        s += "\trotation=0, #* Rotation in degrees \n"
+        s += "\tha='center', #* Horizontal alignment [ 'center' | 'right' | 'left' ] \n"
+        s += "\tva='top', #* Vertical Alignment   [ 'center' | 'top' | 'bottom' | 'baseline' ] \n"
+        s += ") \n"
+        s += f"ticks = {[i for i in range(len(self.levels_dim_dict['x']))]} \n"
+        s += "for ax in DA.axes_iter_notlowerrow: \n"
+        s += "\tax.set_xticks(ticks=ticks, labels=notlowerrow, **kws) \n"
+        s += "\tax.tick_params(axis='x', pad=1) #* Sets distance to figure \n"
+        s += "for ax in DA.axes_iter_lowerrow: \n"
+        s += "\tax.set_xticks(ticks=ticks, labels=lowerrow, **kws) \n"
+        s += "\tax.tick_params(axis='x', pad=1) #* Sets distance to figure \n"
+        pyperclip.copy(s)
+        print("#! Code copied to clipboard, press Ctrl+V to paste:")
+        return s
+
     # ... EDIT Gridlines! # ......................................................................
-    def edit_grid(self) -> "PlotTool":
+    def edit_grid(self) -> PlotTool:
         for ax in self.axes.flatten():
             ax.yaxis.grid(True, which="major", ls="-", linewidth=0.5, c="grey")
             ax.yaxis.grid(True, which="minor", ls="-", linewidth=0.2, c="grey")
@@ -477,7 +671,7 @@ class PlotTool(Analysis):
         return s
 
     # ... EDIT Shapes & Sizes
-
+    # TODO: Until now, stick with the arguments supplied to self.subplots
     #
     #
     #
@@ -498,7 +692,7 @@ class PlotTool(Analysis):
         labels = [ut.capitalize(l) for l in labels]
         return handles, labels
 
-    def edit_legend(self) -> "PlotTool":
+    def edit_legend(self) -> PlotTool:
         """Adds standard legend to figure"""
         self.fig.legend(
             title=ut.capitalize(self.dims.hue),
@@ -534,7 +728,7 @@ class PlotTool(Analysis):
 
     # ... Fontsizes .....................................
 
-    def edit_fontsizes(self, ticklabels=10, xylabels=10, axis_titles=11) -> "PlotTool":
+    def edit_fontsizes(self, ticklabels=10, xylabels=10, axis_titles=10) -> PlotTool:
         """Edits fontsizes in [pt]. Does not affect legent or suptitle
 
         Args:
@@ -588,97 +782,36 @@ PT = PlotTool(data=DF, dims=DIMS).switch("x", "col")
 # PT.data_describe()
 # PT.plot()
 
-
-# %% Experiments: Iterating over axes 
-PT = (
+# %% Experiments:
+PT: PlotTool = (
     PT.subplots(sharey=True)
     .fillaxes(kind="box", boxprops=dict(alpha=0.5))
     .fillaxes(kind="swarm", size=3, dodge=True)
     # .legend()  # * Add legend
 )
-for i, ax in enumerate(PT.axes.flatten()):
-    ax.set_title(i)
-
-
-def iter_axes_throughrows():
-    """Returns: >> r_index1, ax11 >> r_index1, ax12 >> r_index2, ax21 >> r_index2, ax22 >> ..."""
-    for ri, row in enumerate(PT.axes):
-        for ax in row:
-            yield ri, ax
-
-
-def iter_axes_throughcols():
-    """Returns: >> c_index1, ax11 >> c_index2, ax21 >> c_index1, ax12 >> c_index2, ax22 >> ..."""
-    for ci, col in enumerate(PT.axes.T):  # * mind the T (for Transpose)
-        for ax in col:
-            yield ci, ax
-
-
-def iter_axes_leftmost():
-    """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
-    for row in PT.axes:
-        yield row[0]
-
-
-def iter_axes_upperrow():
-    """Returns: >> ax11 >> ax12 >> ax13 >> ax14 >> ..."""
-    for ax in PT.axes[0]:
-        yield ax
-
-
-def iter_axes_lowerrow():
-    """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
-    for ax in PT.axes[-1]:
-        yield ax
-
-
-def iter_axes_notlowerrow():
-    """Returns: >> axes excluding lowest row"""
-    for row in PT.axes[:-1]:
-        for ax in row:
-            yield ax
-
-
-for ax in iter_axes_leftmost():
-    ax.set_ylabel("ugawuga")
-
-for ax in iter_axes_upperrow():
-    ax.set_ylabel("bumdidumm")
-
-for ax in iter_axes_lowerrow():
-    ax.set_title("unterste Reihe")
-
-for ax in iter_axes_notlowerrow():
-    ax.set_title("nicht unterste Reihe")
-
-
-def edit_rename_single():
-    """Renames axestitles, xlabels and ylabels of a single axes"""
-    assert not isinstance(PT.axes, np.ndarray), "PT.axes is a single axes"
-    PT.axes
 
 
 # %% New Dataset . . . . . .
-DF, dims = ut.load_dataset("fmri")
-PT = PlotTool(data=DF, dims=dims)
+# DF, dims = ut.load_dataset("fmri")
+# PT = PlotTool(data=DF, dims=dims)
 
 # PT = PT.switch("row", "col").plot()
 # PT.set(row="none", col="none").plot()
-PT = (
-    PT.switch("row", "col")
-    .subplots(sharey=True, height_ratios=[2, 1])
-    .fillaxes(kind="line", alpha=0.5)
-    .fillaxes(kind="strip", size=2, dodge=True, alpha=0.4)
-    # .edit_log_yscale(base=10)
-    .edit_grid()
-    .edit_legend()
-    # .edit_add_minorticklabels(subs=[2, 3, 5, 7])
-    .edit_fontsizes(9, 10, 11)
-    .edit_yticklabel_percentage(decimals_minor=1, decimals_major=1)
-)
+# PT = (
+#     PT.switch("row", "col")
+#     .subplots(sharey=True, height_ratios=[2, 1])
+#     .fillaxes(kind="line", alpha=0.5)
+#     .fillaxes(kind="strip", size=2, dodge=True, alpha=0.4)
+#     # .edit_log_yscale(base=10)
+#     .edit_grid()
+#     .edit_legend()
+#     # .edit_add_minorticklabels(subs=[2, 3, 5, 7])
+#     .edit_fontsizes(9, 10, 11)
+#     .edit_yticklabel_percentage(decimals_minor=1, decimals_major=1)
+# )
 
 
-plt.close()
+# plt.close()
 
 
 # %% main ................................................................................
@@ -827,6 +960,92 @@ def main():
     #     ax.yaxis.get_label().set_fontsize(xylabels) # * xy-axis labels
     #     ax.xaxis.get_label().set_fontsize(xylabels)
     #     ax.title.set_fontsize(axis_titles) # * Title
+
+    ### Format your axes titles:
+    PT.edit_format_titles(
+        row_format=lambda x: x.upper(),
+        col_format=lambda x: "",
+        connect=" || ",
+    )
+
+    ### Snippet for axes title formatting
+    PT.edit_format_titles_snip()
+    # row_format = lambda x: x.upper() #* e.g. try lambda x: x.upper()
+    # col_format = lambda x: x
+    # connect = '\n' #* newline. Try ' | ' as a separator in the same line
+    # for rowkey, axes in PT.axes_iter__row_axes:
+    #     for ax in axes:
+    #         title = row_format(rowkey)
+    #         ax.set_title(title)
+    # for colkey, axes in PT.axes_iter__col_axes:
+    #     for ax in axes:
+    #         title = ax.get_title() + connect + col_format(colkey)
+    #         ax.set_title(title)
+
+    ### Change the axis titles fully manually
+    PT.edit_replace_titles(
+        [
+            "guccy",
+            "guccy-gu",
+            "dada\nnana",
+            "is this empty?",
+            "next row",
+            "...",
+        ]
+    )
+
+    ### Snippet for replacing titles
+    PT.edit_replace_titles_snip()
+    # titles = ['Lunch \nThsdfr ', 'Lunch \nFri ', 'Lunch \nSat ', 'Lunch \nSun ', 'Dinner \nThur ', 'Dinner \nFri ', 'Dinner \nSat ', 'Dinner \nSun ']
+    # for ax, title in zip(PT.axes.flatten(), titles):
+    #     ax.set_title(title)
+
+    ### Change the axis labels
+    PT.edit_xyaxis_labels(
+        leftmost="tipdf",
+        notleftmost="",
+        lowerrow="smoker",
+        notlowerrow="d",
+    )
+
+    ### Snipper for changing the axis labels
+    PT.edit_xyaxis_labels_snip()
+    # ### y-axis labels
+    # for ax in PT.axes_iter_leftmost:
+    #     ax.set_ylabel('tip')
+    # for ax in PT.axes_iter_notleftmost:
+    #     ax.set_ylabel('')
+    # ### x-axis labels
+    # for ax in PT.axes_iter_lowerrow:
+    #     ax.set_xlabel('smoker')
+    # for ax in PT.axes_iter_notlowerrow:
+    #     ax.set_xlabel('')
+
+    ### Edit xtick-labels
+    PT.edit_xticklabels(
+        lowerrow=["NOO", "yup"],
+        notlowerrow=["dd", "ee"],
+        rotation=0,
+        ha="center",
+        pad=1,
+    )
+    ### Snippet for changing the axis labels
+    PT.edit_xticklabels_snip()
+    # DA=PT
+    # notlowerrow = ['', '']
+    # lowerrow = ['Yes', 'No']
+    # kws = dict(
+    #     rotation=30, #* Rotation in degrees
+    #     ha='right', #* Horizontal alignment [ 'center' | 'right' | 'left' ]
+    #     va='top', #* Vertical Alignment   [ 'center' | 'top' | 'bottom' | 'baseline' ]
+    # )
+    # ticks = [0, 1]
+    # for ax in DA.axes_iter_notlowerrow:
+    #     ax.set_xticks(ticks=ticks, labels=notlowerrow, **kws)
+    #     ax.tick_params(axis='x', pad=.01) #* Sets distance to figure
+    # for ax in DA.axes_iter_lowerrow:
+    #     ax.set_xticks(ticks=ticks, labels=lowerrow, **kws)
+    #     ax.tick_params(axis='x', pad=.01) #* Sets distance to figure
 
 
 if __name__ == "__main__":

@@ -1,3 +1,6 @@
+# !
+# %% Imports
+
 from __future__ import annotations
 from nis import cat
 from operator import index, le
@@ -119,7 +122,7 @@ class Analysis:
             self.check_inputlevels_with_data(input_lvls=levels, verbose=verbose)
             self.input_levels = levels
             self.data_categorize(verbose=verbose)
-            
+
         # if levels_ignore:
         #     self.check_inputlevels_with_data(input_lvls=levels_ignore, verbose=verbose)
 
@@ -240,13 +243,13 @@ class Analysis:
 
     @property
     def levels_dim_dict(self) -> dict:
-        """Returns: {"ROW":[row_l1, row_l2, ...], "COL":[c_l1, c_l2, ...], "HUE":[...], "X":[...]}"""
+        """Returns: {"row":[row_l1, row_l2, ...], "col":[c_l1, c_l2, ...], "hue":[...], "x":[...]}"""
         D = self.levels_factor_dict
         return {
-            "ROW": D.get(self.dims.row),
-            "COL": D.get(self.dims.col),
-            "HUE": D.get(self.dims.hue),
-            "X": D.get(self.dims.x),
+            "row": D.get(self.dims.row),
+            "col": D.get(self.dims.col),
+            "hue": D.get(self.dims.hue),
+            "x": D.get(self.dims.x),
         }
 
     @property
@@ -341,15 +344,15 @@ class Analysis:
         ### Fill with Results
         catdict = {factor: [] for factor in self.factors_all}
         if not skip_notfound:
-            catdict['NOT_FOUND'] = []
+            catdict["NOT_FOUND"] = []
         for input_lvl in ut.flatten(input_lvls):
             factor = self.get_factor_from_level(input_lvl)
             if not factor is None:
                 catdict[factor].append(input_lvl)
             else:
                 if not skip_notfound:
-                    catdict['NOT_FOUND'].append(input_lvl)
-            
+                    catdict["NOT_FOUND"].append(input_lvl)
+
         ### Remove empties
         # * This ensures that we can categorize only those columns whose levels were specified in the input
         # ! This also makes sure that those factors, that were completely mismatched, don't appear in the result
@@ -383,27 +386,29 @@ class Analysis:
         catdict = self.make_catdict_from_input(input_lvls, skip_notfound=False)
         LVLS = {}
         for factor_from_input, lvls_from_input in catdict.items():
-            if factor_from_input == 'NOT_FOUND':
+            if factor_from_input == "NOT_FOUND":
                 LVLS[factor_from_input] = lvls_from_input
             else:
                 LVLS[factor_from_input] = self.levels_factor_dict[factor_from_input]
-            
+
         # LVLS = {factor: self.levels_factor_dict[factor] if not factor is 'NOT_FOUND' for factor in catdict.keys()}
-        
+
         ### Scan for Matches and Mismatches
         matchdict = {}
         for factor, LVLs_fromCOL in LVLS.items():
             matchdict[factor] = (False, LVLs_fromCOL)  # * Initialize
-            if factor == 'NOT_FOUND': 
-                continue # ! LVLs_fromCOL won't contain levels from data but actually from input
+            if factor == "NOT_FOUND":
+                continue  # ! LVLs_fromCOL won't contain levels from data but actually from input
             for lvls in input_lvls:
-                if ut.check_unordered_identity(LVLs_fromCOL, lvls, ignore_duplicates=False):
-                    matchdict[factor] = (True, LVLs_fromCOL) # * Update if match
+                if ut.check_unordered_identity(
+                    LVLs_fromCOL, lvls, ignore_duplicates=False
+                ):
+                    matchdict[factor] = (True, LVLs_fromCOL)  # * Update if match
                     break
         if verbose:
             self._print_levelmatches(input_lvls, matchdict)
-        
-    def _print_levelmatches(self, input_lvls, matchdict):  
+
+    def _print_levelmatches(self, input_lvls, matchdict):
         """Prints the level matches and mismatches
 
         Args:
@@ -415,17 +420,19 @@ class Analysis:
         """
         # * List all unmatched levels
         problems, warnings = [], []
-        if 'NOT_FOUND' in matchdict.keys(): 
+        if "NOT_FOUND" in matchdict.keys():
             # ! This is treated as a warning, since it might contain levels that fully exclude a factor
-            mismatches = matchdict['NOT_FOUND'][1]
+            mismatches = matchdict["NOT_FOUND"][1]
             warnings.append(mismatches)
             print(f"🟡 Levels mismatch:  {mismatches}")
         # * Check for mismatches per factor
         problems = []
         for factor, (match, LVLs_fromCOL) in matchdict.items():
-            if not match and factor != 'NOT_FOUND':
+            if not match and factor != "NOT_FOUND":
                 problems.append(factor)
-                print(f"🟠 Levels incomplete: For '{factor}', your input does not cover all levels")
+                print(
+                    f"🟠 Levels incomplete: For '{factor}', your input does not cover all levels"
+                )
         # * Give feedback how much was matched
         if self.count_matching_levels(input_lvls) == 0:
             print("🛑🛑🛑 Levels bad: No input matched with data")
@@ -435,11 +442,10 @@ class Analysis:
             print("✅ Levels good: No partially defined factors")
         elif self.count_matching_levels(input_lvls) > 0:
             print("🆗 Levels ok: Some input was found")
-                
+
         # * Search through input levels and data levels
         if problems:
             self._print_levelmatches_detailed(input_lvls)
-
 
     def _print_levelmatches_detailed(self, input_lvls):
         """Prints out detailed summary of level mismatches between user input and data
@@ -450,7 +456,7 @@ class Analysis:
         """
 
         # ! ALWAYS VERBOSE
-        
+
         RJ = 17  # * Right Justification to have everything aligned nicely
 
         ### Make a catdict
@@ -463,11 +469,13 @@ class Analysis:
         input_lvl_flat = ut.flatten(input_lvls)
         for factor, LVLs_from_COL in self.levels_factor_dict.items():
             for lvl_df in LVLs_from_COL:
-                if not factor in catdict.keys(): #* When all levels from a factor are missing
+                if (
+                    not factor in catdict.keys()
+                ):  # * When all levels from a factor are missing
                     message = f"<-- Undefined, like all levels from '{factor}'. This will be ignored"
                 elif lvl_df in input_lvl_flat:  # * MATCH
                     message = "yes"
-                else: # * when factor was partially defined
+                else:  # * when factor was partially defined
                     message = f"<-- 🚨 UNDEFINED. Other levels from '{factor}' were defined, so this one will turn to NaNs!"
                 # * Add '' to recognize hiding leading or trailing spaces
                 lvl_df = f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
@@ -756,7 +764,7 @@ class Analysis:
     # !
     def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
-    ) -> "Analysis":
+    ) -> Analysis:
         a = self if inplace else copy(self)
 
         # * NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply
@@ -778,7 +786,7 @@ class Analysis:
         title: str = None,  # type: ignore
         inplace=False,
         verbose=True,
-    ) -> "Analysis":
+    ) -> Analysis:
         """Redefines values of Analysis.dims (y,x,hue,row,col) and also title,"""
 
         ### HANDLE COPY"""
@@ -824,7 +832,7 @@ class Analysis:
         title: str = None,
         inplace=False,
         verbose=True,
-    ) -> "Analysis":
+    ) -> Analysis:
         """Same as `self.update_analysis`, just with inplace=True"""
 
         return self.set(
