@@ -128,17 +128,16 @@ class PlotTool(Analysis):
     #
 
     # ... handle shape of axes
-    
+
     @property
     def axes_nested(self) -> np.ndarray:
         """Always returns a 2D nested array of axes, even if there is only one row or column."""
-        if self.dims.row and self.dims.col: # * both row and col
+        if self.dims.row and self.dims.col:  # * both row and col
             return self.axes
-        elif self.dims.row or self.dims.col: # * either or
+        elif self.dims.row or self.dims.col:  # * either or
             return np.array([self.axes])
-        else: #* Single figure
-            return np.array([self.axes]).reshape(1,1)
-
+        else:  # * Single figure
+            return np.array([self.axes]).reshape(1, 1)
 
     # ... ITERATORS #...........................................................................................
 
@@ -161,13 +160,11 @@ class PlotTool(Analysis):
         for rowkey, axes in zip(self.levels_dim_dict["row"], self.axes_nested):
             yield rowkey, axes
 
-
     @property
     def axes_iter__col_axes(self):
         """Returns: col_lvl1, (ax11, ax21, ...) >> col_lvl2, (ax12, ax22, ...) >> ..."""
         for colkey, axes in zip(self.levels_dim_dict["col"], self.axes_nested.T):
             yield colkey, axes
-
 
     #
     ### Iterator yielding axes and DF
@@ -458,9 +455,12 @@ class PlotTool(Analysis):
     #
     ### ... EDIT x- & y-axis LABELS ............................................................
 
-
     def edit_xyaxis_labels(
-        self, leftmost: str ="", notleftmost: str="", lowerrow: str="", notlowerrow: str=""
+        self,
+        leftmost: str = "",
+        notleftmost: str = "",
+        lowerrow: str = "",
+        notlowerrow: str = "",
     ) -> PlotTool:
         """Edits x- and y-axis labels
 
@@ -474,7 +474,7 @@ class PlotTool(Analysis):
         notleftmost = notleftmost or ""
         lowerrow = lowerrow or self.dims.x
         notlowerrow = notlowerrow or ""
-        
+
         ### y-axis labels
         for ax in self.axes_iter_leftmost:
             ax.set_ylabel(leftmost)
@@ -802,10 +802,11 @@ PT = PlotTool(data=DF, dims=DIMS).switch("x", "col")
 # PT.data_describe()
 # PT.plot()
 
+
 # %% Experiments:
 def tester(DF, dims):
-    PT = PlotTool(data=DF, dims=dims)#.switch("x", "col")
-    
+    PT = PlotTool(data=DF, dims=dims)  # .switch("x", "col")
+
     PT: PlotTool = (
         PT.subplots(sharey=True)
         .fillaxes(kind="box", boxprops=dict(alpha=0.5))
@@ -813,8 +814,7 @@ def tester(DF, dims):
         .reset_axtitles()
     )
     PT = (
-        PT
-        .edit_titles()
+        PT.edit_titles()
         .edit_format_titles()
         .edit_xyaxis_labels()
         .edit_log_yscale(base=10)
@@ -824,37 +824,35 @@ def tester(DF, dims):
         .edit_grid()
         .edit_fontsizes(9, 10, 7)
         # .edit_replace_titles(titles = ["1", "2", "3", "4", "5", "6", "7", "8"])
-
     )
-    if PT.dims.hue: #* Only when legend
+    if PT.dims.hue:  # * Only when legend
         PT = PT.edit_legend()
     # plt.close()
 
 
 dimses = [
-    dict(y="tip", x="day", hue="sex", col="smoker", row="time"),
-    dict(y="tip", x="sex", hue="day", col="smoker", row="time"),
-    dict(y="tip", x="sex", hue="day", col="time", row="smoker"),
+    # dict(y="tip", x="day", hue="sex", col="smoker", row="time"),
+    # dict(y="tip", x="sex", hue="day", col="smoker", row="time"),
+    # dict(y="tip", x="sex", hue="day", col="time", row="smoker"),
     dict(y="tip", x="sex", hue="day", col="time"),
     dict(y="tip", x="sex", hue="day", row="time"),
     dict(y="tip", x="sex", hue="day", row="size-cut"),
     dict(y="tip", x="sex", hue="day"),
     dict(y="tip", x="sex"),
-
 ]
 
 DF, dims = ut.load_dataset("tips")
 for dim in dimses:
     tester(DF, dim)
 
-#%%
+# %%
 
 fig, axes = plt.subplots(1, 1)
 print(axes)
 axes = np.array([axes]).reshape(1, 1)
 print(axes)
 ### make a 2D 1x1 array with 1 column and 1 row
-# axes = np.array([axes]).reshape(1, 1) 
+# axes = np.array([axes]).reshape(1, 1)
 
 
 # %% New Dataset . . . . . .

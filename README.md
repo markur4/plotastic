@@ -83,12 +83,12 @@ classDiagram
       hue: str =None
       row: str =None
       col: str =None
-      _by(parameter): [row, col]
       set(**kwargs, inplace: bool =False)
       switch(*keys, **kwargs inplace: bool =False)
    }
 
    class Analysis {
+
       data: pd.DataFrame
       dims: Dims
 
@@ -97,7 +97,7 @@ classDiagram
       ...
       title.setter()
       _NaNs(property) 
-      _empty_groups(property)
+      %%_empty_groups(property)
       _factors_all(property) [x,y,hue,row,col]
       _factors_xhue(property) [x,hue]
       _factors_rowcol(property) [row,col]
@@ -106,6 +106,7 @@ classDiagram
       _hierarchy(property) = dict(ROW:[l1, l2, ...], COL:[...], HUE:[...], X:[...])
       transform() -> Analysis
       describe_data() -> pd.DataFrame
+      catplot(kind="strip") -> sns.FacetGrid
       ....()
    }
    click Analysis href "https://github.com/markur4/plotastic/blob/main/plotastic/analysis.py" "analysis.py"
@@ -123,6 +124,14 @@ classDiagram
 
 
    %% STATISTICS #......................................................................................
+
+   class pingouin{
+      <<Statistics Library>>
+      anova()
+      rm_anova()
+      pairwise_tests()
+      ....()
+   }
 
 
    class Assumptions{
@@ -166,26 +175,48 @@ classDiagram
       test_multiple_wilcoxon_snip()
       ....()
    }
+   class Bivariate{
+      ...
+      test_pearson()
+      test_pearson_snip()
+      test_spearman()
+      test_spearman_snip()
+      test_kendall()
+      test_kendall_snip()
+      ....()
+   }
 
    Assumptions  <|-- PostHoc
    Assumptions  <|-- Omnibus
+   Assumptions  <|-- Bivariate
+   pingouin .. Assumptions
+
 
 
 
    %% PLOTTING #......................................................................................
 
-   class PlotTool{
-      fig
-      axes
+
+   class matplotlib{
+      <<Plotting Objects>>
       ...
-      init_fig() -> (fig, axes)
-      fill_axes(fig, axes, kind="bar") -> (fig, axes)
+      Axes
+      Figure
+      fig.legend()
+      ....()
+   }
+
+   class PlotTool{
+      fig: mpl.figure.Figure
+      axes: mpl.axes.Axes
+      ...
+      subplots() -> (fig, axes)
+      fillaxes(kind="bar") -> (fig, axes)
       plot(kind="strip") -> (fig, axes)
 
-      load_fig() -> (fig, axes)
-      show_fig() -> None
 
-      axes_flat(property) -> axes
+      axes_nested(property) -> np.ndarray(axes).shape(1,1)
+      axes_iter__key_ax(property) -> ax
 
       edit_titles(titles:dict) -> None
       edit_titles_snip()
@@ -195,6 +226,10 @@ classDiagram
       edit_ticks_snip()
       ....()
    }
+   
+   matplotlib *-- PlotTool
+
+
    class MultiPlot{
       <<Library of pre-built Plots>>
       ...
@@ -206,6 +241,7 @@ classDiagram
       plot_paired_dots_snip()
       plot_scatter_with_line()
       plot_scatter_with_line_snip()
+      plot_qqplot()
       ....()
    }
 
@@ -233,6 +269,7 @@ classDiagram
    MultiPlot <|-- DataAnalysis
    Omnibus <|-- DataAnalysis
    PostHoc <|-- DataAnalysis
+   Bivariate <|-- DataAnalysis
 
 
 
