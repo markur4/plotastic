@@ -3,20 +3,15 @@
 
 from __future__ import annotations
 
-# import decimal
-# from distutils.fancy_getopt import WS_TRANS
-# from keyword import kwlist
-# from shutil import which
-# from turtle import width
-from turtle import left
-from typing import TYPE_CHECKING, Callable
-from pyparsing import col
 
-# from click import edit
+from typing import TYPE_CHECKING, Callable
+
 
 import pyperclip
+import pickle
+from pathlib import Path
 
-# from matplotlib import axes
+
 import numpy as np
 import pandas as pd
 
@@ -24,14 +19,13 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from IPython.display import display
-
 
 import markurutils as ut
 from analysis import Analysis
 
 if TYPE_CHECKING:
     import numpy as np
+    import io
 
     # from matplotlib import axes
 
@@ -100,7 +94,7 @@ class PlotTool(Analysis):
 
     # ...__INIT__ .....................
 
-    def __init__(self, data: pd.DataFrame, dims: dict, verbose=False) -> PlotTool:
+    def __init__(self, data: pd.DataFrame, dims: dict, verbose=False):
         """
         _summary_
 
@@ -115,7 +109,11 @@ class PlotTool(Analysis):
             PlotTool: _description_
         """
         ### Inherit from Analysis
-        super().__init__(data=data, dims=dims, verbose=verbose)
+        super().__init__(
+            data=data,
+            dims=dims,
+            verbose=verbose,
+        )
 
         ### Initialise figure and axes
         fig, axes = plt.subplots(nrows=self.len_rowlevels, ncols=self.len_collevels)
@@ -123,11 +121,17 @@ class PlotTool(Analysis):
         self.axes = axes
         plt.close()  # * Close the figure to avoid displaying it
 
-    #
+        ### Buffer to store plot intermediates
+        self.buffer = Path("__figcache")
+
+    # __init__
     #
     #
 
-    # ... handle shape of axes
+    # ... ITERATORS #...........................................................................................
+
+    #
+    # * MAKE NESTED ....................................#
 
     @property
     def axes_nested(self) -> np.ndarray:
@@ -139,7 +143,8 @@ class PlotTool(Analysis):
         else:  # * Single figure
             return np.array([self.axes]).reshape(1, 1)
 
-    # ... ITERATORS #...........................................................................................
+    #
+    # * Associate with Keys ....................................#
 
     @property
     def axes_iter__keys_ax(self):
@@ -152,7 +157,7 @@ class PlotTool(Analysis):
                 yield key, ax
 
     #
-    ### Iterators returning axes groups
+    # * Associate with Rowcol   ................................#
 
     @property
     def axes_iter__row_axes(self):
@@ -167,7 +172,7 @@ class PlotTool(Analysis):
             yield colkey, axes
 
     #
-    ### Iterator yielding axes and DF
+    # * Data  ..................................................#
 
     @property
     def axes_iter__ax_df(self):
@@ -188,7 +193,7 @@ class PlotTool(Analysis):
                     yield ax, df
 
     #
-    ### Selective Iterators:
+    # * Selective   ............................................#
 
     @property
     def axes_iter_leftmost(self):
@@ -217,35 +222,8 @@ class PlotTool(Analysis):
                 yield ax
 
     #
-    #  ... PLOT ...........................................................................................
-
-    def plot(
-        self, kind: str = "strip", subplot_kws: dict = None, **sns_kws
-    ) -> PlotTool:
-        """Quick plotting initialising mpl.subplots and filling its axes with seaborn graphics
-
-        Args:
-            kind (str, optional): _description_. Defaults to "strip".
-            subplot_kws (dict, optional): _description_. Defaults to None.
-            sns_kws (dict, optional): _description_. Defaults to None.
-
-        Returns:
-            fig_and_axes: _description_
-        """
-        ### Handle kwargs
-        subplot_kws = subplot_kws or {}
-        sns_kws = sns_kws or {}
-
-        ### Standard kws for standard stripplot
-        if kind == "strip" and len(sns_kws) == 0:
-            sns_kws = dict(alpha=0.6, dodge=True)
-
-        self.subplots(**subplot_kws)  # * Initialise Figure and Axes
-        self.fillaxes(kind=kind, **sns_kws)  # * Fill axes with seaborn graphics
-        self.edit_legend()  # * Add legend to figure
-        plt.tight_layout()  # * Make sure everything fits nicely
-
-        return self
+    #
+    #  ... PLOT .........................................................................................................
 
     def subplots(
         self,
@@ -279,7 +257,7 @@ class PlotTool(Analysis):
         self.fig, self.axes = plt.subplots(**KWS)
 
         ### Add titles to axes to provide basic orientation
-        self.reset_axtitles()
+        self.edit_axtitles_reset()
 
         return self
 
@@ -342,7 +320,8 @@ class PlotTool(Analysis):
 
     def fillaxes_snip(self, kind: str = "strip", doclink=True) -> str:
         s = ""
-        s += f"# . . . {self.DOCS[kind]} #\n"
+        if doclink:
+            s += f"# . . . {self.DOCS[kind]} #\n"
         s += "kws = dict(alpha=.8) \n"
         s += "for ax, df in DA.iter_axes_and_data: \n"
         s += f"\t{self.SNS_FUNCS_STR[kind]}(data=df, ax=ax, y='{self.dims.y}', x='{self.dims.x}', hue='{self.dims.hue}', **kws)\n"
@@ -352,16 +331,51 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
+    def plot(
+        self, kind: str = "strip", subplot_kws: dict = None, **sns_kws
+    ) -> PlotTool:
+        """Quick plotting, combines self.subplots and self.fillaxes its axes with seaborn graphics
+
+        Args:
+            kind (str, optional): _description_. Defaults to "strip".
+            subplot_kws (dict, optional): _description_. Defaults to None.
+            sns_kws (dict, optional): _description_. Defaults to None.
+
+        Returns:
+            fig_and_axes: _description_
+        """
+        ### Handle kwargs
+        subplot_kws = subplot_kws or {}
+        sns_kws = sns_kws or {}
+
+        ### Standard kws for standard stripplot
+        if kind == "strip" and len(sns_kws) == 0:
+            sns_kws = dict(alpha=0.6, dodge=True)
+
+        self.subplots(**subplot_kws)  # * Initialise Figure and Axes
+        self.fillaxes(kind=kind, **sns_kws)  # * Fill axes with seaborn graphics
+        self.edit_legend()  # * Add legend to figure
+        plt.tight_layout()  # * Make sure everything fits nicely
+
+        return self
+
     #
-    # ... Fig properties ...........................................................
+    #
+    # ... Fig properties ............................................................................
     @property
     def figsize(self) -> tuple[int]:
         return self.fig.get_size_inches()
 
     #
     #
+    # ... EDIT .........................................................................
+
     #
-    # ... EDIT Titles of fig & axes.........................................................................
+    # * Shapes & Sizes ........................................#
+    # TODO: Until now, stick with the arguments supplied to self.subplots
+
+    #
+    # * Titles of axes .........................................#
 
     @staticmethod
     def _standard_axtitle(key: tuple[str] | str, connect="\n") -> str:
@@ -376,7 +390,7 @@ class PlotTool(Analysis):
             key = [ut.capitalize(k) for k in key]
             return connect.join(key)
 
-    def reset_axtitles(self) -> PlotTool:
+    def edit_axtitles_reset(self) -> PlotTool:
         for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))
         return self
@@ -393,26 +407,27 @@ class PlotTool(Analysis):
                 ax.set_title(axtitles[key])
         return self
 
-    def edit_format_titles(
+    def edit_titles_with_func(
         self,
-        row_format: Callable = None,
-        col_format: Callable = None,
+        row_func: Callable = None,
+        col_func: Callable = None,
         connect="\n",
     ) -> PlotTool:
-        row_format = row_format or (lambda x: x)
-        col_format = col_format or (lambda x: x)
+        """Applies formatting functions (e.g. lambda x: x.upper()) to row and col titles)"""
+        row_func = row_func or (lambda x: x)
+        col_func = col_func or (lambda x: x)
 
         for rowkey, axes in self.axes_iter__row_axes:
             for ax in axes:
-                title = row_format(rowkey)
+                title = row_func(rowkey)
                 ax.set_title(title)
         for colkey, axes in self.axes_iter__col_axes:
             for ax in axes:
-                title = ax.get_title() + connect + col_format(colkey)
+                title = ax.get_title() + connect + col_func(colkey)
                 ax.set_title(title)
         return self
 
-    def edit_format_titles_snip(self) -> str:
+    def edit_titles_with_func_snip(self) -> str:
         s = ""
         s += "row_format = lambda x: x #* e.g. try lambda x: x.upper() \n"
         s += "col_format = lambda x: x \n"
@@ -429,7 +444,7 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def edit_replace_titles(self, titles: list) -> PlotTool:
+    def edit_title_replace(self, titles: list) -> PlotTool:
         """Edits axes titles. If list is longer than axes, the remaining titles are ignored
 
         Args:
@@ -443,7 +458,7 @@ class PlotTool(Analysis):
             ax.set_title(title)
         return self
 
-    def edit_replace_titles_snip(self):
+    def edit_title_replace_snip(self):
         s = ""
         s += f"titles = {[ax.get_title() for ax in self.axes.flatten()]} \n"
         s += "for ax, title in zip(DA.axes.flatten(), titles): \n"
@@ -453,9 +468,9 @@ class PlotTool(Analysis):
         return s
 
     #
-    ### ... EDIT x- & y-axis LABELS ............................................................
+    # * Labels of x- & y-axis  .................................#
 
-    def edit_xyaxis_labels(
+    def edit_xy_axis_labels(
         self,
         leftmost: str = "",
         notleftmost: str = "",
@@ -488,7 +503,7 @@ class PlotTool(Analysis):
             ax.set_xlabel(notlowerrow)
         return self
 
-    def edit_xyaxis_labels_snip(self) -> str:
+    def edit_xy_axis_labels_snip(self) -> str:
         s = ""
         s += "### y-axis labels \n"
         s += "for ax in DA.axes_iter_leftmost: \n"
@@ -505,9 +520,9 @@ class PlotTool(Analysis):
         return s
 
     #
-    ### ... EDIT x- & y-axis SCALE ............................................................
+    # * Scale of x- & y-axis  ..................................#
 
-    def edit_log_yscale(
+    def edit_y_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
     ) -> PlotTool:
         for ax in self.axes_nested.flatten():
@@ -521,7 +536,7 @@ class PlotTool(Analysis):
             # ax.yaxis.sety_ticks()
         return self
 
-    def edit_log_xscale(
+    def edit_x_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
     ) -> PlotTool:
         for ax in self.axes.flatten():
@@ -533,7 +548,7 @@ class PlotTool(Analysis):
             )
         return self
 
-    def edit_scale_snip(self, doclink=True) -> str:
+    def edit_xy_scale_snip(self, doclink=True) -> str:
         s = ""
         if doclink:
             s += f"# . . . {self.DOCS['set_xscale']} #\n"
@@ -549,9 +564,9 @@ class PlotTool(Analysis):
         return s
 
     #
-    # ... EDIT, Ticks and Ticklabels # ......................................................................
+    # * Ticks and their Labels .................................#
 
-    def edit_yticklabel_percentage(
+    def edit_y_ticklabel_percentage(
         self, decimals_major: int = 0, decimals_minor: int = 0
     ) -> PlotTool:
         for ax in self.axes_nested.flatten():
@@ -563,7 +578,7 @@ class PlotTool(Analysis):
             )
         return self
 
-    def edit_yticklabel_percentage_snip(self, doclink=True) -> str:
+    def edit_y_ticklabel_percentage_snip(self, doclink=True) -> str:
         s = ""
         if doclink:
             s += f"# . . . {self.DOCS['percent_formatter']} #\n"
@@ -574,11 +589,11 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def edit_add_minorticklabels(self, subs: list = [2, 3, 5, 7]):
-        """minor ticklabels are kicked out unless their rounded mantissa (the digits from a float) is in subs
+    def edit_y_ticklabels_log_minor(self, subs: list = [2, 3, 5, 7]):
+        """Displays minor ticklabels for log-scales. Only shows those ticks whose rounded mantissa (the digits from a float) is in subs
 
         Args:
-            subs (list, optional): _description_. Defaults to [2, 3, 5, 7].
+            subs (list, optional): Mantissas (the digits from a float). Defaults to [2, 3, 5, 7].
 
         Returns:
             _type_: _description_
@@ -600,7 +615,7 @@ class PlotTool(Analysis):
                     label.set_visible(False)  # * Set those not in subs to invisible
         return self
 
-    def edit_add_minorticklabels_snip(self) -> str:
+    def edit_y_ticklabels_log_minor_snip(self) -> str:
         s = ""
         s += "for ax in DA.axes.flatten(): \n"
         s += "\t#* Set minor ticks, we need ScalarFormatter, others can't get casted into float \n"
@@ -616,7 +631,7 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def edit_xticklabels(
+    def edit_x_ticklabels(
         self,
         lowerrow: list = None,
         notlowerrow: list = None,
@@ -652,7 +667,7 @@ class PlotTool(Analysis):
             ax.tick_params(axis="x", pad=pad)  # * Sets distance to figure
         return self
 
-    def edit_xticklabels_snip(self) -> str:
+    def edit_x_ticklabels_snip(self) -> str:
         s = ""
         s += f"notlowerrow = {self.levels_dim_dict['x']} \n"
         s += f"lowerrow = {self.levels_dim_dict['x']} \n"
@@ -672,7 +687,9 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    # ... EDIT Gridlines! # ......................................................................
+    #
+    # * Grid ...................................................#
+
     def edit_grid(self) -> PlotTool:
         for ax in self.axes_nested.flatten():
             ax.yaxis.grid(True, which="major", ls="-", linewidth=0.5, c="grey")
@@ -690,12 +707,8 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    # ... EDIT Shapes & Sizes
-    # TODO: Until now, stick with the arguments supplied to self.subplots
     #
-    #
-    #
-    # ... Add Legend ............................................................................
+    # * Legend .................................................#
 
     @property
     def legend_handles_and_labels(self):
@@ -746,7 +759,8 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    # ... Fontsizes .....................................
+    #
+    # * fontsizes ..............................................#
 
     def edit_fontsizes(self, ticklabels=10, xylabels=10, axis_titles=10) -> PlotTool:
         """Edits fontsizes in [pt]. Does not affect legent or suptitle
@@ -787,6 +801,8 @@ class PlotTool(Analysis):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
+    #
+
 
 # ! # end class
 # !
@@ -795,15 +811,22 @@ class PlotTool(Analysis):
 
 # %% Initialize Data and PlotTool . . . . . . . . . . . . . . . . . . . . . . .
 
-DF, dims = ut.load_dataset("tips")
-DIMS = dict(y="tip", x="day", hue="sex", col="smoker", row="time")
-PT = PlotTool(data=DF, dims=DIMS).switch("x", "col")
+# DF, dims = ut.load_dataset("tips")
+# DF2, dims2 = ut.load_dataset("fmri")
+# DIMS = dict(y="tip", x="day", hue="sex", col="smoker", row="time")
+# PT = PlotTool(data=DF, dims=DIMS).switch("x", "col")
+# PT2 = PlotTool(data=DF2, dims=DIMS2).switch("x", "col")
 
 # PT.data_describe()
 # PT.plot()
 
 
 # %% Experiments:
+
+
+# %% main ................................................................................
+
+
 def tester(DF, dims):
     PT = PlotTool(data=DF, dims=dims)  # .switch("x", "col")
 
@@ -811,16 +834,16 @@ def tester(DF, dims):
         PT.subplots(sharey=True)
         .fillaxes(kind="box", boxprops=dict(alpha=0.5))
         .fillaxes(kind="swarm", size=3, dodge=True)
-        .reset_axtitles()
+        .edit_axtitles_reset()
     )
     PT = (
         PT.edit_titles()
-        .edit_format_titles()
-        .edit_xyaxis_labels()
-        .edit_log_yscale(base=10)
-        .edit_yticklabel_percentage()
-        .edit_add_minorticklabels(subs=[2, 3, 5, 7])
-        .edit_xticklabels()
+        .edit_titles_with_func()
+        .edit_xy_axis_labels()
+        .edit_y_scale_log(base=10)
+        .edit_y_ticklabel_percentage()
+        .edit_y_ticklabels_log_minor(subs=[2, 3, 5, 7])
+        .edit_x_ticklabels()
         .edit_grid()
         .edit_fontsizes(9, 10, 7)
         # .edit_replace_titles(titles = ["1", "2", "3", "4", "5", "6", "7", "8"])
@@ -828,57 +851,6 @@ def tester(DF, dims):
     if PT.dims.hue:  # * Only when legend
         PT = PT.edit_legend()
     # plt.close()
-
-
-dimses = [
-    # dict(y="tip", x="day", hue="sex", col="smoker", row="time"),
-    # dict(y="tip", x="sex", hue="day", col="smoker", row="time"),
-    # dict(y="tip", x="sex", hue="day", col="time", row="smoker"),
-    dict(y="tip", x="sex", hue="day", col="time"),
-    dict(y="tip", x="sex", hue="day", row="time"),
-    dict(y="tip", x="sex", hue="day", row="size-cut"),
-    dict(y="tip", x="sex", hue="day"),
-    dict(y="tip", x="sex"),
-]
-
-DF, dims = ut.load_dataset("tips")
-for dim in dimses:
-    tester(DF, dim)
-
-# %%
-
-fig, axes = plt.subplots(1, 1)
-print(axes)
-axes = np.array([axes]).reshape(1, 1)
-print(axes)
-### make a 2D 1x1 array with 1 column and 1 row
-# axes = np.array([axes]).reshape(1, 1)
-
-
-# %% New Dataset . . . . . .
-# DF, dims = ut.load_dataset("fmri")
-# PT = PlotTool(data=DF, dims=dims)
-
-# PT = PT.switch("row", "col").plot()
-# PT.set(row="none", col="none").plot()
-# PT = (
-#     PT.switch("row", "col")
-#     .subplots(sharey=True, height_ratios=[2, 1])
-#     .fillaxes(kind="line", alpha=0.5)
-#     .fillaxes(kind="strip", size=2, dodge=True, alpha=0.4)
-#     # .edit_log_yscale(base=10)
-#     .edit_grid()
-#     .edit_legend()
-#     # .edit_add_minorticklabels(subs=[2, 3, 5, 7])
-#     .edit_fontsizes(9, 10, 11)
-#     .edit_yticklabel_percentage(decimals_minor=1, decimals_major=1)
-# )
-
-
-# plt.close()
-
-
-# %% main ................................................................................
 
 
 def main():
@@ -919,7 +891,7 @@ def main():
 
     ### Use Chaining
     # * (methods act inplace, so you have to re-initialize PT to start from scratch!)
-    PT = (  # * Needs to be passed in order to make it modifyable in subequent lines
+    PT: PlotTool = (  # * Needs to be passed in order to make it modifyable in subequent lines
         PT.switch("x", "col")  # * Experiment with switching dimensions!
         .subplots(sharey=True, gridspec_kw=dict(wspace=0.2, hspace=0.5))
         .fillaxes(kind="box", boxprops=dict(alpha=0.5))
@@ -972,10 +944,10 @@ def main():
     PT.set(row="none", col="none").plot()
 
     ### Logarithmic scale
-    PT.edit_log_yscale(base=2)
+    PT.edit_y_scale_log(base=2)
 
     ### Snippet for Logarithmic scaling
-    PT.edit_scale_snip(doclink=True)
+    PT.edit_xy_scale_snip(doclink=True)
     # # . . . https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html#matplotlib.axes.Axes.set_xscale #
     # for ax in DA.axes.flatten():
     #     ax.set_yscale('log',  # * 'symlog', 'linear', 'logit',
@@ -995,10 +967,10 @@ def main():
     #     ax.xaxis.grid(True, which='major', ls='-', linewidth=0.3, c='grey')
 
     ### Show minor tick-labels
-    PT.edit_add_minorticklabels(subs=[2, 3, 5, 7])
+    PT.edit_y_ticklabels_log_minor(subs=[2, 3, 5, 7])
 
     ### Snippet for minor tick-labels
-    PT.edit_add_minorticklabels_snip()
+    PT.edit_y_ticklabels_log_minor()
     # for ax in PT.axes.flatten():
     #     #* Set minor ticks, we need ScalarFormatter, others can't get casted into float
     #     ax.yaxis.set_minor_formatter(mpl.ticker.ScalarFormatter(useOffset=0, useMathText=False))
@@ -1026,14 +998,14 @@ def main():
     #     ax.title.set_fontsize(axis_titles) # * Title
 
     ### Format your axes titles:
-    PT.edit_format_titles(
-        row_format=lambda x: x.upper(),
-        col_format=lambda x: "",
+    PT.edit_titles_with_func(
+        row_func=lambda x: x.upper(),
+        col_func=lambda x: "",
         connect=" || ",
     )
 
     ### Snippet for axes title formatting
-    PT.edit_format_titles_snip()
+    PT.edit_titles_with_func_snip()
     # row_format = lambda x: x.upper() #* e.g. try lambda x: x.upper()
     # col_format = lambda x: x
     # connect = '\n' #* newline. Try ' | ' as a separator in the same line
@@ -1047,7 +1019,7 @@ def main():
     #         ax.set_title(title)
 
     ### Change the axis titles fully manually
-    PT.edit_replace_titles(
+    PT.edit_title_replace(
         [
             "guccy",
             "guccy-gu",
@@ -1059,13 +1031,13 @@ def main():
     )
 
     ### Snippet for replacing titles
-    PT.edit_replace_titles_snip()
+    PT.edit_title_replace_snip()
     # titles = ['Lunch \nThsdfr ', 'Lunch \nFri ', 'Lunch \nSat ', 'Lunch \nSun ', 'Dinner \nThur ', 'Dinner \nFri ', 'Dinner \nSat ', 'Dinner \nSun ']
     # for ax, title in zip(PT.axes.flatten(), titles):
     #     ax.set_title(title)
 
     ### Change the axis labels
-    PT.edit_xyaxis_labels(
+    PT.edit_xy_axis_labels(
         leftmost="tipdf",
         notleftmost="",
         lowerrow="smoker",
@@ -1073,7 +1045,7 @@ def main():
     )
 
     ### Snipper for changing the axis labels
-    PT.edit_xyaxis_labels_snip()
+    PT.edit_xy_axis_labels_snip()
     # ### y-axis labels
     # for ax in PT.axes_iter_leftmost:
     #     ax.set_ylabel('tip')
@@ -1086,7 +1058,7 @@ def main():
     #     ax.set_xlabel('')
 
     ### Edit xtick-labels
-    PT.edit_xticklabels(
+    PT.edit_x_ticklabels(
         lowerrow=["NOO", "yup"],
         notlowerrow=["dd", "ee"],
         rotation=0,
@@ -1094,7 +1066,7 @@ def main():
         pad=1,
     )
     ### Snippet for changing the axis labels
-    PT.edit_xticklabels_snip()
+    PT.edit_x_ticklabels_snip()
     # DA=PT
     # notlowerrow = ['', '']
     # lowerrow = ['Yes', 'No']
@@ -1112,6 +1084,21 @@ def main():
     #     ax.tick_params(axis='x', pad=.01) #* Sets distance to figure
 
 
+dimses = [
+    dict(y="tip", x="day", hue="sex", col="smoker", row="time"),
+    dict(y="tip", x="sex", hue="day", col="smoker", row="time"),
+    dict(y="tip", x="sex", hue="day", col="time", row="smoker"),
+    dict(y="tip", x="sex", hue="day", col="time"),
+    dict(y="tip", x="sex", hue="day", row="time"),
+    dict(y="tip", x="sex", hue="day", row="size-cut"),
+    dict(y="tip", x="sex", hue="day"),
+    dict(y="tip", x="sex"),
+]
+
+
 if __name__ == "__main__":
     # main()
+    DF, dims = ut.load_dataset("tips")
+    for dim in dimses:
+        tester(DF, dim)
     pass

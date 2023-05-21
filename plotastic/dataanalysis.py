@@ -1,4 +1,4 @@
-#
+# !
 
 # %%
 
@@ -6,24 +6,28 @@ from cgi import test
 from typing import Dict
 from copy import copy, deepcopy
 
+from pathlib import Path
+import pickle
+
 import pandas as pd
 
 import markurutils as ut
 
 # from analysis import Analysis
-from multiplot import MultiPlot
+
 # from assumptions import Assumptions
+from multiplot import MultiPlot
 from omnibus import Omnibus
 from posthoc import PostHoc
+from bivariate import Bivariate
+
 # from statresult import StatResult
-
-
 
 
 # %%
 
 
-class DataAnalysis(MultiPlot, Omnibus, PostHoc):
+class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
     def __init__(
         self, data: pd.DataFrame, dims: dict, title: str = "untitled", verbose=True
     ):
@@ -73,15 +77,104 @@ class DataAnalysis(MultiPlot, Omnibus, PostHoc):
             a.title = f"{a.title}{con}{to_end}"
         return a
 
-    # ... PLOTTING #.............................................................................................
+    # ... I/O PLOTTING #.............................................................................................
 
-    def show_plot(self):
-        pass
-        # display(self.plot)
+    def save_plot_tofile(
+        self,
+        g=None,
+        name: str = None,
+        filepath: Path | str = None,
+        format=".pdf",
+        overwrite=None,
+        verbose=True,
+    ):
+        """
+
+        :param g:
+        :param filename: Provide custom full filepath. Overrides automatic filename generation. Will use default suffix from seaborn (.png)!
+        :param filepath:
+        :param format: file extension determines format
+        :param overwrite:
+        :return:
+        """
+        raise NotImplementedError
+        g = g if g else self.graphic
+
+        """### CONSTRUCT FILEPATH"""
+        kind = self.kws.pre.get("kind", self.kws.func.__name__)
+        default_filename = self.filer.get_filename(
+            titlesuffix=kind
+        )  # need to initialize
+        if filepath:
+            filepath = Path(filepath)
+        else:
+            filepath = self.filer.get_filepath(titlesuffix=kind)
+
+        """OVERRIDE FILENAME"""
+        if name:
+            filepath = filepath.with_name(
+                name
+            )  # if filename.endswith(".pdf")  else f"{filename}.pdf"
+
+        if not overwrite is None and not overwrite:
+            filepath = mku.Filer.prevent_overwrite(
+                filename=filepath.stem, parent=filepath.parent, ret_filepath=True
+            )
+        elif overwrite:
+            filepath = filepath.with_name(
+                str(self.filer.get_filename(titlesuffix=kind, overwrite=True))
+            )
+
+        """HANDLE FILE EXTENSION SUFFIX"""
+        filepath = filepath.with_suffix(format)
+        kws = dict()
+        if filepath.suffix == ".pdf":
+            kws["backend"] = "cairo"
+
+        """SAVE IT"""
+        backend = kws.get("backend", mpl.rcParams["backend"])
+        if verbose:
+            print(f"#! Saving '{filepath.name}'  in  '{filepath}' (backend={backend})")
+        g.fig.savefig(filepath, bbox_inches="tight", facecolor="none", dpi=300, **kws)
+        if verbose:
+            print(f"#! ✅ {filepath.name} Saved! ")
+
+        plt.close()
+
+        return self
+
+    def save_fig_tobuffer(self, name=""):
+        filename = Path(self.buffer + name).with_suffix(".pickle")
+        with open(filename, "wb") as file:
+            pickle.dump((self.fig, self.axes), file)
+
+    def load_fig_frombuffer(self, name=""):
+        filename = Path(self.buffer + name).with_suffix(".pickle")
+        with open(filename, "rb") as file:
+            fig, axes = pickle.load(file)
+        return (
+            fig,
+            axes,
+        )  # ! can#t return the whole PlotTool object, since pyplot will mix the fig with previous objects
+
+    # @staticmethod
+    # def _redraw_fig(fig):
+    #     """create a dummy figure and use its manager to display "fig" """
+    #     dummy = plt.figure()  # * Make empty figure
+    #     new_manager = dummy.canvas.manager  # * Get the figure's manager
+    #     new_manager.canvas.figure = fig  # * Associate it with the figure
+    #     fig.set_canvas(new_manager.canvas)
+    #     return fig
 
 
 # %%
-import markurutils as ut
+DF, dims = ut.load_dataset("tips")  # * Import Data
+DA = DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
+
+# %%
+DA.catplot()
+
+# %% Unit Tests
 import unittest
 
 
@@ -104,17 +197,14 @@ class TestDataAnalysis(unittest.TestCase):
         self.assertEqual(x_after_chaining, E3)
 
 
+# %% __name__ == "__main__"
+
 if __name__ == "__main__":
-    pass
+    import markurutils as ut
+    import unittest
+
     # unittest.main()
 
-
-# %%
-DF, dims = ut.load_dataset("tips")  # * Import Data
-DA = DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
-
-# %%
-DA.plot_quick()
 
 # %%
 

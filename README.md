@@ -133,8 +133,14 @@ classDiagram
       ....()
    }
 
+   class StatResults{
+      <<Storage>>
+      ...
+      ....()
+   }
 
    class Assumptions{
+      results: StatResults 
       normal(property):bool ="unknown"
       homoscedastic(property):bool ="unknown"
       spherical(property):bool ="unknown"
@@ -150,6 +156,7 @@ classDiagram
       check_all_assumptions_snip()
       ....()
    }
+   StatResults *-- Assumptions
 
    class Omnibus{
       ...
@@ -189,13 +196,10 @@ classDiagram
    Assumptions  <|-- PostHoc
    Assumptions  <|-- Omnibus
    Assumptions  <|-- Bivariate
-   pingouin .. Assumptions
-
-
+   pingouin .. Assumptions: Uses
 
 
    %% PLOTTING #......................................................................................
-
 
    class matplotlib{
       <<Plotting Objects>>
@@ -209,10 +213,15 @@ classDiagram
    class PlotTool{
       fig: mpl.figure.Figure
       axes: mpl.axes.Axes
+      buffer: io.BytesIO
       ...
       subplots() -> (fig, axes)
-      fillaxes(kind="bar") -> (fig, axes)
+      fillaxes(kind="strip") -> (fig, axes)
       plot(kind="strip") -> (fig, axes)
+
+      save_plot_tofile() -> None
+      save_plot_tobuffer() -> io.BytesIO
+      load_plot_frombuffer() -> (fig, axes)
 
 
       axes_nested(property) -> np.ndarray(axes).shape(1,1)
@@ -256,12 +265,13 @@ classDiagram
       %% FIGURES DON'T NEED TITLES, WE EDIT THEM AFTERWARDS
       title = "untitled" 
       filer: Filer 
-      results: dict =None && DataFrames of statistics
       ...
-      _axes_dict(property): dict(str plt.MultiPlot)
+      save_all_tofile()
+      save_all_tobuffer()
+      load_all_frombuffer()
+
       annot_stars(axes) -> (fig, axes)
-      show_plot()
-      save_all()
+
       ....()
    }
    click DataAnalysis href "https://github.com/markur4/plotastic/blob/main/plotastic/dataanalysis.py" "dataanalysis.py"

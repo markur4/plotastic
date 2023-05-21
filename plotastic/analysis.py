@@ -143,7 +143,7 @@ class Analysis:
         {"y": self.dims.y, "x": self.dims.x,"hue": self.dims.hue, "col": self.dims.col, "row": self.dims.row}
         :rtype: dict
         """
-        return self.dims.asdict(incl_by=False, incl_None=False)
+        return self.dims.asdict(incl_None=False)
         # return {dim: factor for dim, factor in self.dims.asdict().items() if not factor is None}
 
     @property
