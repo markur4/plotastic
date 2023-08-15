@@ -132,7 +132,7 @@ class PlotTool(Analysis):
     # ... ITERATORS #...........................................................................................
 
     #
-    # * MAKE NESTED ....................................#
+    # * NESTED / FLAT....................................#
 
     @property
     def axes_nested(self) -> np.ndarray:
@@ -143,6 +143,11 @@ class PlotTool(Analysis):
             return np.array([self.axes])
         else:  # * Single figure
             return np.array([self.axes]).reshape(1, 1)
+
+    @property
+    def axes_flat(self) -> np.ndarray:
+        """Always returns a 1D flattened array of axes, regardless of row, column, or single figure."""
+        return self.axes_nested.flatten()
 
     #
     # * Associate with Keys ....................................#
@@ -455,7 +460,7 @@ class PlotTool(Analysis):
             PlotTool: The object itselt
         """
 
-        for ax, title in zip(self.axes_nested.flatten(), titles):
+        for ax, title in zip(self.axes_flat, titles):
             ax.set_title(title)
         return self
 
@@ -526,7 +531,7 @@ class PlotTool(Analysis):
     def edit_y_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
     ) -> PlotTool:
-        for ax in self.axes_nested.flatten():
+        for ax in self.axes_flat:
             ax.set_yscale(
                 value="log",  # * "symlog", "linear", "logit", ...
                 base=base,  # * Base of the logarithm
@@ -570,7 +575,7 @@ class PlotTool(Analysis):
     def edit_y_ticklabel_percentage(
         self, decimals_major: int = 0, decimals_minor: int = 0
     ) -> PlotTool:
-        for ax in self.axes_nested.flatten():
+        for ax in self.axes_flat:
             ax.yaxis.set_major_formatter(
                 mpl.ticker.PercentFormatter(xmax=1, decimals=decimals_major)
             )
@@ -599,7 +604,7 @@ class PlotTool(Analysis):
         Returns:
             _type_: _description_
         """
-        for ax in self.axes_nested.flatten():
+        for ax in self.axes_flat:
             # * Set minor ticks, we need ScalarFormatter, others can't get casted into float
             ax.yaxis.set_minor_formatter(
                 mpl.ticker.ScalarFormatter(useOffset=0, useMathText=False)
@@ -692,7 +697,7 @@ class PlotTool(Analysis):
     # * Grid ...................................................#
 
     def edit_grid(self) -> PlotTool:
-        for ax in self.axes_nested.flatten():
+        for ax in self.axes_flat:
             ax.yaxis.grid(True, which="major", ls="-", linewidth=0.5, c="grey")
             ax.yaxis.grid(True, which="minor", ls="-", linewidth=0.2, c="grey")
             ax.xaxis.grid(True, which="major", ls="-", linewidth=0.3, c="grey")
@@ -775,7 +780,7 @@ class PlotTool(Analysis):
             PlotTool: _description_
         """
 
-        for ax in self.axes_nested.flatten():
+        for ax in self.axes_flat:
             ax.tick_params(
                 axis="y", which="major", labelsize=ticklabels
             )  # * Ticklabels
