@@ -1,6 +1,7 @@
 from importlib import metadata
 import glob
 from pathlib import Path
+
 # from os.path import dirname, basename, isfile, join
 # import os
 
@@ -29,6 +30,10 @@ del cwd, modules
 
 
 # ... Flatten module access .....................................................
+
+for module in __all__:
+    exec(f"from .{module} import *")
+
 # from .analysis import *
 # from .dims import *
 

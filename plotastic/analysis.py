@@ -86,9 +86,10 @@ class Analysis:
         self,
         data: pd.DataFrame,
         dims: dict | Dims,
+        subject: str = None,
+        levels: list[tuple[str]] = None,
         # transform=None
         verbose=False,
-        levels: list[tuple[str]] = None,
         # levels_ignore: list[tuple[str]] = None,
         # som: dict[str, str] = None,
     ) -> Analysis:
@@ -107,6 +108,7 @@ class Analysis:
         """
         self.data = data
         self.dims = dims if type(dims) is Dims else Dims(**dims)
+        self.subject = subject
 
         ### Transformations
         self.is_transformed = False

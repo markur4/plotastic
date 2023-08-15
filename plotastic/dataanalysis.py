@@ -29,12 +29,20 @@ from plotastic.bivariate import Bivariate
 
 class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
     def __init__(
-        self, data: pd.DataFrame, dims: dict, title: str = "untitled", verbose=True
+        self,
+        data: pd.DataFrame,
+        dims: dict,
+        subject: str = None,
+        levels: list[tuple[str]] = None,
+        title: str = "untitled",
+        verbose=True,
     ):
         ### Inherit
         # * verbosity false, since each subclass can test its own DataFrame
-        init_kws = dict(data=data, dims=dims, verbose=False)
-        super().__init__(**init_kws)
+        analysis_kws = dict(
+            data=data, dims=dims, subject=subject, levels=levels, verbose=False
+        )
+        super().__init__(**analysis_kws)
 
         self._title = title
         self.filer = ut.Filer(title=title)
@@ -167,46 +175,40 @@ class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
     #     return fig
 
 
-# %% Import Test Data
-DF, dims = ut.load_dataset("tips")  # * Import Data
-DA = DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
+# # %% Import Test Data
+# DF, dims = ut.load_dataset("tips")  # * Import Data
+# DA = DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
 
-# %% Catplot
-DA.catplot()
+# # %% Catplot
+# DA.catplot()
 
-# %% Unit Tests
-import unittest
-
-
-class TestDataAnalysis(unittest.TestCase):
-    def test_switching(self):
-        v = False
-        data, dims = ut.load_dataset("tips", verbose=v)
-        DA = DataAnalysis(data, dims, verbose=v)
-
-        ### Chaining work?
-        x, E1 = DA.dims.x, "size-cut"
-        x_inchain, E2 = DA.switch("x", "hue", verbose=v).dims.x, "smoker"
-        x_after_chaining, E3 = DA.dims.x, "size-cut"
-        print(x, x_inchain, x_after_chaining)
-        print(x != x_inchain)
-        print(x == x_after_chaining)
-
-        self.assertEqual(x, E1)
-        self.assertEqual(x_inchain, E2)
-        self.assertEqual(x_after_chaining, E3)
+# # %% Unit Tests
+# import unittest
 
 
-# %% __name__ == "__main__"
+# class TestDataAnalysis(unittest.TestCase):
+#     def test_switching(self):
+#         v = False
+#         data, dims = ut.load_dataset("tips", verbose=v)
+#         DA = DataAnalysis(data, dims, verbose=v)
 
-if __name__ == "__main__":
-    import markurutils as ut
-    import unittest
+#         ### Chaining work?
+#         x, E1 = DA.dims.x, "size-cut"
+#         x_inchain, E2 = DA.switch("x", "hue", verbose=v).dims.x, "smoker"
+#         x_after_chaining, E3 = DA.dims.x, "size-cut"
+#         print(x, x_inchain, x_after_chaining)
+#         print(x != x_inchain)
+#         print(x == x_after_chaining)
 
-    # unittest.main()
+#         self.assertEqual(x, E1)
+#         self.assertEqual(x_inchain, E2)
+#         self.assertEqual(x_after_chaining, E3)
 
 
-# %%
+# # %% __name__ == "__main__"
 
+# if __name__ == "__main__":
+#     import markurutils as ut
+#     import unittest
 
-# %%
+#     # unittest.main()

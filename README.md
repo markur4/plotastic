@@ -135,16 +135,25 @@ classDiagram
 
    class StatResults{
       <<Storage>>
+      normality: pd.DataFrame = "not tested"
+      homoscedasticity: pd.DataFrame = "not tested"
+      sphericity: pd.DataFrame = "not tested"
+      posthoc: pd.DataFrame = "not tested"
+      omnibus: pd.DataFrame = "not tested"
+      bivariate: pd.DataFrame = "not tested"
       ...
+      normal(property):bool ="not assessed"
+      homoscedastic(property):bool ="unknown"
+      spherical(property):bool ="unknown"
+      parametric(property):bool =None
+      assess_normality()
+      assess_homoscedasticity()
+      assess_sphericity()
       ....()
    }
 
    class Assumptions{
       results: StatResults 
-      normal(property):bool ="unknown"
-      homoscedastic(property):bool ="unknown"
-      spherical(property):bool ="unknown"
-      parametric(property):bool =None
       ...
       check_normality()
       check_normality_snip()

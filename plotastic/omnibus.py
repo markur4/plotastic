@@ -4,5 +4,5 @@ from plotastic.assumptions import Assumptions
 
 
 class Omnibus(Assumptions):
-    def __init__(self, data: pd.DataFrame, dims: dict, verbose=True):
-        super().__init__(data=data, dims=dims, verbose=verbose)
+    def __init__(self, **analysis_kws):
+        super().__init__(**analysis_kws)

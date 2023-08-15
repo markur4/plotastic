@@ -8,5 +8,5 @@ from plotastic.analysis import Analysis
 
 
 class Bivariate(Analysis):
-    def __init__(self, data, dims, verbose=False):
-        super().__init__(data=data, dims=dims, verbose=verbose)
+    def __init__(self, **analysis_kws):
+        super().__init__(**analysis_kws)

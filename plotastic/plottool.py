@@ -95,7 +95,7 @@ class PlotTool(Analysis):
 
     # ...__INIT__ .....................
 
-    def __init__(self, data: pd.DataFrame, dims: dict, verbose=False):
+    def __init__(self, **analysis_kws):
         """
         _summary_
 
@@ -110,11 +110,7 @@ class PlotTool(Analysis):
             PlotTool: _description_
         """
         ### Inherit from Analysis
-        super().__init__(
-            data=data,
-            dims=dims,
-            verbose=verbose,
-        )
+        super().__init__(**analysis_kws)
 
         ### Initialise figure and axes
         fig, axes = plt.subplots(nrows=self.len_rowlevels, ncols=self.len_collevels)

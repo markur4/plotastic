@@ -1,8 +1,11 @@
 import pandas as pd
 
 from plotastic.analysis import Analysis
+from plotastic.statresults import StatResults
 
 
 class Assumptions(Analysis):
-    def __init__(self, data: pd.DataFrame, dims: dict, verbose=False):
-        super().__init__(data=data, dims=dims, verbose=verbose)
+    def __init__(self, **analysis_kws):
+        super().__init__(**analysis_kws)
+
+        self.results = StatResults()

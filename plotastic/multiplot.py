@@ -5,5 +5,5 @@ from plotastic.plottool import PlotTool
 
 
 class MultiPlot(PlotTool):
-    def __init__(self, data: pd.DataFrame, dims: str, verbose=False):
-        super().__init__(data=data, dims=dims, verbose=verbose)
+    def __init__(self, **analysis_kws):
+        super().__init__(**analysis_kws)
