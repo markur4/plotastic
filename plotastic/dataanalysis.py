@@ -1,6 +1,6 @@
 # !
 
-# %%
+# %% Imports
 
 from cgi import test
 from typing import Dict
@@ -24,7 +24,7 @@ from bivariate import Bivariate
 # from statresult import StatResult
 
 
-# %%
+# %% Class DataAnalysis
 
 
 class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
@@ -167,11 +167,11 @@ class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
     #     return fig
 
 
-# %%
+# %% Import Test Data
 DF, dims = ut.load_dataset("tips")  # * Import Data
 DA = DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
 
-# %%
+# %% Catplot
 DA.catplot()
 
 # %% Unit Tests

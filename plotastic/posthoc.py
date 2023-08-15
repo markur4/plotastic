@@ -1,6 +1,6 @@
 import pandas as pd
-from analysis import Analysis
-from assumptions import Assumptions
+from plotastic.analysis import Analysis
+from plotastic.assumptions import Assumptions
 
 
 class PostHoc(Assumptions):

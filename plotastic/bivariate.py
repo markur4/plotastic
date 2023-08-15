@@ -2,7 +2,7 @@
 
 import pingouin as pg
 
-from analysis import Analysis
+from plotastic.analysis import Analysis
 
 # %%
 

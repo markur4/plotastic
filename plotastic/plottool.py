@@ -21,7 +21,8 @@ import seaborn as sns
 
 
 import markurutils as ut
-from analysis import Analysis
+
+from plotastic.analysis import Analysis
 
 if TYPE_CHECKING:
     import numpy as np

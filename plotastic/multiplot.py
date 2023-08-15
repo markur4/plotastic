@@ -1,7 +1,7 @@
 import pandas as pd
 
-from analysis import Analysis
-from plottool import PlotTool
+from plotastic.analysis import Analysis
+from plotastic.plottool import PlotTool
 
 
 class MultiPlot(PlotTool):

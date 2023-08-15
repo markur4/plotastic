@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 from nis import cat
+
 from operator import index, le
 from re import L  # for type hinting my Class type for return values
 from typing import Dict, Generator, List, Callable, TYPE_CHECKING
@@ -29,7 +30,7 @@ import matplotlib.pyplot as plt
 # from markurutils.builtin_types import printable_dict
 # from markurutils.filer import Filer
 import markurutils as ut
-from dims import Dims
+from plotastic.dims import Dims
 
 # %% Utils
 df = None  # * Prevent warning when using catchstate
