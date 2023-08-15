@@ -16,10 +16,10 @@ import markurutils as ut
 # from analysis import Analysis
 
 # from assumptions import Assumptions
-from multiplot import MultiPlot
-from omnibus import Omnibus
-from posthoc import PostHoc
-from bivariate import Bivariate
+from plotastic.multiplot import MultiPlot
+from plotastic.omnibus import Omnibus
+from plotastic.posthoc import PostHoc
+from plotastic.bivariate import Bivariate
 
 # from statresult import StatResult
 

@@ -5,6 +5,9 @@
 import pandas as pd
 import markurutils as ut
 import plotastic as plst
+print(plst.__all__)
+# from plotastic import *
+# Dims
 from plotastic.analysis import Dims, Analysis
 
 

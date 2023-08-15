@@ -9,8 +9,10 @@ import pandas as pd
 
 from IPython.display import display
 
-from analysis import Analysis
-from plothelper import PlotHelper
+import plotastic as plst
+
+from plotastic.analysis import Analysis
+from plotastic.plothelper import PlotHelper
 
 
 # %%
