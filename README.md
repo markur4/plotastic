@@ -1,8 +1,7 @@
 # plotastic
+### A wrapper for seaborn plotters for convenient statistics powered by pingouin!
 
-a wrapper for seaborn plotters for convenient statistics powered by pingouin!
-
-## Installation
+## Installation 📦
 
 ``` bash
 pip install git+https://github.com/markur4/plotastic.git
@@ -30,10 +29,64 @@ pip install git+https://github.com/markur4/plotastic.git
    - Snippets for better documentation or functions, you choose!
 5. **💿 Save all results at once!**
 
-## Class Tree 🌳
+
+
+
+
+
+
+
+
+## Features ⚙️
 
 <details>
-<summary>🌳 CLICK TO UNFOLD 🌳</summary>
+<summary>⚙️ Features (click to unfold) </summary>
+
+### Implemented
+
+- **Plotting:**
+  - still refactoring!
+
+
+### Planned
+
+- **Plotting:**
+  - All possible seaborn plote
+  - QQ-MultiPlot
+- **Assumption testing:**
+  - Normality (Shapiro-Wilk)
+  - Sphericity (Levene)
+- **Omnibus tests:**
+  - lorem
+  - lorem
+- **Post-hoc tests:**
+  - lorem
+  - lorem
+
+
+### Maybe..?
+
+- Interactive MultiPlot (where you click stuff and adjust scale etc.)
+
+### Not planned
+
+- Support for seaborn FacetGrid
+  - Plotastic uses matplotlib figures and fills its axes with seaborn plot functions. In my opinion, that's the best solution that offers the best adaptibility of every plot detail while bieng easy to maintain
+- Support for seaborn objects (same as Facetgrid)
+
+### Not possible
+
+- NOTHING
+
+</details>
+
+## Structure of Plotastic 🌳
+
+
+<details>
+
+
+<summary>🌳 Class Diagram (click to unfold) </summary>
 
 ### Not everything is implemented. But this is where we're headed. See Features to see what's possible snd what not
 
@@ -297,48 +350,57 @@ classDiagram
 
 </details>
 
-
-## Features ⚙️
-
 <details>
-<summary>⚙️ CLICK TO UNFOLD ⚙️</summary>
 
-### Implemented
-
-- **Plotting:**
-  - still refactoring!
+<summary>📈 Pseudo-Flowchart how plotting works (click to unfold) </summary>
 
 
-### Planned
-
-- **Plotting:**
-  - All possible seaborn plote
-  - QQ-MultiPlot
-- **Assumption testing:**
-  - Normality (Shapiro-Wilk)
-  - Sphericity (Levene)
-- **Omnibus tests:**
-  - lorem
-  - lorem
-- **Post-hoc tests:**
-  - lorem
-  - lorem
+```mermaid
 
 
-### Maybe..?
 
-- Interactive MultiPlot (where you click stuff and adjust scale etc.)
+flowchart TD
+    PT[(PlotTool or DataAnalysis)]
+    self.fig[(self.fig)] 
+    self.axes[(self.axes)]
+    self.subplots[self.subplots]
 
-### Not planned
 
-- Support for seaborn FacetGrid
-  - Plotastic uses matplotlib figures and fills its axes with seaborn plot functions. In my opinion, that's the best solution that offers the best adaptibility of every plot detail while bieng easy to maintain
-- Support for seaborn objects (same as Facetgrid)
+    %% INIT PATH
+    init[self.__init__]
+    plt.subplots[[plt.subplots]] 
 
-### Not possible
+    %%ioff[/ioff/]
+    %%figax[/fig, axes/]
 
-- NOTHING
+    PT --call--> init --with ioff: call--> plt.subplots
+    plt.subplots -.initializes.-> self.fig & self.axes
 
+    %% SUBPLOTS PATH
+    plt.subplots[[plt.subplots]] 
+    %%ioff2[/ioff/]
+    %%PT --call--> 
+    
+    self.subplots --with ioff: call-->plt.subplots
+    plt.subplots -.returns.-> fig[/fig/] & axes[/axes/]
+
+    %% PLOT PATH
+    self.plot[self.plot]
+    self.fill_axes[self.fill_axes]
+    %%axes2[/axes/]
+    PT --call--> self.plot --1st call--> self.subplots
+    axes --passed to--> self.fill_axes
+    self.plot --2nd call--> self.fill_axes
+
+    fig ==sets==> self.fig
+    self.fill_axes ==sets==> self.axes 
+
+
+    %%PT --call---> init --call---> s.subplots --call---> p.subplots
+    %% p.subplots --fig, axes---> PT
+
+
+```
 </details>
 
 ## Disclaimer about Statistics (READ if you're new to statistics)

@@ -20,12 +20,12 @@ flowchart TD
     plt.subplots -.initializes.-> self.fig & self.axes
 
     %% SUBPLOTS PATH
-    plt.subplots2[[plt.subplots]] 
+    plt.subplots[[plt.subplots]] 
     %%ioff2[/ioff/]
     %%PT --call--> 
     
-    self.subplots --with ioff: call-->plt.subplots2
-    plt.subplots2 -.returns.-> fig[/fig/] & axes[/axes/]
+    self.subplots --with ioff: call-->plt.subplots
+    plt.subplots -.returns.-> fig[/fig/] & axes[/axes/]
 
     %% PLOT PATH
     self.plot[self.plot]
