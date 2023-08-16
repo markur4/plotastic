@@ -32,6 +32,11 @@ class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
         self,
         data: pd.DataFrame,
         dims: dict,
+        x: str,
+        y: str,
+        hue: str,
+        row: str,
+        col: str,
         subject: str = None,
         levels: list[tuple[str]] = None,
         title: str = "untitled",
@@ -175,40 +180,3 @@ class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
     #     return fig
 
 
-# # %% Import Test Data
-# DF, dims = ut.load_dataset("tips")  # * Import Data
-# DA = DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
-
-# # %% Catplot
-# DA.catplot()
-
-# # %% Unit Tests
-# import unittest
-
-
-# class TestDataAnalysis(unittest.TestCase):
-#     def test_switching(self):
-#         v = False
-#         data, dims = ut.load_dataset("tips", verbose=v)
-#         DA = DataAnalysis(data, dims, verbose=v)
-
-#         ### Chaining work?
-#         x, E1 = DA.dims.x, "size-cut"
-#         x_inchain, E2 = DA.switch("x", "hue", verbose=v).dims.x, "smoker"
-#         x_after_chaining, E3 = DA.dims.x, "size-cut"
-#         print(x, x_inchain, x_after_chaining)
-#         print(x != x_inchain)
-#         print(x == x_after_chaining)
-
-#         self.assertEqual(x, E1)
-#         self.assertEqual(x_inchain, E2)
-#         self.assertEqual(x_after_chaining, E3)
-
-
-# # %% __name__ == "__main__"
-
-# if __name__ == "__main__":
-#     import markurutils as ut
-#     import unittest
-
-#     # unittest.main()
