@@ -367,21 +367,21 @@ flowchart TD
 
 
     %% INIT PATH
-    init[self.__init__]
+    init[PlotTool.__init__ ]
     plt.subplots[[plt.subplots]] 
 
     %%ioff[/ioff/]
     %%figax[/fig, axes/]
 
-    PT --call--> init --with ioff: call--> plt.subplots
-    plt.subplots -.initializes.-> self.fig & self.axes
+    PT --call--> init -- call--> plt.subplots
+    %% plt.subplots -.initializes.-> self.fig & self.axes
 
     %% SUBPLOTS PATH
     plt.subplots[[plt.subplots]] 
     %%ioff2[/ioff/]
     %%PT --call--> 
     
-    self.subplots --with ioff: call-->plt.subplots
+    self.subplots --call-->plt.subplots
     plt.subplots -.returns.-> fig[/fig/] & axes[/axes/]
 
     %% PLOT PATH

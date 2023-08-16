@@ -28,15 +28,12 @@ from plotastic.bivariate import Bivariate
 
 
 class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
+    
+    
     def __init__(
         self,
         data: pd.DataFrame,
         dims: dict,
-        x: str,
-        y: str,
-        hue: str,
-        row: str,
-        col: str,
         subject: str = None,
         levels: list[tuple[str]] = None,
         title: str = "untitled",
@@ -178,5 +175,3 @@ class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
     #     new_manager.canvas.figure = fig  # * Associate it with the figure
     #     fig.set_canvas(new_manager.canvas)
     #     return fig
-
-
