@@ -30,6 +30,8 @@ import matplotlib.pyplot as plt
 # from markurutils.builtin_types import printable_dict
 # from markurutils.filer import Filer
 import markurutils as ut
+
+# from old.dataanalysis import DataAnalysis
 from plotastic.dims import Dims
 
 # %% Utils
@@ -110,6 +112,9 @@ class Analysis:
         self.dims = dims if type(dims) is Dims else Dims(**dims)
         self.subject = subject
 
+        # ### Initialize a dataframe that contains  groups for every combination of factor levels (with dv = N)
+        # self.data_allgroups = self.data_ensure_allgroups
+
         ### Transformations
         self.is_transformed = False
         self.transform_history = []  # * HISTORY OF TRANSFORMATIONS
@@ -119,6 +124,8 @@ class Analysis:
         ### Check for empties or missing group combinations
         if verbose:
             self.warn_about_empties_and_NaNs()
+            if subject:
+                self.warn_about_subjects_with_missing_data()
 
         ### Make Categorical
         if levels:
@@ -154,9 +161,9 @@ class Analysis:
         return [c for c in self.data.columns if c not in self.factors_all]
 
     @property
-    def factors_xhue(self) -> str | tuple[str]:
+    def factors_xhue(self) -> str | list[str]:
         if self.dims.hue:
-            xhue = (self.dims.x, self.dims.hue)
+            xhue = [self.dims.x, self.dims.hue]
         else:
             xhue = self.dims.x
         return xhue
@@ -189,9 +196,9 @@ class Analysis:
     #     return xhue
 
     @property
-    def factors_rowcol(self) -> str | tuple[str] | None:
+    def factors_rowcol(self) -> str | list[str] | None:
         if self.dims.row and self.dims.col:
-            rowcol = (self.dims.row, self.dims.col)
+            rowcol = [self.dims.row, self.dims.col]
         elif self.dims.row:
             rowcol = self.dims.row
         elif self.dims.col:
@@ -199,6 +206,14 @@ class Analysis:
         else:
             rowcol = None
         return rowcol
+
+    @property
+    def is_just_x(self) -> bool:
+        return not self.dims.row and not self.dims.col and not self.dims.hue
+
+    @property
+    def is_just_xand_hue(self) -> bool:
+        return not self.dims.row and not self.dims.col
 
     @property
     def factors_rowcol_list(self) -> list[str]:
@@ -580,10 +595,11 @@ class Analysis:
         ### Define Functions
         def NaNs(s: "pd.Series"):
             result = int(s.isna().sum())
-            if not result is None and result != 0:
-                return result
-            else:
-                return None
+            return result
+            # if not result is None and result != 0:
+            #     return result
+            # else:
+            #     return None
 
         def Zeroes(s: "pd.Series"):
             return s.value_counts().get(0)  ## COLUMNNOT SHOWING IF ALL None
@@ -621,10 +637,10 @@ class Analysis:
                     NaNs,
                     Zeroes,
                     Negatives,
-                    "median",
                     "mean",
                     "std",
                     Q1,
+                    "median",
                     Q3,
                     IQR,
                     skew,
@@ -674,7 +690,40 @@ class Analysis:
             hasNaN_df.head(10)  # * Show df
             # ut.pp(hasNaN_df)
         else:
-            print("✅ Groups complete: No groups with single NaNs")
+            print("✅ Groups complete: No groups with NaNs")
+
+    def warn_about_subjects_with_missing_data(self) -> None:
+        """Prints a warning if there are subjects with missing data"""
+
+        ### Get numbers of samples for each subject
+        counts_persubj = (
+            self.data.groupby(self.subject)
+            .count()[self.dims.y]
+            .sort_values(ascending=False)
+        )
+        ### Retrieve subjects with missing data
+
+        ### check if all subjects have the same number of samples
+        if counts_persubj.nunique() > 1:
+            print(
+                f"❗️ Subjects incomplete: The largest subject contains {counts_persubj.max()} datapoints, but these subjects contain less:"
+            )
+            missing_data_df = counts_persubj[counts_persubj != counts_persubj.max()]
+            print(missing_data_df)
+        else:
+            print("✅ Subjects complete: No subjects with missing data")
+
+    # # ... Iterate through Data SKIPPING OF EMPTY GROUPS .................
+
+    # def data_iterate_by_rowcol(
+    #     self,
+    # ) -> Generator[pd.DataFrame, None, None]:
+    #     """Iterates through the data, yielding a DataFrame for each row/col combination.
+    #     :yield: _description_
+    #     :rtype: _type_
+    #     """
+    #     for key in self.levelkeys_rowcol:
+    #         yield self.data_get_rowcol(key)
 
     #
     # ... Iterate through DATA  .......................................................................................................'''
@@ -708,9 +757,13 @@ class Analysis:
         index_old = reindex_DF.index
 
         # * Make index with complete set of keys
-        index_new = pd.MultiIndex.from_product(
-            iterables=self.levels_tuples, names=self.factors_all
-        )
+        # * If only one factor, we need to use pd.Index instead of pd.MultiIndex
+        if self.is_just_x:
+            index_new = pd.Index(data=self.levels_dim_dict["x"], name=self.dims.x)
+        else:
+            index_new = pd.MultiIndex.from_product(
+                iterables=self.levels_tuples, names=self.factors_all
+            )
         # index_new = pd.MultiIndex(levels=self.levelkeys_rowcol, names=self.factors_all)
 
         ### Construct empty DF but with complete 'index' (index made out of Factors)
@@ -722,22 +775,53 @@ class Analysis:
 
         # * Fill empty DF with data
         newDF = pd.concat([empty_DF, reindex_DF]).sort_index().reset_index()
+
+        # ut.pp(empty_DF)
+        # ut.pp(reindex_DF)
+        # print(reindex_DF.index)
+        # ut.pp(newDF)
         return newDF
 
     @property
     def data_iter__key_rowcol(self) -> Generator[tuple, pd.DataFrame]:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ..."""
-        grouped = self.data_ensure_allgroups.groupby(
-            ut.ensure_list(self.factors_rowcol)
-        )
-        for key in self.levelkeys_rowcol:
-            df = grouped.get_group(key)
-            yield key, df
+        if self.factors_rowcol is None:
+            # * If no row or col, return all axes and data
+            yield None, self.data_ensure_allgroups  # ! Error for  df.groupby().get_group(None)
+
+        else:
+            grouped = self.data_ensure_allgroups.groupby(
+                ut.ensure_list(self.factors_rowcol)
+            )
+            for key in self.levelkeys_rowcol:
+                df = grouped.get_group(key)
+                yield key, df
+
+    @property
+    def data_iter__key_rowcol_no_empty(self) -> Generator[tuple, pd.DataFrame]:
+        """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ...
+        Does not contain rows from empty groups"""
+        if self.factors_rowcol is None:
+            # * If no row or col, return all axes and data
+            yield None, self.data  # ! Error for  df.groupby().get_group(None)
+
+        else:
+            grouped = self.data.groupby(ut.ensure_list(self.factors_rowcol))
+            for key in self.levelkeys_rowcol:
+                df = grouped.get_group(key)
+                yield key, df
 
     @property
     def data_iter__key_allgroups(self):
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ..."""
         for key, df in self.data_ensure_allgroups.groupby(self.factors_all):
+            yield key, df
+
+    @property
+    def data_iter__key_allgroups_no_empty(self):
+        """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ...
+        SKIPS EMPTY GROUPS!"""
+        for key, df in self.data.groupby(self.factors_all):
             yield key, df
 
     #
@@ -892,30 +976,100 @@ class Analysis:
 
 # !
 # !
-# !
-
-# %% Experiments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# !    #* ######################################################################################
 
 
-# %% main()............................................................
+# %%
+
+# DF, dims = ut.load_dataset("tips")
+# dims = dict(y="tip", x="sex", hue="day", col="smoker", row="time")
+
+# DA = Analysis(
+#     data=DF,
+#     dims=dims,
+#     # subject="day",
+#     verbose=True,
+# )
 
 
-def main():
-    data, dims = ut.load_dataset("fmri")
-
-    A = Analysis(
-        data=data,
-        dims=dims,
-        levels=[
-            ("frontal", "p arietal"),
-            ("cue", "stim "),
-            (0, 2, 1, 3, 4, 5, 6, 7, 8, 9),
-        ],
-        verbose=True,
-    )
+# %% automatic testing
 
 
-if __name__ == "__main__":
-    main()
+def tester(DF, dims):
+    A = Analysis(data=DF, dims=dims, verbose=True)  # .switch("x", "col")
+
+
+dimses = [
+    dict(y="tip", x="day", hue="sex", col="smoker", row="time"),
+    dict(y="tip", x="sex", hue="day", col="smoker", row="time"),
+    dict(y="tip", x="sex", hue="day", col="time", row="smoker"),
+    dict(y="tip", x="sex", hue="day", col="time"),
+    dict(y="tip", x="sex", hue="day", row="time"),
+    dict(y="tip", x="sex", hue="day", row="size-cut"),
+    dict(y="tip", x="sex", hue="day"),
+    dict(y="tip", x="sex"),
+    dict(y="tip", x="size-cut"),
+]
+
+# DF, dims = ut.load_dataset("tips")
+# for dim in dimses:
+#     print("\n !!!", dim)
+#     tester(DF, dim)
+
+
+# %% Prototypes
+# ! not working
+"""! I tried implementing generators that iterate through the data vy looping through the list of
+levelkeys and then picking out the datawindow using grouped.get_group(key). 
+This is cool since I can make a function that uses skip=True/False as an argument, but generators don't accept arguments that easily
+Also, I don't think I need it
+"""
+# def skip():
+#     grouped = DA.data.groupby(DA.factors_all)
+#     for key in DA.levelkeys_all:
+#         try:
+#             df = grouped.get_group(key)
+#         except KeyError:
+#             continue
+#         yield key, df
+
+
+# def notskip():
+#     grouped = DA.data.groupby(DA.factors_all)
+#     for key in DA.levelkeys_all:
+#         try:
+#             df = grouped.get_group(key)
+#         except KeyError:
+#             # * Associate key with respective factor
+#             factor_and_keys = {DA.get_factor_from_level(lvl): lvl for lvl in key}
+#             factor_and_keys_df = pd.DataFrame(factor_and_keys, index=[0])
+
+#             empty_df = pd.DataFrame(columns=DA.data.columns)
+
+#             # * Append to empty df
+#             df = empty_df.append(factor_and_keys_df, ignore_index=True)
+
+#         yield key, df
+
+
+# def data_iter__key_allgroups(skip_empty_groups=False):
+#     if skip_empty_groups:
+#         return skip
+#     else:
+#         return notskip
+
+
+# # for key, df in data_iter__key_allgroups(skip_empty_groups=True):
+# #     print(key, df)
+# #     print()
+
+# for key, df in skip():
+#     print(key, df)
+#     print()
+
+# for key, df in notskip():
+#     print(key, df)
+#     print()
+
 
 # %%

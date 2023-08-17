@@ -37,10 +37,13 @@ class PostHoc(Assumptions):
             elif "between" in kwargs:
                 kwargs_2["between"] = list(reversed(kwargs["between"]))
 
-        ### Iterate over rows and columns
+        ### Perform Test
+        # * Iterate over rows and columns
         PH_dict = {}
-        for key, df in self.data_iter__key_rowcol:
-            ### Perform pairwise tests
+        for key, df in self.data_iter__key_rowcol_no_empty:
+            # print(key)
+            # ut.pp(df)
+
             if self.dims.hue:  # * perform twice with x and hue turned around (= huex)
                 ph_xhue = pg.pairwise_tests(data=df, **kwargs)
                 ph_huex = pg.pairwise_tests(data=df, **kwargs_2)
@@ -49,13 +52,12 @@ class PostHoc(Assumptions):
                 ph_x = pg.pairwise_tests(data=df, **kwargs)
                 PH_dict[key] = ph_x
 
-        PH = pd.concat(PH_dict, keys=PH_dict.keys(), names=self.factors_rowcol_list)
-        return PH
+        return pd.concat(PH_dict, keys=PH_dict.keys(), names=self.factors_rowcol_list)
 
     def _enhance_PH(self, PH: pd.DataFrame) -> pd.DataFrame:
         return PH
 
-    # ... T TEST ..................................................#
+    # ... Pairwise TESTs ..................................................#
 
     def test_pairwise(
         self, paired=True, parametric=True, subject=None, **user_kwargs
@@ -75,10 +77,10 @@ class PostHoc(Assumptions):
             assert (self.subject is not None) or (
                 subject is not None
             ), "No subject column specified"
-            kwargs["within"] = list(self.factors_xhue)
+            kwargs["within"] = self.factors_xhue
             kwargs["subject"] = self.subject if self.subject else subject
         else:
-            kwargs["between"] = list(self.factors_xhue)
+            kwargs["between"] = self.factors_xhue
 
         # * Add user kwargs
         kwargs.update(self.STANDARD_KWS)
@@ -91,30 +93,110 @@ class PostHoc(Assumptions):
         return PH
 
 
-# %% Get Data and make DataAnalysis object
+# %% make iterator
+from plotastic.analysis import Analysis
+
+DF, dims = ut.load_dataset("tips")
+
+DA = Analysis(data=DF, dims=dict(y="tip", x="size-cut"), verbose=False)
+# DA = PostHoc(data=DF, dims=dict(y="tip", x="size-cut"), verbose=True)
+
+
+# %%Automatic testing
+
+# ! PostHoc does not support dimensions that produce empty groups in dataframe
+dimses_tips = [
+    # dict(y="tip", x="day", hue="sex", col="smoker", row="time"), # ! these make empty groups
+    # dict(y="tip", x="sex", hue="day", col="smoker", row="time"),
+    # dict(y="tip", x="sex", hue="day", col="time", row="smoker"),
+    dict(y="tip", x="size-cut", hue="smoker", col="sex", row="time"),
+    dict(y="tip", x="size-cut", hue="smoker", col="sex"),
+    dict(y="tip", x="size-cut", hue="smoker"),
+    dict(y="tip", x="size-cut"),
+]
+
+
+dimses_fmri = [
+    dict(y="signal", x="timepoint", hue="event", col="region"),
+    dict(y="signal", x="timepoint", hue="region", col="event"),
+    dict(y="signal", x="timepoint", hue="region"),
+    dict(y="signal", x="timepoint", hue="event"),
+    dict(y="signal", x="timepoint"),
+]
+
+
+def tester_tips(DF, dims):
+    DA = PostHoc(data=DF, dims=dims, verbose=True)
+    DA.catplot()
+    DA.test_pairwise(paired=False)
+
+
+def tester_fmri(DF, dims):
+    DA = PostHoc(data=DF, dims=dims, verbose=True, subject="subject")
+    DA.test_pairwise(paired=True)
+
+
+DF, dims = ut.load_dataset("tips")
+for dim in dimses_tips:
+    print("\n !!!", dim)
+    tester_tips(DF, dim)
 
 DF, dims = ut.load_dataset("fmri")
-DA = PostHoc(data=DF, dims=dims, subject="subject")
+for dim in dimses_fmri:
+    print("\n !!!", dim)
+    tester_tips(DF, dim)
 
 
-# %%
-DA.test_pairwise(paired=False, padjust="bonf", return_desc=False)
+# # %% test for dataset fmri
 
-# %%
-DA.test_multiple_t(padjust="bonf")
+# DF, dims = ut.load_dataset("fmri")
+# DA = PostHoc(
+#     data=DF,
+#     dims=dims,
+#     subject="subject",
+#     verbose=True,
+# )
+# # DA.data_describe()
 
-# %%
+# DA.test_pairwise(
+#     paired=True,
+#     padjust="bonf",
+#     subject="subject",
+#     return_desc=False,
+# )
 
-pg.pairwise_tests(
-    data=DF,
-    dv="signal",
-    # between=[dims["x"], dims["hue"]],
-    within=[dims["x"], dims["hue"]],
-    between=dims["col"],
-    subject="subject",
-    parametric=True,
-    padjust="bh",
-    nan_policy="pairwise",
-)
+
+# # %%  test for dataset tips
+
+# DF, dims = ut.load_dataset("tips")
+# DA = PostHoc(
+#     data=DF,
+#     dims=dims,
+#     subject="day",
+#     verbose=True,
+# )
+# # DA.data_describe()
+
+# DA.test_pairwise(
+#     paired=False,  # ! If using paired, but table is not paired, it will throw a cryptic error "AssertionError: The T-value must be a int or a float."
+#     padjust="bonf",
+#     # subject="subject",
+#     return_desc=False,
+# )
+
+
+# %% test with pingouin
+
+# pg.pairwise_tests(
+#     data=DF,
+#     dv="signal",
+#     # between=[dims["x"], dims["hue"]],
+#     within=[dims["x"], dims["hue"]],
+#     between=dims["col"],
+#     subject="subject",
+#     parametric=True,
+#     padjust="bh",
+#     nan_policy="pairwise",
+# )
 
 # %%

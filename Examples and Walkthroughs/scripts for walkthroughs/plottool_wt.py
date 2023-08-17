@@ -256,7 +256,7 @@ PT.edit_x_ticklabels_snip()
 
 
 def tester(DF, dims):
-    PT = PlotTool(data=DF, dims=dims)  # .switch("x", "col")
+    PT = PlotTool(data=DF, dims=dims, verbose=True)  # .switch("x", "col")
 
     PT: PlotTool = (
         PT.subplots(sharey=True)
@@ -291,6 +291,7 @@ dimses = [
     dict(y="tip", x="sex", hue="day", row="size-cut"),
     dict(y="tip", x="sex", hue="day"),
     dict(y="tip", x="sex"),
+    dict(y="tip", x="size-cut"),
 ]
 
 DF, dims = ut.load_dataset("tips")
