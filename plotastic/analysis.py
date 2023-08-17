@@ -154,17 +154,44 @@ class Analysis:
         return [c for c in self.data.columns if c not in self.factors_all]
 
     @property
-    def factors_xhue(self) -> str | list[str]:
+    def factors_xhue(self) -> str | tuple[str]:
         if self.dims.hue:
-            xhue = [self.dims.x, self.dims.hue]
+            xhue = (self.dims.x, self.dims.hue)
         else:
             xhue = self.dims.x
         return xhue
 
+    # @property
+    # def factors_huex(self) -> str | tuple[str]:
+    #     """
+    #     When within/between/factors has two elements, it DOES matter in which order you post them.
+    #     Usually, multiple t-tests don't always compare two groups coming from some combination of factors and levels, since they assume that these combinations don't make sense, and sometimes they really don't.
+    #     We still want to be able to get every combination and do this by simply switching the order of factors.
+    #     This allows us to compare e.g. not just every 'treatment type' per 'timepoint', but also every 'timepoint' per 'treatment type'.
+    #     """
+    #     if self.dims.hue:
+    #         xhue = (self.dims.hue, self.dims.x)
+    #     else:
+    #         xhue = self.dims.x
+    #     return xhue
+
+    # @property
+    # def factors_xhue_huex(self) -> tuple[str] | tuple[tuple[str]]:
+    #     """Makes sure that x is not present twice in the list if no hue is present"""
+    #     return tuple(set(self.factors_xhue, self.factors_huex))
+
+    # @property
+    # def factors_xhue_list(self) -> list[str]:
+    #     if self.dims.hue:
+    #         xhue = [self.dims.x, self.dims.hue]
+    #     else:
+    #         xhue = [self.dims.x]
+    #     return xhue
+
     @property
-    def factors_rowcol(self) -> str | list[str] | None:
+    def factors_rowcol(self) -> str | tuple[str] | None:
         if self.dims.row and self.dims.col:
-            rowcol = [self.dims.row, self.dims.col]
+            rowcol = (self.dims.row, self.dims.col)
         elif self.dims.row:
             rowcol = self.dims.row
         elif self.dims.col:
@@ -174,7 +201,7 @@ class Analysis:
         return rowcol
 
     @property
-    def factors_rowcol_nested(self) -> str | list[str] | None:
+    def factors_rowcol_list(self) -> list[str]:
         if self.dims.row and self.dims.col:
             rowcol = [self.dims.row, self.dims.col]
         elif self.dims.row:

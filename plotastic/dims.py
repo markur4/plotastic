@@ -6,48 +6,48 @@ from copy import copy, deepcopy
 
 
 # TODO maybe refactor this to contain
-class Dimension:
-    def __init__(
-        self, name: str, scale_of_measurement: Literal["nominal", "ordinal", "cardinal"]
-    ) -> "Dimension":
-        """_summary_
+# class Dimension:
+#     def __init__(
+#         self, name: str, scale_of_measurement: Literal["nominal", "ordinal", "cardinal"]
+#     ) -> "Dimension":
+#         """_summary_
 
-        Args:
-            name (str): _description_
-            scale_of_measurement (str):
-            (https://en.wikipedia.org/wiki/Level_of_measurement)
-            What's the scale of measurement?
-            * Nominal data:
-                * Categorical data that has no order
-                * e.g. colors, names, etc.
-            * Ordinal data:
-                * Categorical data that has order
-                * e.g. grades, sizes, etc.
-                * This works independently from ordered pd.Categorical type. That is used to place plots in the right order.
-            * Cardinal data:
-                * Numerical data that has order
-                * Three types: interval, ratio, and absolute
-                * Don't let them confuse you. It's an old scale and is often contested
-                * Interval data:
-                    * Numerical data that has order and equal intervals
-                    * e.g. temperature [°C], dates, etc.
-                * Ratio data:
-                    * Numerical data that has order, equal intervals, and a true zero
-                    * Might not have a unit, since it was divided by itself
-                    * e.g.  temperature [Kelvin], height, weight, etc.
-                * Absolute data:
-                    * Numerical data that has order, equal intervals, a true zero, and an absolute scale
+#         Args:
+#             name (str): _description_
+#             scale_of_measurement (str):
+#             (https://en.wikipedia.org/wiki/Level_of_measurement)
+#             What's the scale of measurement?
+#             * Nominal data:
+#                 * Categorical data that has no order
+#                 * e.g. colors, names, etc.
+#             * Ordinal data:
+#                 * Categorical data that has order
+#                 * e.g. grades, sizes, etc.
+#                 * This works independently from ordered pd.Categorical type. That is used to place plots in the right order.
+#             * Cardinal data:
+#                 * Numerical data that has order
+#                 * Three types: interval, ratio, and absolute
+#                 * Don't let them confuse you. It's an old scale and is often contested
+#                 * Interval data:
+#                     * Numerical data that has order and equal intervals
+#                     * e.g. temperature [°C], dates, etc.
+#                 * Ratio data:
+#                     * Numerical data that has order, equal intervals, and a true zero
+#                     * Might not have a unit, since it was divided by itself
+#                     * e.g.  temperature [Kelvin], height, weight, etc.
+#                 * Absolute data:
+#                     * Numerical data that has order, equal intervals, a true zero, and an absolute scale
 
-        Returns:
-            Dimension: _description_
-        """
-        # * "nominal", "ordinal", "interval", "ratio
+#         Returns:
+#             Dimension: _description_
+#         """
+#         # * "nominal", "ordinal", "interval", "ratio
 
-        self.name = name
-        self.som = scale_of_measurement
+#         self.name = name
+#         self.som = scale_of_measurement
 
-    #
-    #
+#     #
+#     #
 
 
 class Dims:

@@ -21,7 +21,7 @@ pip install git+https://github.com/markur4/plotastic.git
 
 1. **🧮 Import & Prepare your pandas DataFrame**
 2. **🔀 Make a DataAnalysis Object**
-   - `DataAnalysis(DataFrame, x, y, hue, row, col)`
+   - `DataAnalysis(DataFrame, dims={x, y, hue, row, col})`
 3. **📊 Plot figure**
    - Print ready to use matplotlib snippets (kinda like Copilot, but tested!) ... 
    - ... or execute automated functions!
@@ -33,14 +33,25 @@ pip install git+https://github.com/markur4/plotastic.git
 
 
 
+## Statistical Anatomy of a Plotastic Plot 📊
+
+- Every Data is separable into seaborn's `x`, `y`, `hue`, `row`, `col` dimensions
+- These dimensions are assigned to statistical terms:
+  - `y` is the ***dependent variable*** (***DV***)
+  - `x` and `hue` are ***independent variables*** (***IV***) and are treated as ***within/between factors*** (categorical variables)
+  - `row` and `col` are ***grouping variables*** (categorical variables)
+  - A `subject` may be specified for within/paired study designs (categorical variable)
+- For each level of `row` or `col` (or for each combination of `row`- and `col` levels), statistical tests will be performed with regards to the two-factors `x` and `hue`
+- Example with ANOVA:
+  -  If `x = "day"`, `hue = "gender"`, `row = "smoker"`, `col = "age-group"`, then for each level of `smoker` and `age-group` (e.g. `smoker: "yes"` and `age-group: "young"`), a *two-way ANOVA* will be performed with `day` and `gender` as factors.
+  - Three-way ANOVAs are not possible (yet), since that would require setting e.g. `col` as the third factor, or implementing another dimension (e.g. `hue2`).
 
 
 
-
-## Features ⚙️
+## Feature List ⚙️
 
 <details>
-<summary>⚙️ Features (click to unfold) </summary>
+<summary>⚙️ Feature List (click to unfold) </summary>
 
 ### Implemented
 
@@ -80,7 +91,7 @@ pip install git+https://github.com/markur4/plotastic.git
 
 </details>
 
-## Structure of Plotastic 🌳
+## Internal Structure of Plotastic 🌳
 
 
 <details>
