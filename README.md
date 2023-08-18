@@ -151,7 +151,7 @@ classDiagram
       switch(*keys, **kwargs inplace: bool =False)
    }
 
-   class Analysis {
+   class DimsAndLevels {
 
       data: pd.DataFrame
       dims: Dims
@@ -173,18 +173,18 @@ classDiagram
       catplot(kind="strip") -> sns.FacetGrid
       ....()
    }
-   click Analysis href "https://github.com/markur4/plotastic/blob/main/plotastic/analysis.py" "analysis.py"
+   click DimsAndLevels href "https://github.com/markur4/plotastic/blob/main/plotastic/DimsAndLevels.py" "DimsAndLevels.py"
   
-   pd_DataFrame *-- Analysis
-   Dims *-- Analysis
+   pd_DataFrame *-- DimsAndLevels
+   Dims *-- DimsAndLevels
 
 
 
-   Analysis <|-- PlotTool
+   DimsAndLevels <|-- PlotTool
    %%Analysis <|-- Assumptions
    %%Analysis <|-- Omnibus
    %%Analysis <|-- PostHoc
-   Analysis <|-- Assumptions
+   DimsAndLevels <|-- Assumptions
 
 
    %% STATISTICS #......................................................................................
