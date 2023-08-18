@@ -189,7 +189,7 @@ classDiagram
    }
   click DataFrameTool href "https://github.com/markur4/plotastic/blob/main/plotastic/dataframetool.py" "DimsAndLevels.py"
 
-   DataFrameTool <|-- DimsAndLevels
+   DimsAndLevels <|-- DataFrameTool
    DataFrameTool <|-- PlotTool
    %%Analysis <|-- Assumptions
    %%Analysis <|-- Omnibus
