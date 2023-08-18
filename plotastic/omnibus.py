@@ -1,5 +1,5 @@
 import pandas as pd
-from plotastic.analysis import Analysis
+from plotastic.dimsandlevels import DimsAndLevels
 from plotastic.assumptions import Assumptions
 
 

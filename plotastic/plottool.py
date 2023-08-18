@@ -22,7 +22,7 @@ import seaborn as sns
 
 import markurutils as ut
 
-from plotastic.analysis import Analysis
+from plotastic.dimsandlevels import DimsAndLevels
 
 if TYPE_CHECKING:
     import numpy as np
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 # %% Class: PlotTool ...................................................................................
 
 
-class PlotTool(Analysis):
+class PlotTool(DimsAndLevels):
     SNS_FUNCS = {
         "bar": sns.barplot,
         "point": sns.pointplot,

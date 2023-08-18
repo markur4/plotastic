@@ -11,7 +11,7 @@ from IPython.display import display
 
 import plotastic as plst
 
-from plotastic.analysis import Analysis
+from plotastic.analysis import DimsAndLevels
 from plotastic.plothelper import PlotHelper
 
 
@@ -26,7 +26,7 @@ print(DIMS)
 
 # %%
 ### Make Analysis Object
-A = Analysis(data=DF, dims=DIMS, title="Tips Analysis", verbose=True)
+A = DimsAndLevels(data=DF, dims=DIMS, title="Tips Analysis", verbose=True)
 # %%
 ### Show those groups that are empty
 A.data_get_empty_groupkeys()

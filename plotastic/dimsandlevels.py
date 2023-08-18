@@ -55,7 +55,7 @@ def catchstate(df, var_name: str = "df"):
 # %% Class Analysis ..........................................................
 
 
-class Analysis:
+class DimsAndLevels:
     def __str__(self):
         # d = self.__dict__
         D = {
@@ -94,7 +94,7 @@ class Analysis:
         verbose=False,
         # levels_ignore: list[tuple[str]] = None,
         # som: dict[str, str] = None,
-    ) -> Analysis:
+    ) -> DimsAndLevels:
         """_summary_
 
         Args:
@@ -890,7 +890,7 @@ class Analysis:
     # !
     def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
-    ) -> Analysis:
+    ) -> DimsAndLevels:
         a = self if inplace else copy(self)
 
         # * NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply
@@ -912,7 +912,7 @@ class Analysis:
         title: str = None,  # type: ignore
         inplace=False,
         verbose=True,
-    ) -> Analysis:
+    ) -> DimsAndLevels:
         """Redefines values of Analysis.dims (y,x,hue,row,col) and also title,"""
 
         ### HANDLE COPY"""
@@ -958,7 +958,7 @@ class Analysis:
         title: str = None,
         inplace=False,
         verbose=True,
-    ) -> Analysis:
+    ) -> DimsAndLevels:
         """Same as `self.update_analysis`, just with inplace=True"""
 
         return self.set(
@@ -996,7 +996,7 @@ class Analysis:
 
 
 def tester(DF, dims):
-    A = Analysis(data=DF, dims=dims, verbose=True)  # .switch("x", "col")
+    A = DimsAndLevels(data=DF, dims=dims, verbose=True)  # .switch("x", "col")
 
 
 dimses = [

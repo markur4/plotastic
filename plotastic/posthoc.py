@@ -94,11 +94,11 @@ class PostHoc(Assumptions):
 
 
 # %% make iterator
-from plotastic.analysis import Analysis
+from plotastic.dimsandlevels import DimsAndLevels
 
 DF, dims = ut.load_dataset("tips")
 
-DA = Analysis(data=DF, dims=dict(y="tip", x="size-cut"), verbose=False)
+DA = DimsAndLevels(data=DF, dims=dict(y="tip", x="size-cut"), verbose=False)
 # DA = PostHoc(data=DF, dims=dict(y="tip", x="size-cut"), verbose=True)
 
 
