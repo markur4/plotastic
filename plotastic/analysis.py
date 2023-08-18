@@ -263,7 +263,7 @@ class Analysis:
 
     def get_factor_from_level(self, level: str, ret_notfound=None):
         """Gets the factor from a level"""
-        for factor, levels in self.levels_factor_dict.items():
+        for factor, levels in self.levels_dict_factor.items():
             if level in levels:
                 return factor
         ### If nothing returned, nothing was wound
@@ -290,18 +290,18 @@ class Analysis:
         else:
             return S.unique().tolist()
 
-    @property
-    def levels_factor_dict(self) -> dict:
+    @property  # * {"f1": [lvl1, lvl2], "f2": [lvl1, lvl2],}
+    def levels_dict_factor(self) -> dict:
         """Returns: {"f1": [lvl1, lvl2], "f2": [lvl1, lvl2],}"""
         return {
             factor: self.get_levels_from_column(colname=factor)
             for factor in self.factors_all
         }
 
-    @property
-    def levels_dim_dict(self) -> dict:
+    @property  # * {"row":[row_l1, row_l2, ...], "col":[c_l1, c_l2, ...], "hue":[...], "x":[...]}
+    def levels_dict_dim(self) -> dict:
         """Returns: {"row":[row_l1, row_l2, ...], "col":[c_l1, c_l2, ...], "hue":[...], "x":[...]}"""
-        D = self.levels_factor_dict
+        D = self.levels_dict_factor
         return {
             "row": D.get(self.dims.row, ""),
             "col": D.get(self.dims.col, ""),
@@ -309,21 +309,21 @@ class Analysis:
             "x": D.get(self.dims.x),
         }
 
-    @property
+    @property  # * [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]
     def levels_tuples(self) -> list[tuple]:
         """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]"""
-        return [tuple(l) for l in self.levels_factor_dict.values() if not l is None]
+        return [tuple(l) for l in self.levels_dict_factor.values() if not l is None]
 
-    @property
+    @property  # * [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2) ]
     def levels_tuples_rowcol(self):
         """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2) ]"""
         return [
             tuple(l)
-            for k, l in self.levels_factor_dict.items()
+            for k, l in self.levels_dict_factor.items()
             if (not l is None) and (k in ut.ensure_list(self.factors_rowcol))
         ]
 
-    @property
+    @property  # * (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
     def levels_xhue_flat(self) -> tuple:
         """Returns: (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)"""
         l = []
@@ -337,7 +337,7 @@ class Analysis:
                 [l.append(e) for e in S.unique()]
         return tuple(l)
 
-    @property
+    @property  # * (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
     def levels_rowcol_flat(self) -> tuple:
         """Returns: (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)"""
         l = []
@@ -354,7 +354,7 @@ class Analysis:
     #
     # ... Properties of Factors and Levels ............................................................................................
 
-    @property
+    @property  # * {"f1": "continuous", "f2": "category",}
     def factors_types(self) -> dict:
         """Returns: {"f1": "continuous", "f2": "category",}"""
         D = dict()
@@ -377,14 +377,14 @@ class Analysis:
     @property
     def len_rowlevels(self) -> int:
         if not self.dims.row is None:
-            return len(self.levels_factor_dict[self.dims.row])
+            return len(self.levels_dict_factor[self.dims.row])
         else:
             return 1  # * Used by subplots, we need minimum of one row
 
     @property
     def len_collevels(self) -> int:
         if not self.dims.col is None:
-            return len(self.levels_factor_dict[self.dims.col])
+            return len(self.levels_dict_factor[self.dims.col])
         else:
             return 1  # * Used by subplots, we need minimum of one col
 
@@ -446,7 +446,7 @@ class Analysis:
             if factor_from_input == "NOT_FOUND":
                 LVLS[factor_from_input] = lvls_from_input
             else:
-                LVLS[factor_from_input] = self.levels_factor_dict[factor_from_input]
+                LVLS[factor_from_input] = self.levels_dict_factor[factor_from_input]
 
         # LVLS = {factor: self.levels_factor_dict[factor] if not factor is 'NOT_FOUND' for factor in catdict.keys()}
 
@@ -524,7 +524,7 @@ class Analysis:
         print("     ", f"LEVELS IN DATA: ".rjust(15), "DEFINED BY USER?")
 
         input_lvl_flat = ut.flatten(input_lvls)
-        for factor, LVLs_from_COL in self.levels_factor_dict.items():
+        for factor, LVLs_from_COL in self.levels_dict_factor.items():
             for lvl_df in LVLs_from_COL:
                 if (
                     not factor in catdict.keys()
@@ -728,14 +728,14 @@ class Analysis:
     #
     # ... Iterate through DATA  .......................................................................................................'''
 
-    @property
+    @property  # * [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]
     def levelkeys_all(
         self,
     ) -> list[tuple]:  # ! refactored from 'levelkeys' -> 'levelkeys_all'
         """Returns: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]"""
         return [key for key in product(*self.levels_tuples)]
 
-    @property
+    @property  # * [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
     def levelkeys_rowcol(self) -> list[tuple | str]:
         """Returns: [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]"""
         return [
@@ -759,7 +759,7 @@ class Analysis:
         # * Make index with complete set of keys
         # * If only one factor, we need to use pd.Index instead of pd.MultiIndex
         if self.is_just_x:
-            index_new = pd.Index(data=self.levels_dim_dict["x"], name=self.dims.x)
+            index_new = pd.Index(data=self.levels_dict_dim["x"], name=self.dims.x)
         else:
             index_new = pd.MultiIndex.from_product(
                 iterables=self.levels_tuples, names=self.factors_all
@@ -782,8 +782,8 @@ class Analysis:
         # ut.pp(newDF)
         return newDF
 
-    @property
-    def data_iter__key_rowcol(self) -> Generator[tuple, pd.DataFrame]:
+    @property  # * >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
+    def data_iter__key_facet(self) -> Generator[tuple, pd.DataFrame]:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ..."""
         if self.factors_rowcol is None:
             # * If no row or col, return all axes and data
@@ -797,8 +797,8 @@ class Analysis:
                 df = grouped.get_group(key)
                 yield key, df
 
-    @property
-    def data_iter__key_rowcol_no_empty(self) -> Generator[tuple, pd.DataFrame]:
+    @property  # * >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
+    def data_iter__key_facet_no_empty(self) -> Generator[tuple, pd.DataFrame]:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ...
         Does not contain rows from empty groups"""
         if self.factors_rowcol is None:
@@ -811,13 +811,13 @@ class Analysis:
                 df = grouped.get_group(key)
                 yield key, df
 
-    @property
+    @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
     def data_iter__key_allgroups(self):
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ..."""
         for key, df in self.data_ensure_allgroups.groupby(self.factors_all):
             yield key, df
 
-    @property
+    @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
     def data_iter__key_allgroups_no_empty(self):
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ...
         SKIPS EMPTY GROUPS!"""

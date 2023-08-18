@@ -130,7 +130,7 @@ class PlotTool(Analysis):
     #
     # * NESTED / FLAT....................................#
 
-    @property
+    @property  # * [[ax11, ax12], [ax21, ax22]]
     def axes_nested(self) -> np.ndarray:
         """Always returns a 2D nested array of axes, even if there is only one row or column."""
         if self.dims.row and self.dims.col:  # * both row and col
@@ -140,7 +140,7 @@ class PlotTool(Analysis):
         else:  # * Single figure
             return np.array([self.axes]).reshape(1, 1)
 
-    @property
+    @property  # * [ax11, ax12, ax21, ax22]
     def axes_flat(self) -> np.ndarray:
         """Always returns a 1D flattened array of axes, regardless of row, column, or single figure."""
         return self.axes_nested.flatten()
@@ -148,7 +148,7 @@ class PlotTool(Analysis):
     #
     # * Associate with Keys ....................................#
 
-    @property
+    @property  # * >>> (R_lvl1, C_lvl1), ax11 >>> (R_lvl1, C_lv2), ax12 >>> (R_lvl2, C_lvl1), ax21 >> ...
     def axes_iter__keys_ax(self):
         """Returns: >> (R_lvl1, C_lvl1), ax11 >> (R_lvl1, C_lv2), ax12 >> (R_lvl2, C_lvl1), ax21 >> ..."""
         if self.factors_rowcol is None:
@@ -161,29 +161,29 @@ class PlotTool(Analysis):
     #
     # * Associate with Rowcol   ................................#
 
-    @property
+    @property  # * row_lvl1, (ax11, ax21, ...) >>> row_lvl2, (ax12, ax22, ...) >>> ...
     def axes_iter__row_axes(self):
         """Returns: row_lvl1, (ax11, ax21, ...) >> row_lvl2, (ax12, ax22, ...) >> ..."""
-        for rowkey, axes in zip(self.levels_dim_dict["row"], self.axes_nested):
+        for rowkey, axes in zip(self.levels_dict_dim["row"], self.axes_nested):
             yield rowkey, axes
 
-    @property
+    @property  # *  col_lvl1, (ax11, ax21, ...) >>> col_lvl2, (ax12, ax22, ...) >>> ...
     def axes_iter__col_axes(self):
         """Returns: col_lvl1, (ax11, ax21, ...) >> col_lvl2, (ax12, ax22, ...) >> ..."""
-        for colkey, axes in zip(self.levels_dim_dict["col"], self.axes_nested.T):
+        for colkey, axes in zip(self.levels_dict_dim["col"], self.axes_nested.T):
             yield colkey, axes
 
     #
     # * Data  ..................................................#
 
-    @property
+    @property  # * >>> ax11, df11 >>> ax12, df12 >>> ax21, df21 >>> ...
     def axes_iter__ax_df(self):
         """Returns: >> (ax11, df11) >> (ax12, df12) >> (ax21, df21) >> ..."""
         if self.factors_rowcol is None:
             yield self.axes, self.data  # * If no row or col, return all axes and data
         else:
             for (key_ax, ax), (key_df, df) in zip(
-                self.axes_iter__keys_ax, self.data_iter__key_rowcol
+                self.axes_iter__keys_ax, self.data_iter__key_facet
             ):
                 assert (
                     key_df == key_ax
@@ -197,26 +197,26 @@ class PlotTool(Analysis):
     #
     # * Selective   ............................................#
 
-    @property
+    @property  # * ax11 >>> ax12 >>> ax21 >>> ax22 >>> ...
     def axes_iter_leftmost(self):
         """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
         for row in self.axes_nested:
             yield row[0]
 
-    @property
+    @property  # * >> axes excluding leftmost column
     def axes_iter_notleftmost(self):
         """Returns: >> axes excluding leftmost column"""
         for row in self.axes_nested:
             for ax in row[1:]:
                 yield ax
 
-    @property
+    @property  # * ax31 >>> ax32 >>> ax33 >>> ax34 >>> ...
     def axes_iter_lowerrow(self):
         """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
         for ax in self.axes_nested[-1]:
             yield ax
 
-    @property
+    @property  # * >> axes excluding lowest row
     def axes_iter_notlowerrow(self):
         """Returns: >> axes excluding lowest row"""
         for row in self.axes_nested[:-1]:
@@ -650,8 +650,8 @@ class PlotTool(Analysis):
             notlowerrow (list): x-axis ticklabels for not-lower row of axes
             etc.
         """
-        notlowerrow = notlowerrow or self.levels_dim_dict["x"]
-        lowerrow = lowerrow or self.levels_dim_dict["x"]
+        notlowerrow = notlowerrow or self.levels_dict_dim["x"]
+        lowerrow = lowerrow or self.levels_dict_dim["x"]
 
         kws = dict(
             rotation=rotation,  # * Rotation in degrees
@@ -671,14 +671,14 @@ class PlotTool(Analysis):
 
     def edit_x_ticklabels_snip(self) -> str:
         s = ""
-        s += f"notlowerrow = {self.levels_dim_dict['x']} \n"
-        s += f"lowerrow = {self.levels_dim_dict['x']} \n"
+        s += f"notlowerrow = {self.levels_dict_dim['x']} \n"
+        s += f"lowerrow = {self.levels_dict_dim['x']} \n"
         s += "kws = dict( \n"
         s += "\trotation=0, #* Rotation in degrees \n"
         s += "\tha='center', #* Horizontal alignment [ 'center' | 'right' | 'left' ] \n"
         s += "\tva='top', #* Vertical Alignment   [ 'center' | 'top' | 'bottom' | 'baseline' ] \n"
         s += ") \n"
-        s += f"ticks = {[i for i in range(len(self.levels_dim_dict['x']))]} \n"
+        s += f"ticks = {[i for i in range(len(self.levels_dict_dim['x']))]} \n"
         s += "for ax in DA.axes_iter_notlowerrow: \n"
         s += "\tax.set_xticks(ticks=ticks, labels=notlowerrow, **kws) \n"
         s += "\tax.tick_params(axis='x', pad=1) #* Sets distance to figure \n"
