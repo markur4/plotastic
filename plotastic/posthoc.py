@@ -20,8 +20,8 @@ class PostHoc(Assumptions):
     )
 
     # ... __INIT__ .......................................................#
-    def __init__(self, **analysis_kws):
-        super().__init__(**analysis_kws)
+    def __init__(self, **dataframetool_kws):
+        super().__init__(**dataframetool_kws)
 
     # ... Base functions ..................................................#
 
@@ -127,7 +127,7 @@ dimses_fmri = [
 
 def tester_tips(DF, dims):
     DA = PostHoc(data=DF, dims=dims, verbose=True)
-    DA.catplot()
+    # DA.catplot()
     DA.test_pairwise(paired=False)
 
 

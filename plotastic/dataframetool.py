@@ -29,7 +29,7 @@ class DataFrameTool(DimsAndLevels):
         subject: str = None,
         # transform=None
         verbose=False,
-        **dims_and_levels_kws,
+        **dims_data_kws,
     ):
         """
         _summary_
@@ -45,9 +45,12 @@ class DataFrameTool(DimsAndLevels):
             PlotTool: _description_
         """
         ### Inherit from DimsAndLevels
-        super().__init__(**dims_and_levels_kws)
+        super().__init__(**dims_data_kws)
 
+        ### Attributes
+        # * to make columns categorical (and exclude levels, if unspecified)
         self.user_levels = levels
+        # * for paired analysis
         self.subject = subject
 
         # ### Initialize a dataframe that contains  groups for every combination of factor levels (with dv = N)

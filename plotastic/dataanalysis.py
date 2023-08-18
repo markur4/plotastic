@@ -41,10 +41,10 @@ class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
     ):
         ### Inherit
         # * verbosity false, since each subclass can test its own DataFrame
-        analysis_kws = dict(
+        dataframetool_kws = dict(
             data=data, dims=dims, subject=subject, levels=levels, verbose=False
         )
-        super().__init__(**analysis_kws)
+        super().__init__(**dataframetool_kws)
 
         self._title = title
         self.filer = ut.Filer(title=title)
