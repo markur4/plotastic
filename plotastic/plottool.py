@@ -13,7 +13,6 @@ from pathlib import Path
 
 
 import numpy as np
-import pandas as pd
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -22,11 +21,12 @@ import seaborn as sns
 
 import markurutils as ut
 
-from plotastic.dimsandlevels import DimsAndLevels
+from plotastic.dataframetool import DataFrameTool
 
 if TYPE_CHECKING:
     import numpy as np
-    import io
+
+    # import io
 
     # from matplotlib import axes
 
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 # %% Class: PlotTool ...................................................................................
 
 
-class PlotTool(DimsAndLevels):
+class PlotTool(DataFrameTool):
     SNS_FUNCS = {
         "bar": sns.barplot,
         "point": sns.pointplot,

@@ -5,7 +5,7 @@ import markurutils as ut
 import pandas as pd
 import pingouin as pg
 
-# from plotastic.analysis import Analysis
+
 from plotastic.assumptions import Assumptions
 
 
@@ -94,11 +94,11 @@ class PostHoc(Assumptions):
 
 
 # %% make iterator
-from plotastic.dimsandlevels import DimsAndLevels
+from plotastic.dataframetool import DataFrameTool
 
 DF, dims = ut.load_dataset("tips")
 
-DA = DimsAndLevels(data=DF, dims=dict(y="tip", x="size-cut"), verbose=False)
+DA = DataFrameTool(data=DF, dims=dict(y="tip", x="size-cut"), verbose=False)
 # DA = PostHoc(data=DF, dims=dict(y="tip", x="size-cut"), verbose=True)
 
 

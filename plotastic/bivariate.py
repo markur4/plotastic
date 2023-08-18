@@ -2,11 +2,11 @@
 
 import pingouin as pg
 
-from plotastic.dimsandlevels import DimsAndLevels
+from plotastic.dataframetool import DataFrameTool
 
 # %%
 
 
-class Bivariate(DimsAndLevels):
-    def __init__(self, **analysis_kws):
-        super().__init__(**analysis_kws)
+class Bivariate(DataFrameTool):
+    def __init__(self, **dims_and_levels_kws):
+        super().__init__(**dims_and_levels_kws)

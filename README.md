@@ -167,25 +167,34 @@ classDiagram
       _factors_rowcol(property) [row,col]
       _vartypes(property) = dict(f1:'categorical', f2:'continuous', ...)
       _levels(property) = dict(f1:[l1, l2, ...], f2:[...], ...)
-      _hierarchy(property) = dict(ROW:[l1, l2, ...], COL:[...], HUE:[...], X:[...])
-      transform() -> Analysis
-      describe_data() -> pd.DataFrame
-      catplot(kind="strip") -> sns.FacetGrid
       ....()
    }
-   click DimsAndLevels href "https://github.com/markur4/plotastic/blob/main/plotastic/DimsAndLevels.py" "DimsAndLevels.py"
+   click DimsAndLevels href "https://github.com/markur4/plotastic/blob/main/plotastic/dimsandlevels.py" "DimsAndLevels.py"
   
    pd_DataFrame *-- DimsAndLevels
    Dims *-- DimsAndLevels
 
 
 
-   DimsAndLevels <|-- PlotTool
+
+   class DataFrameTool{
+      user_levels: dict =None
+      subject: str =None
+      ...
+      catplot(kind="strip") -> sns.FacetGrid
+      describe_data() -> pd.DataFrame
+      transform() -> Analysis
+      categorize() -> pd.DataFrame
+      ....()
+   }
+  click DataFrameTool href "https://github.com/markur4/plotastic/blob/main/plotastic/dataframetool.py" "DimsAndLevels.py"
+
+   DataFrameTool <|-- DimsAndLevels
+   DataFrameTool <|-- PlotTool
    %%Analysis <|-- Assumptions
    %%Analysis <|-- Omnibus
    %%Analysis <|-- PostHoc
-   DimsAndLevels <|-- Assumptions
-
+   DataFrameTool <|-- Assumptions
 
    %% STATISTICS #......................................................................................
 
@@ -418,7 +427,7 @@ flowchart TD
 
 <details>
 
-<summary>❗️ CLICK TO UNFOLD ❗️</summary>
+<summary>❗️ Disclaimer about Statistics (Click to unfold)</summary>
 
 
 
@@ -437,9 +446,11 @@ The author is not a dedicated statistician. He derives his knowledge from ...
 
 **🛑 plotastic can NOT ...**
 
-- ... test for multicolinearity (Absence of multicolinearity is required by ANOVA!)
-- ... teach you statistics, you need some basic knowledge
 - ... replace a professional statistician
+- ... teach you statistics, you need some basic knowledge (but is awesome for practicing)
+- ... test for multicolinearity (Absence of multicolinearity is required by ANOVA!)
+- ... perform stringent correction for multiple testing (e.g. bonferoni), as statistical tests are applied to sub-facets of the whole dataframe for each axes, which depends on the definition of x, hue, col, etc. Hence, corrected p-values might over-estimate the significance of your results. 
+
 
 ### Be **critical** and **responsible** with your statistical analysis!
 
