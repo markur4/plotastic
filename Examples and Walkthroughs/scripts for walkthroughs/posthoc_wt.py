@@ -35,8 +35,7 @@ PH.test_pairwise(
 
 PH.test_pairwise(
     # between=[dims["x"], dims["hue"]],
-    # within=[dims["x"], dims["hue"]],
-    within=["ddd", dims["hue"]],
+    within=[dims["x"], dims["hue"]],
     # between=dims["col"],
     subject="subject",
     parametric=True,

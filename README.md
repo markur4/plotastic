@@ -156,9 +156,6 @@ classDiagram
       data: pd.DataFrame
       dims: Dims
 
-      subject: str =None 
-      is_transformed: bool =False
-      ...
       title.setter()
       _NaNs(property) 
       %%_empty_groups(property)
@@ -180,7 +177,7 @@ classDiagram
    class DataFrameTool{
       user_levels: dict =None
       subject: str =None
-      ...
+      verbose: bool =False
       catplot(kind="strip") -> sns.FacetGrid
       describe_data() -> pd.DataFrame
       transform() -> Analysis
@@ -194,7 +191,7 @@ classDiagram
    %%Analysis <|-- Assumptions
    %%Analysis <|-- Omnibus
    %%Analysis <|-- PostHoc
-   DataFrameTool <|-- Assumptions
+   DataFrameTool <|-- StatTest
 
    %% STATISTICS #......................................................................................
 
@@ -225,8 +222,24 @@ classDiagram
       ....()
    }
 
-   class Assumptions{
+   class StatTest{
+      <<BaseObject>>
+      ALPHA: float = 0.05
+      ALPHA_TOLERANCE: float = 0.075
       results: StatResults 
+      ...
+      set_alpha()
+      set_alpha_tolerance()
+      _p_to_stars(p: float) -> str
+      _effectsize_to_words(effectsize: float) -> str
+      ....()
+
+
+   }
+   StatResults *-- StatTest
+
+
+   class Assumptions{
       ...
       check_normality()
       check_normality_snip()
@@ -238,7 +251,7 @@ classDiagram
       check_all_assumptions_snip()
       ....()
    }
-   StatResults *-- Assumptions
+   StatTest <|-- Assumptions
 
    class Omnibus{
       ...

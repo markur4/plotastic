@@ -2,6 +2,7 @@
 # %% Import Modules
 import markurutils as ut
 
+import numpy as np
 import pandas as pd
 import pingouin as pg
 
@@ -23,7 +24,7 @@ class PostHoc(Assumptions):
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
 
-    # ... Base functions ..................................................#
+    # ... Base function ..................................................#
 
     @ut.ignore_warnings
     def _base_pairwise_tests(self, **kwargs) -> pd.DataFrame:
@@ -59,13 +60,15 @@ class PostHoc(Assumptions):
 
         return pd.concat(PH_dict, keys=PH_dict.keys(), names=self.factors_rowcol_list)
 
-    def _enhance_PH(self, PH: pd.DataFrame) -> pd.DataFrame:
-        return PH
-
     # ... Pairwise TESTs ..................................................#
 
     def test_pairwise(
-        self, paired=True, parametric=True, subject=None, **user_kwargs
+        self,
+        paired=True,
+        parametric=True,
+        subject=None,
+        only_contrast=False,
+        **user_kwargs,
     ) -> pd.DataFrame:
         """Interface that sorts arguments, executes pairwise tests and adds extra features to PH table"""
 
@@ -94,40 +97,143 @@ class PostHoc(Assumptions):
         # * Make sure the specified factors are present
         if "within" in kwargs:
             assert all(
-                [f in self.factors_xhue for f in kwargs["within"]]
+                [f in self.factors_all for f in ut.ensure_list(kwargs["within"])]
             ), f"Argument 'within' contains unknown columns ({kwargs['within']} should be like one of {self.factors_all}"
         if "between" in kwargs:
             assert all(
-                [f in self.factors_xhue for f in kwargs["between"]]
-            ), f"Argument 'between' contains unknown columns ({kwargs['between']} should be like one of {self.factors_all}"
+                [f in self.factors_all for f in ut.ensure_list(kwargs["between"])]
+            ), f"Argument 'between' contains unknown columns {kwargs['between']} should be like one of {self.factors_all}"
 
         ### Make PH table
         PH = self._base_pairwise_tests(**kwargs)
-        PH = self._enhance_PH(PH)
+        PH = self._enhance_PH(PH, only_contrast=only_contrast)
+
+        ### Save result
+        self.results.DF_posthoc = PH
 
         return PH
+
+    def _enhance_PH(self, PH: pd.DataFrame, only_contrast=True) -> pd.DataFrame:
+        ### Define Alpha
+        alpha = self.ALPHA
+        alpha_tolerance = self.ALPHA_TOLERANCE
+
+        ### Define column that contains p-values
+        # pcol = "p-unc" if padjust in ("none", None) else "p-corr"
+
+        ### EDIT PH
+        PH = PH.reset_index()
+
+        # * Add Stars
+        PH["**p-unc"] = PH["p-unc"].apply(self._p_to_stars, alpha=alpha)
+        if "p-corr" in PH.columns:
+            PH["**p-corr"] = PH["p-corr"].apply(self._p_to_stars, alpha=alpha)
+
+        # * Make Column for categorizing significance
+        PH["Sign."] = pd.cut(
+            PH["p-unc"],
+            bins=[0, alpha, alpha_tolerance, 1],
+            labels=["signif.", "toler.", False],
+        )
+        if "p-corr" in PH.columns:
+            PH["Sign."] = pd.cut(
+                PH["p-corr"],
+                bins=[0, alpha, alpha_tolerance, 1],
+                labels=["signif.", "toler.", False],
+            )
+
+        # * Make pairs
+        PH["pairs"] = PH.apply(self._level_to_pair, axis=1)
+
+        ### Check contrast
+        # * Optionally remove non-contrast comparisons
+        if only_contrast and self.dims.hue:
+            PH = PH[
+                PH["Contrast"].str.contains("*", regex=False)
+            ]  # <<<< OVERRRIDE PH, REMOVE NON-CONTRAST ROWS
+
+        # * Show if the pair crosses x or hue boundaries
+        if self.dims.hue:
+            PH["cross"] = PH.apply(self._detect_xhue_crossing, axis=1)
+        else:
+            PH["cross"] = "x"
+
+        ### Set new index
+        PH = PH.drop(columns=["level_1"]).set_index(
+            self.factors_rowcol_list + ["Contrast", "cross"]
+        )
+
+        return PH
+
+    # ... Pairing functions ..................................................#
+
+    def _level_to_pair(self, row: "pd.Series") -> tuple:
+        """converts the factor-columns of a posthoc table into a column of pairs"""
+
+        ### See if there are multiple factors
+        phInteract = " * " in row["Contrast"]
+
+        if not phInteract:
+            return row["A"], row["B"]
+        else:
+            levels = row[[self.dims.hue, self.dims.x]].tolist()
+            if pd.notna(
+                levels[0]
+            ):  # switch column if NaN, also check: if not math.isnan(factor)
+                lvl = levels[0]
+                pair = ((row["B"], lvl), (row["A"], lvl))
+            else:
+                lvl = levels[1]
+                pair = ((lvl, row["B"]), (lvl, row["A"]))
+        return pair
+
+    @staticmethod
+    def _detect_xhue_crossing(row: "pd.Series") -> str:
+        """
+        Detects if a pair ((DCN, F2), (DCN, F1)) is crossing x or hue boundaries
+        :param row:
+        :return:
+        """
+
+        """crossing Hue: ((x, hue1), (x, hue2))"""
+        """crossing X:   ((x1, hue), (x2, hue))"""
+
+        ### See if there are multiple factors
+        phInteract = " * " in row["Contrast"]
+
+        if not phInteract:
+            return "x"
+        else:
+            cross = np.nan
+            pair = row["pairs"]
+            if pair[0][0] == pair[1][0]:
+                cross = "hue"
+            if pair[0][1] == pair[1][1]:
+                cross = "x"
+            return cross
 
 
 # %% Import data and make PostHoc object
 
 
-DF, dims = ut.load_dataset("tips")
+DF, dims = ut.load_dataset("fmri")
 
-PH = PostHoc(data=DF, dims=dims, verbose=False)
+PH = PostHoc(data=DF, dims=dims, verbose=False, subject="subject")
 
 
 # %% test with pingouin
 
-# pg.pairwise_tests(
-#     data=DF,
-#     dv="signal",
-#     # between=[dims["x"], dims["hue"]],
-#     within=[dims["x"], dims["hue"]],
-#     between=dims["col"],
-#     subject="subject",
-#     parametric=True,
-#     padjust="bh",
-#     nan_policy="pairwise",
-# )
+ph = PH.test_pairwise(
+    # dv="signal",
+    # between=[dims["x"], dims["hue"]],
+    # within=[dims["x"], dims["hue"]],
+    # between=dims["col"],
+    # subject="subject",
+    parametric=True,
+    padjust="bh",
+    nan_policy="pairwise",
+)
+
+ut.pp(ph[ph["Sign."].isin(["signif."])]).head(70)
 
 # %%
