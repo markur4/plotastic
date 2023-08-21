@@ -40,7 +40,7 @@ class PostHoc(Assumptions):
         ### Perform Test
         # * Iterate over rows and columns
         PH_dict = {}
-        for key, df in self.data_iter__key_facet_no_empty:
+        for key, df in self.data_iter__key_facet_skip_empty: #* no empty means that empty groups are skipped
             # print(key)
             # ut.pp(df)
 

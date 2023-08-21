@@ -486,7 +486,7 @@ class DataFrameTool(DimsAndLevels):
                 yield key, df
 
     @property  # * >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
-    def data_iter__key_facet_no_empty(self) -> Generator:
+    def data_iter__key_facet_skip_empty(self) -> Generator:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ...
         Does not contain rows from empty groups"""
         if self.factors_rowcol is None:
@@ -500,13 +500,13 @@ class DataFrameTool(DimsAndLevels):
                 yield key, df
 
     @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
-    def data_iter__key_allgroups(self):
+    def data_iter__allkeys_groups(self):
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ..."""
         for key, df in self.data_ensure_allgroups.groupby(self.factors_all):
             yield key, df
 
     @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
-    def data_iter__key_allgroups_no_empty(self):
+    def data_iter__allkeys_groups_skip_empty(self):
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ...
         SKIPS EMPTY GROUPS!"""
         for key, df in self.data.groupby(self.factors_all):
