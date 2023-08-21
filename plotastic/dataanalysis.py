@@ -12,14 +12,7 @@ import pickle
 import pandas as pd
 
 import markurutils as ut
-
-# from analysis import Analysis
-
-# from assumptions import Assumptions
-from plotastic.multiplot import MultiPlot
-from plotastic.omnibus import Omnibus
-from plotastic.posthoc import PostHoc
-from plotastic.bivariate import Bivariate
+from plotastic.annotator import Annotator
 
 # from statresult import StatResult
 
@@ -27,9 +20,7 @@ from plotastic.bivariate import Bivariate
 # %% Class DataAnalysis
 
 
-class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
-    
-    
+class DataAnalysis(Annotator):
     def __init__(
         self,
         data: pd.DataFrame,
@@ -51,6 +42,8 @@ class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         if verbose:
             self.warn_about_empties_and_NaNs()
+            if subject:
+                self.warn_about_subjects_with_missing_data()
 
         # self.plot = plot
         ### statistics
@@ -175,3 +168,11 @@ class DataAnalysis(MultiPlot, Omnibus, PostHoc, Bivariate):
     #     new_manager.canvas.figure = fig  # * Associate it with the figure
     #     fig.set_canvas(new_manager.canvas)
     #     return fig
+
+# %%
+
+DF, DIMS = ut.load_dataset("fmri")
+DA = DataAnalysis(DF, DIMS)
+
+
+# %%

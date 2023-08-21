@@ -354,6 +354,17 @@ classDiagram
 
    %% DATAANALYSIS #......................................................................................
 
+   class Annotator{
+      ...
+      check_pairs()
+      annotate_pairwise()
+   }
+
+   MultiPlot <|-- Annotator
+   Omnibus <|-- Annotator
+   PostHoc <|-- Annotator
+   Bivariate <|-- Annotator
+
    class DataAnalysis{
 
       <<Interface>>
@@ -371,11 +382,7 @@ classDiagram
    }
    click DataAnalysis href "https://github.com/markur4/plotastic/blob/main/plotastic/dataanalysis.py" "dataanalysis.py"
 
-   MultiPlot <|-- DataAnalysis
-   Omnibus <|-- DataAnalysis
-   PostHoc <|-- DataAnalysis
-   Bivariate <|-- DataAnalysis
-
+  Annotator <|-- DataAnalysis
 
 
 

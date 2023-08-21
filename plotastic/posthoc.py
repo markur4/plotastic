@@ -216,24 +216,24 @@ class PostHoc(Assumptions):
 # %% Import data and make PostHoc object
 
 
-DF, dims = ut.load_dataset("fmri")
+# DF, dims = ut.load_dataset("fmri")
 
-PH = PostHoc(data=DF, dims=dims, verbose=False, subject="subject")
+# PH = PostHoc(data=DF, dims=dims, verbose=False, subject="subject")
 
 
 # %% test with pingouin
 
-ph = PH.test_pairwise(
-    # dv="signal",
-    # between=[dims["x"], dims["hue"]],
-    # within=[dims["x"], dims["hue"]],
-    # between=dims["col"],
-    # subject="subject",
-    parametric=True,
-    padjust="bh",
-    nan_policy="pairwise",
-)
+# ph = PH.test_pairwise(
+#     # dv="signal",
+#     # between=[dims["x"], dims["hue"]],
+#     # within=[dims["x"], dims["hue"]],
+#     # between=dims["col"],
+#     # subject="subject",
+#     parametric=True,
+#     padjust="bh",
+#     nan_policy="pairwise",
+# )
 
-ut.pp(ph[ph["Sign."].isin(["signif."])]).head(70)
+# ut.pp(ph[ph["Sign."].isin(["signif."])]).head(70)
 
 # %%

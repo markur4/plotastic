@@ -368,7 +368,7 @@ class DataFrameTool(DimsAndLevels):
                 print(key)
         else:
             print(
-                "✅ Data complete: All combinations of levels from selected factors are present in the Dataframe."
+                "✅ Data complete: All combinations of levels from selected factors are present in the Dataframe"
             )
 
         if len(hasNaN_df) > 0:
