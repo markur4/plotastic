@@ -271,7 +271,7 @@ class DataFrameTool(DimsAndLevels):
         Returns:
             _type_: sns.FacetGrid
         """
-        g = sns.catplot(kind=kind, data=self.data, **self.factors_as_kwargs)
+        g = sns.catplot(kind=kind, data=self.data, **self.factors_as_dict)
         plt.show()
         return g
 

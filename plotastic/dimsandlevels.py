@@ -2,6 +2,7 @@
 # %% Imports
 
 from __future__ import annotations
+
 # from nis import cat
 
 # from operator import index, le
@@ -20,6 +21,7 @@ from itertools import product
 
 # import numpy as np
 import pandas as pd
+
 # import seaborn as sns
 from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
@@ -104,20 +106,18 @@ class DimsAndLevels:
         """
         self.data = data
         self.dims = dims if type(dims) is Dims else Dims(**dims)
-        
-
 
     #
     #
     # ... List FACTORS .....................................................................................................'''
 
-    @property
+    @property  # * [row, col, hue, x]
     def factors_all(self) -> list[str]:
         F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
         return [e for e in F if (not e is None)]
 
-    @property
-    def factors_as_kwargs(self) -> dict:
+    @property  # * {"y": dims.y, "x": dims.x, "hue": dims.hue, "col": dims.col, "row": dims.row}
+    def factors_as_dict(self) -> dict:
         """
         gets the dimensions in forms of a dictinary to be passed onto seaborn functions
         :return:
@@ -127,7 +127,7 @@ class DimsAndLevels:
         return self.dims.asdict(incl_None=False)
         # return {dim: factor for dim, factor in self.dims.asdict().items() if not factor is None}
 
-    @property
+    @property  # * [col1, col7, col8]
     def columns_not_factor(self) -> list[str]:
         return [c for c in self.data.columns if c not in self.factors_all]
 
@@ -206,6 +206,7 @@ class DimsAndLevels:
     #
     # ... Retrieve FACTORS .....................................................................................................'''
 
+    # * input: Hue -> "smoke"
     def getfactors_from_dim(
         self, putative_factors: str | list[str,]
     ) -> str | list[str]:
@@ -243,11 +244,11 @@ class DimsAndLevels:
         elif ret_notfound == "raise":
             raise AssertionError(f"#! Level '{level}' not found in data.")
 
-    def get_rank_from_level(self, level: str):
-        """Gets the factor from a level"""
-        for rank, levels in self.hierarchy.items():
-            if level in levels:
-                return rank
+    # def get_rank_from_level(self, level: str):
+    #     """Gets the factor from a level"""
+    #     for rank, levels in self.hierarchy.items():
+    #         if level in levels:
+    #             return rank
 
     #
     # ... LEVELS ......................................................................................................'''
@@ -547,6 +548,3 @@ Also, I don't think I need it
 # for key, df in notskip():
 #     print(key, df)
 #     print()
-
-
-
