@@ -7,6 +7,7 @@ from xml.etree.ElementInclude import include
 
 import numpy as np
 import pandas as pd
+
 pd.options.mode.chained_assignment = None
 
 import markurutils as ut
@@ -20,6 +21,9 @@ from plotastic.bivariate import Bivariate
 
 
 class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
+    ### Types of group selection
+    _TYPES_SELECTION = tuple([str, bool] + ut.NUMERICAL_TYPES)
+
     # ... ­­init__ .....................................................................
 
     def __init__(self, **dataframetool_kws):
@@ -44,6 +48,12 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         :return:
         """
 
+        ### Define allowed types for elements of xhue
+        # * Dictionaries selects specific pairs, everything else selects all pairs containing that element.
+        # * Levels of xhue levels can be specified as string, int bool and all numpy numerical types.
+        types_allowed = tuple(list(self._TYPES_SELECTION) + [dict])
+        types_specific = self._TYPES_SELECTION
+
         ### Retrieve Levels
         LVLs = self.levels_xhue_flat
         LVLdict = self.levels_dict_factor
@@ -54,12 +64,6 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         ### If hue or x is specified, nothing must be checked as the complete x or hue will be included or excluded
         if xhue_selected in ("hue", "x"):
             return None
-
-        ### Define allowed types for elements of xhue
-        # * Dictionaries selects specific pairs, everything else selects all pairs containing that element.
-        # * Levels of xhue levels can be specified as string, int bool and all numpy numerical types.
-        types_allowed = tuple([str, bool, dict] + ut.NUMERICAL_TYPES)
-        types_specific = tuple([str, bool] + ut.NUMERICAL_TYPES)
 
         ### CHECK IF SELECTION IS CORRECT
         assert isinstance(xhue_selected, list), f"#! '{xhue_selected}' should be a list"
@@ -108,17 +112,16 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         :param rowcol_selected:
         :return:
         """
+        ### Define expected types for elements of rowcol
+        # * Tuples are used if both row and col are specified.
+        # * Row and col levels may be specified as strings, numericals, bools, etc.
+        types_allowed = tuple(self._TYPES_SELECTION + [tuple])
+        types_specific = self._TYPES_SELECTION
 
         ### Retrieve levels
         LVLs = self.levels_rowcol_flat
         LVLs_ROW = self.levels_dict_dim["row"]
         LVLs_COL = self.levels_dict_dim["col"]
-
-        ### Define expected types for elements of rowcol
-        # * Tuples are used if both row and col are specified.
-        # * Row and col levels may be specified as strings, numericals, bools, etc.
-        types_allowed = tuple([str, bool, tuple] + ut.NUMERICAL_TYPES)
-        types_specific = tuple([str, bool] + ut.NUMERICAL_TYPES)
 
         ### Warn user to specify both row and col explicitly, if both are present
         if len(self.factors_rowcol_list) == 2 and isinstance(rowcol_selected, str):
@@ -252,7 +255,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         for xhue in xhue_selected:
             """xhue should be a string or a dictionary
             (with an x-/hue-level as key and a tuple of two x-/hue-levels as value)"""
-            if isinstance(xhue, str):
+            if isinstance(xhue, self._TYPES_SELECTION):
                 """xhue should be one of levels_xhue"""
                 match = true_value if xhue in PAIR else 0
                 if match:
@@ -304,7 +307,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         match = np.nan
         for rowcol_selected, xhue_selected in rowcol_selection_dict.items():
             """{rowcol_selected} should be a tuple or string and one of {LVLs}"""  # #
-            if isinstance(rowcol_selected, str):
+            if isinstance(rowcol_selected, self._TYPES_SELECTION):
                 match_rc = rowcol_selected in ROWCOL
             elif isinstance(rowcol_selected, tuple):
                 """Facet-key '{rowcol_selected}' should have two strings
@@ -372,8 +375,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                 self._match_selected_rowcol,
                 rowcol_selection_dict=exclude_in_facet,
                 true_value="excl.",
-                axis=1
-                ,
+                axis=1,
             )
         return PH
 
@@ -469,7 +471,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         ### Save PH
         self.results.DF_posthoc = PH
-        
+
         ### Show DF if verbose
         if verbose:
             ut.pp(PH)
