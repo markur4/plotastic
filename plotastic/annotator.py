@@ -434,16 +434,6 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         ), "Posthoc not tested yet, please call .test_pairwise() first"
         PH = self.results.DF_posthoc
 
-        # * Assert presence of Plot
-        # assert (
-        #     not self. is "NOT TESTED"
-        # ), "Plot not tested yet, please call .test_pairwise() first"
-
-        ### Check user argument selection
-        self._check_excluded_included(
-            exclude, exclude_in_facet, include, include_in_facet
-        )
-
         ### Modify PH
         # * Reset Index for easy access
         PH.reset_index(inplace=True)
@@ -452,6 +442,16 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         if self.dims.hue:
             PH = PH.loc[PH["Contrast"].str.contains("*", regex=False), :]
         # ut.pp(PH)
+
+        # ### Assert presence of Plot
+        # assert (
+        #     not self. is "NOT TESTED"
+        # ), "Plot not tested yet, please call .test_pairwise() first"
+
+        ### Check user argument selection
+        self._check_excluded_included(
+            exclude, exclude_in_facet, include, include_in_facet
+        )
 
         ### Match Selection
         PH = self._match_excluded_included(
@@ -469,6 +469,9 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             axis=1,
         )
 
+        ### ANNOTATE
+        self._annotate(PH)
+
         ### Save PH
         self.results.DF_posthoc = PH
 
@@ -477,6 +480,25 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             ut.pp(PH)
 
         return self
+
+    def _annotate(self, PH):
+        for df, ax, ph in self.iter__df_ax_ph(PH):
+            ut.pp(df)
+            ut.pp(ph)
+            print(ax)
+
+    def iter__df_ax_ph(self, PH):
+        phG = PH.groupby(self.factors_rowcol)
+        dfD = self.data_ensure_allgroups.groupby(self.factors_rowcol)
+        axD = self.axes_dict
+
+        ### Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
+        for key in self.levelkeys_rowcol:
+            print(key)
+            ph = phG.get_group(key)
+            df = dfD.get_group(key)
+            ax = axD[key]
+            yield df, ax, ph
 
 
 # %%
@@ -504,7 +526,7 @@ AN = (
         # include_in_facet={"frontal": [0, "cue"], (0,1): [0, "cue"]}, # ! Correct error
         # include_in_facet={"frontal": [0, "cue"], "parietal": [0, "cue"]},
         # exclude_in_facet={"frontal": [2, "cue"], "parietal": [4, "stim"]},
-        verbose=True,
+        verbose=False,
     )
 )
 

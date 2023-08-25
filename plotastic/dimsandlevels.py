@@ -201,7 +201,7 @@ class DimsAndLevels:
         return not self.dims.row and not self.dims.col and not self.dims.hue
 
     @property
-    def is_just_xand_hue(self) -> bool:
+    def is_just_x_and_or_hue(self) -> bool:
         return not self.dims.row and not self.dims.col
 
     @property  # * {"f1": "continuous", "f2": "category",}
@@ -321,6 +321,24 @@ class DimsAndLevels:
             for k, l in self.levels_dict_factor.items()
             if (not l is None) and (k in ut.ensure_list(self.factors_rowcol))
         ]
+
+    @property  # * [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]
+    def levelkeys_all(
+        self,
+    ) -> list[tuple]:  # ! refactored from 'levelkeys' -> 'levelkeys_all'
+        """Returns: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]"""
+        return [key for key in product(*self.levels_tuples)]
+
+    @property  # * [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
+    def levelkeys_rowcol(self) -> list[tuple | str]:
+        """Returns: [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]"""
+        return [
+            key
+            if not len(key) == 1
+            else key[0]  # * If only one factor, string is needed, not a tuple
+            for key in product(*self.levels_tuples_rowcol)
+        ]
+
 
     @property  # * (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
     def levels_xhue_flat(self) -> tuple:

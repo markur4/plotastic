@@ -415,22 +415,6 @@ class DataFrameTool(DimsAndLevels):
     #
     # ... Iterate through DATA  .......................................................................................................'''
 
-    @property  # * [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]
-    def levelkeys_all(
-        self,
-    ) -> list[tuple]:  # ! refactored from 'levelkeys' -> 'levelkeys_all'
-        """Returns: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]"""
-        return [key for key in product(*self.levels_tuples)]
-
-    @property  # * [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
-    def levelkeys_rowcol(self) -> list[tuple | str]:
-        """Returns: [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]"""
-        return [
-            key
-            if not len(key) == 1
-            else key[0]  # * If only one factor, string is needed, not a tuple
-            for key in product(*self.levels_tuples_rowcol)
-        ]
 
     @property
     def data_ensure_allgroups(self) -> pd.DataFrame:
@@ -472,7 +456,7 @@ class DataFrameTool(DimsAndLevels):
     @property  # * >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
     def data_iter__key_facet(self) -> Generator:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ..."""
-        if self.factors_rowcol is None:
+        if self.is_just_x_and_or_hue:
             # * If no row or col, return all axes and data
             yield None, self.data_ensure_allgroups  # ! Error for  df.groupby().get_group(None)
 

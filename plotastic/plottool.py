@@ -158,6 +158,11 @@ class PlotTool(DataFrameTool):
             for key, ax in zip(self.levelkeys_rowcol, self.axes.flatten()):
                 yield key, ax
 
+    @property
+    def axes_dict(self):
+        """Returns: {key: ax}"""
+        return dict(self.axes_iter__keys_ax)
+
     #
     # * Associate with Rowcol   ................................#
 
