@@ -5,7 +5,7 @@ from typing import Dict, Literal
 from copy import copy, deepcopy
 
 
-# TODO maybe refactor this to contain
+# TODO maybe refactor this to specify statistical type of data
 # class Dimension:
 #     def __init__(
 #         self, name: str, scale_of_measurement: Literal["nominal", "ordinal", "cardinal"]

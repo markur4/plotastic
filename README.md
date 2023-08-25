@@ -382,7 +382,7 @@ classDiagram
    }
    click DataAnalysis href "https://github.com/markur4/plotastic/blob/main/plotastic/dataanalysis.py" "dataanalysis.py"
 
-  Annotator <|-- DataAnalysis
+  Annotator --|> DataAnalysis
 
 
 

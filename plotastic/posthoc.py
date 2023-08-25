@@ -67,7 +67,7 @@ class PostHoc(Assumptions):
         paired=True,
         parametric=True,
         subject=None,
-        only_contrast=False,
+        # only_contrast=False,
         **user_kwargs,
     ) -> pd.DataFrame:
         """Interface that sorts arguments, executes pairwise tests and adds extra features to PH table"""
@@ -106,14 +106,21 @@ class PostHoc(Assumptions):
 
         ### Make PH table
         PH = self._base_pairwise_tests(**kwargs)
-        PH = self._enhance_PH(PH, only_contrast=only_contrast)
+        PH = self._enhance_PH(
+            PH,
+            # only_contrast=only_contrast,
+        )
 
         ### Save result
         self.results.DF_posthoc = PH
 
         return PH
 
-    def _enhance_PH(self, PH: pd.DataFrame, only_contrast=True) -> pd.DataFrame:
+    def _enhance_PH(
+        self,
+        PH: pd.DataFrame,
+        # only_contrast=False,
+    ) -> pd.DataFrame:
         ### Define Alpha
         alpha = self.ALPHA
         alpha_tolerance = self.ALPHA_TOLERANCE
@@ -145,12 +152,12 @@ class PostHoc(Assumptions):
         # * Make pairs
         PH["pairs"] = PH.apply(self._level_to_pair, axis=1)
 
-        ### Check contrast
-        # * Optionally remove non-contrast comparisons
-        if only_contrast and self.dims.hue:
-            PH = PH[
-                PH["Contrast"].str.contains("*", regex=False)
-            ]  # <<<< OVERRRIDE PH, REMOVE NON-CONTRAST ROWS
+        # ### Check contrast
+        # # * Optionally remove non-contrast comparisons
+        # if only_contrast and self.dims.hue:
+        #     PH = PH[
+        #         PH["Contrast"].str.contains("*", regex=False)
+        #     ]  # <<<< OVERRRIDE PH, REMOVE NON-CONTRAST ROWS
 
         # * Show if the pair crosses x or hue boundaries
         if self.dims.hue:

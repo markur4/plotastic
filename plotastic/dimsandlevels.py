@@ -56,7 +56,6 @@ def catchstate(df, var_name: str = "df"):
 
 # %% Class Analysis ..........................................................
 
-
 class DimsAndLevels:
     def __str__(self):
         # d = self.__dict__
@@ -111,10 +110,15 @@ class DimsAndLevels:
     #
     # ... List FACTORS .....................................................................................................'''
 
-    @property  # * [row, col, hue, x]
+    @property  # * [row, hue, x] (dims may be missing)
     def factors_all(self) -> list[str]:
         F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
         return [e for e in F if (not e is None)]
+    
+    # @property
+    # def factors_all_include_none(self) -> list[str]:
+    #     F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
+    #     return [e for e in F]
 
     @property  # * {"y": dims.y, "x": dims.x, "hue": dims.hue, "col": dims.col, "row": dims.row}
     def factors_as_dict(self) -> dict:
@@ -179,14 +183,6 @@ class DimsAndLevels:
         return rowcol
 
     @property
-    def is_just_x(self) -> bool:
-        return not self.dims.row and not self.dims.col and not self.dims.hue
-
-    @property
-    def is_just_xand_hue(self) -> bool:
-        return not self.dims.row and not self.dims.col
-
-    @property
     def factors_rowcol_list(self) -> list[str]:
         if self.dims.row and self.dims.col:
             rowcol = [self.dims.row, self.dims.col]
@@ -198,13 +194,43 @@ class DimsAndLevels:
             rowcol = [""]
         return rowcol
 
+    # ... Properties of FACTORS  .......................
+
+    @property  # * True, False
+    def is_just_x(self) -> bool:
+        return not self.dims.row and not self.dims.col and not self.dims.hue
+
+    @property
+    def is_just_xand_hue(self) -> bool:
+        return not self.dims.row and not self.dims.col
+
+    @property  # * {"f1": "continuous", "f2": "category",}
+    def factors_types(self) -> dict:
+        """Returns: {"f1": "continuous", "f2": "category",}"""
+        D = dict()
+        for factor in self.factors_all:
+            type = self.data[factor].dtype.name
+            if type == "object":
+                D[factor] = "object"
+                print(
+                    f"#! factor '{factor}' is of type object so it's probably a string"
+                )
+            if type == "category":
+                D[factor] = "category"
+            elif type in ["int", "float", "float32", "float64", "int32", "int16"]:
+                D[factor] = "continuous"
+            else:
+                print(f"#!!! factor '{factor}' is of unknown type '{type}'")
+                D[factor] = "unknown"
+        return D
+
     @property
     def factors_categoric(self):
         """Includes only columns that were defined as nominal or ordinal"""
-        return
+        raise NotImplementedError
 
     #
-    # ... Retrieve FACTORS .....................................................................................................'''
+    # ... Retrieve FACTORS .................................
 
     # * input: Hue -> "smoke"
     def getfactors_from_dim(
@@ -269,6 +295,7 @@ class DimsAndLevels:
             factor: self.get_levels_from_column(colname=factor)
             for factor in self.factors_all
         }
+    
 
     @property  # * {"row":[row_l1, row_l2, ...], "col":[c_l1, c_l2, ...], "hue":[...], "x":[...]}
     def levels_dict_dim(self) -> dict:
@@ -324,27 +351,7 @@ class DimsAndLevels:
         return tuple(l)
 
     #
-    # ... Properties of Factors and Levels ............................................................................................
-
-    @property  # * {"f1": "continuous", "f2": "category",}
-    def factors_types(self) -> dict:
-        """Returns: {"f1": "continuous", "f2": "category",}"""
-        D = dict()
-        for factor in self.factors_all:
-            type = self.data[factor].dtype.name
-            if type == "object":
-                D[factor] = "object"
-                print(
-                    f"#! factor '{factor}' is of type object so it's probably a string"
-                )
-            if type == "category":
-                D[factor] = "category"
-            elif type in ["int", "float", "float32", "float64", "int32", "int16"]:
-                D[factor] = "continuous"
-            else:
-                print(f"#!!! factor '{factor}' is of unknown type '{type}'")
-                D[factor] = "unknown"
-        return D
+    # ... Properties of Levels .......................................................
 
     @property
     def len_rowlevels(self) -> int:

@@ -18,7 +18,6 @@ from plotastic.dimsandlevels import DimsAndLevels
 
 # %% Class DataFrameTool
 
-
 class DataFrameTool(DimsAndLevels):
     # ... __init__ ...............................................................
 
