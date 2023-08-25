@@ -21,7 +21,7 @@ from plotastic.bivariate import Bivariate
 
 
 class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
-    ### Types of group selection
+    ### Define types that are allowed as elements within exclude/include arguments
     _TYPES_SELECTION = tuple([str, bool] + ut.NUMERICAL_TYPES)
 
     # ... ­­init__ .....................................................................
@@ -173,7 +173,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                 ), f"#! When {row_or_col1} is from COL, {row_or_col2} should be one of {LVLs_ROW}"
         """ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"""
 
-    def _check_excluded_included(
+    def _check_include_exclude(
         self,
         exclude: dict = None,
         exclude_in_facet: dict = None,
@@ -328,7 +328,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         return match
 
-    def _match_excluded_included(
+    def _match_include_exclude(
         self,
         PH: "pd.DataFrame" = None,
         exclude: list = None,
@@ -380,7 +380,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         return PH
 
     @staticmethod
-    def _combine_include_exclude(S: pd.Series, exclude_over_include: bool) -> bool:
+    def _conclude_include_exclude(S: pd.Series, exclude_over_include: bool) -> bool:
         """Concludes matches from selected exclusion/inclusion
         INCLUDE = NONE?
             >> INCLUDE EVERYTHING AND SPECIFY THINGS YOU WANT TO EXCLUDE (EXCLUDE OVER INCLUDE)
@@ -414,13 +414,41 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
     # ... PostHoc: Main Annotation Function .............................................
 
+    def iter__df_ax_ph(self, PH: "pd.DataFrame"):
+        """Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
+
+        Args:
+            PH (_type_): _description_
+
+        Yields:
+            _type_: _description_
+        """
+        phG = PH.groupby(self.factors_rowcol)
+        dfD = self.data_ensure_allgroups.groupby(self.factors_rowcol)
+        axD = self.axes_dict
+
+        ### Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
+        for key in self.levelkeys_rowcol:
+            print(key)
+            ph = phG.get_group(key)
+            df = dfD.get_group(key)
+            ax = axD[key]
+            yield df, ax, ph
+
+    def _annotate_pairwise_base(self, PH: "pd.DataFrame"):
+        for df, ax, ph in self.iter__df_ax_ph(PH):
+            pass
+            # ut.pp(df)
+            # ut.pp(ph)
+            # print(ax)
+
     def annotate_pairwise(
         self,
         only_sig: str = "strict",
-        exclude: dict = None,
-        exclude_in_facet: dict = None,
-        include: dict = None,
+        include: dict | list = None,
+        exclude: dict | list = None,
         include_in_facet: dict = None,
+        exclude_in_facet: dict = None,
         exclude_over_include=True,
         verbose=False,
     ):
@@ -448,57 +476,41 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         #     not self. is "NOT TESTED"
         # ), "Plot not tested yet, please call .test_pairwise() first"
 
-        ### Check user argument selection
-        self._check_excluded_included(
-            exclude, exclude_in_facet, include, include_in_facet
-        )
-
-        ### Match Selection
-        PH = self._match_excluded_included(
-            PH=PH,
-            exclude=exclude,
-            exclude_in_facet=exclude_in_facet,
+        ### Check user argument selection: Go through assertions
+        self._check_include_exclude(
             include=include,
+            exclude=exclude,
             include_in_facet=include_in_facet,
+            exclude_in_facet=exclude_in_facet,
         )
 
-        ### Conclude exclusion/inclusion
+        ### Match user argument selection: Add columns 
+        PH = self._match_include_exclude(
+            PH=PH,
+            include=include,
+            exclude=exclude,
+            include_in_facet=include_in_facet,
+            exclude_in_facet=exclude_in_facet,
+        )
+
+        ### Conclude inclusion/exclusion
         PH["inc+exc"] = PH.apply(
-            self._combine_include_exclude,
+            self._conclude_include_exclude,
             exclude_over_include=exclude_over_include,
             axis=1,
         )
 
-        ### ANNOTATE
-        self._annotate(PH)
+        ### ... ANNOTATE
+        self._annotate_pairwise_base(PH)
 
         ### Save PH
         self.results.DF_posthoc = PH
 
-        ### Show DF if verbose
+        ### Show PH if verbose
         if verbose:
             ut.pp(PH)
 
         return self
-
-    def _annotate(self, PH):
-        for df, ax, ph in self.iter__df_ax_ph(PH):
-            ut.pp(df)
-            ut.pp(ph)
-            print(ax)
-
-    def iter__df_ax_ph(self, PH):
-        phG = PH.groupby(self.factors_rowcol)
-        dfD = self.data_ensure_allgroups.groupby(self.factors_rowcol)
-        axD = self.axes_dict
-
-        ### Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
-        for key in self.levelkeys_rowcol:
-            print(key)
-            ph = phG.get_group(key)
-            df = dfD.get_group(key)
-            ax = axD[key]
-            yield df, ax, ph
 
 
 # %%
@@ -511,7 +523,7 @@ AN = Annotator(
     verbose=True,
 )
 
-ph = AN.test_pairwise()
+ph = AN.test_pairwise(paired=False, alpha=0.005)
 
 # %%
 
