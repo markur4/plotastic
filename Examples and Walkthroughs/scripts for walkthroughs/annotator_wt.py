@@ -4,7 +4,6 @@ import markurutils as ut
 from plotastic import Annotator
 
 
-
 # %% test for FMRI
 
 DF, dims = ut.load_dataset("fmri")
@@ -23,7 +22,7 @@ AN, PH2 = (
     AN.subplots()
     .fillaxes(kind="box")
     .annotate_pairwise(
-        include="__hue",
+        include="__hue",  # * This will only annotate those pairs comparing different hues!
         # include=[0, "stim"],
         # exclude=[1, "cue", {1: ("cue", "stim")}],
         # exclude=[1, {"stim": (0, 2)}],
@@ -40,8 +39,7 @@ AN, PH2 = (
         #     "frontal": [2, "cue", {"stim": (3, 7)}],
         #     "parietal": [4, "stim", {"stim": (2, 9)}],
         # },
-        verbose=False,
-        return_ph=True,
+        return_ph=True,  # * Returns posthoc table after selection arguments were applied
     )
 )
 
@@ -90,6 +88,7 @@ TIPS_dimses = [
     dict(y="tip", x="size-cut"),
 ]
 
+# ! We chose exclusions that will never annotate anything, but we need those arguments to test it
 TIPS_annot_pairwise_kwargs = [
     dict(
         include=["Yes", {"1-2": ("Yes", "No")}],
