@@ -51,7 +51,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         ### Define allowed types for elements of xhue
         # * Dictionaries selects specific pairs, everything else selects all pairs containing that element.
         # * Levels of xhue levels can be specified as string, int bool and all numpy numerical types.
-        types_allowed = tuple(list(self._TYPES_SELECTION) + [dict])
+        types_allowed = self._TYPES_SELECTION + (dict,)
         types_specific = self._TYPES_SELECTION
 
         ### Retrieve Levels
@@ -62,37 +62,39 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             LVLs_HUE = LVLdict[self.dims.hue]
 
         ### If hue or x is specified, nothing must be checked as the complete x or hue will be included or excluded
-        if xhue_selected in ("hue", "x"):
+        if xhue_selected in ("hue", "x", "HUE", "X"):
             return None
 
         ### CHECK IF SELECTION IS CORRECT
         assert isinstance(xhue_selected, list), f"#! '{xhue_selected}' should be a list"
         for xhue in xhue_selected:
-            assert isinstance(xhue, types_allowed), (
-                f"#!  {xhue} ({ut.get_type(xhue)}) should be a string, numerical-like type, bool or a dictionary (with an x-/hue-level as key"
-                f" and a tuple of two x-/hue-levels as value"
-            )
+            assert isinstance(
+                xhue, types_allowed
+            ), f"#!  {xhue} ({ut.get_type(xhue)}) should be a string, numerical-like type, bool or a dictionary (with an x-/hue-level as key and a tuple of two x-/hue-levels as value"
             if isinstance(xhue, types_specific):
                 assert (
                     xhue in LVLs
                 ), f"#!  {xhue} ({ut.get_type(xhue)}) should be one of {LVLs}"
             if isinstance(xhue, dict):
+                assert (
+                    self.dims.hue
+                ), f"#! A dictionary was used {xhue}, but no HUE was defined."
+
                 # * {x_or_hue: xhuepair }
                 for x_or_hue_key, xhuepair in xhue.items():
-                    assert x_or_hue_key in LVLs, (
-                        f"#! The passed key  {x_or_hue_key} ({ut.get_type(x_or_hue_key)}) should be one of {LVLs_X} if values are in HUE-levels,"
-                        f" or one of {LVLs_HUE} if values are in X-levels"
-                    )
-                    assert isinstance(xhuepair, tuple) and len(xhuepair) == 2, (
-                        f"#!  {xhuepair}  ({ut.get_type(xhuepair)}) should be a tuple with two values from either {LVLs_X}"
-                        f" or {LVLs_HUE}"
-                    )
+                    assert (
+                        x_or_hue_key in LVLs
+                    ), f"#! The passed key  {x_or_hue_key} ({ut.get_type(x_or_hue_key)}) should be one of {LVLs_X} if values are in HUE-levels, or one of {LVLs_HUE} if values are in X-levels"
+                    # * {x: (hue1, hue2) } or {hue: (x1, x2) }
+                    assert (
+                        isinstance(xhuepair, tuple) and len(xhuepair) == 2
+                    ), f"#! When specifying a specific level from X or HUE  ({x_or_hue_key}), then  {xhuepair}  ({ut.get_type(xhuepair)}) should be a tuple with two values from either {LVLs_X} or {LVLs_HUE}, in order to define a specific pair where X or Hue = {x_or_hue_key}. If {x_or_hue_key} is from X, then {xhuepair} should be made of {LVLs_HUE}. If {x_or_hue_key} is from HUE, then {xhuepair} should be made of {LVLs_X}"
+
                     for x_or_hue_value in xhuepair:
                         # * {x_or_hue: (x_or_hue2, x_or_hue2) }
-                        assert x_or_hue_value in LVLs, (
-                            f"#! The passed value {x_or_hue_value} ({ut.get_type(x_or_hue_value)}) should be one of {LVLs_X}, if key is in HUE-levels),"
-                            f" or one of {LVLs_HUE}, if key is in X-levels)"
-                        )
+                        assert (
+                            x_or_hue_value in LVLs
+                        ), f"#! The passed value {x_or_hue_value} ({ut.get_type(x_or_hue_value)}) should be one of {LVLs_X}, if key is in HUE-levels), or one of {LVLs_HUE}, if key is in X-levels)"
                         if x_or_hue_key in LVLs_HUE:
                             assert (
                                 not x_or_hue_value in LVLs_HUE
@@ -115,7 +117,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         ### Define expected types for elements of rowcol
         # * Tuples are used if both row and col are specified.
         # * Row and col levels may be specified as strings, numericals, bools, etc.
-        types_allowed = tuple(self._TYPES_SELECTION + [tuple])
+        types_allowed = self._TYPES_SELECTION + (tuple,)
         types_specific = self._TYPES_SELECTION
 
         ### Retrieve levels
@@ -197,10 +199,9 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         ### If facet-specific selection, check if row or col is specified
         if (not exclude_in_facet is None) or (not include_in_facet is None):
-            """CHECK IF SELECTION IS CORRECT"""
             assert (
                 not self.factors_rowcol is None
-            ), f"#! Use 'filter_in_xhue' instead of 'filter_in_facet', if data is not facetted into row or col: {self.factors_others}"
+            ), f"#! Facet-specific selection was passed, but no facetting (row or col) was done."
 
         ### Selection in indivicual Facets
         # * {(row, col): [ x1,  {hue4:(x3,x4)},    hue3 ]}
@@ -423,17 +424,22 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         Yields:
             _type_: _description_
         """
-        phG = PH.groupby(self.factors_rowcol)
-        dfD = self.data_ensure_allgroups.groupby(self.factors_rowcol)
-        axD = self.axes_dict
 
-        ### Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
-        for key in self.levelkeys_rowcol:
-            # print(key)
-            ph = phG.get_group(key)
-            df = dfD.get_group(key)
-            ax = axD[key]
-            yield df, ax, ph
+        if self.factors_rowcol:
+            phG = PH.groupby(self.factors_rowcol)
+            dfD = self.data_ensure_allgroups.groupby(self.factors_rowcol)
+            axD = self.axes_dict
+
+            ### Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
+            for key in self.levelkeys_rowcol:
+                # print(key)
+                ph = phG.get_group(key)
+                df = dfD.get_group(key)
+                ax = axD[key]
+                yield df, ax, ph
+
+        else:
+            yield self.data_ensure_allgroups, self.axes, PH
 
     def _annotate_pairwise_base(self, PH: "pd.DataFrame"):
         for df, ax, ph in self.iter__df_ax_ph(PH):
@@ -457,8 +463,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         ### Assert presence of a posthoc table and plot
         # * Assert presence of Posthoc
         # * We could execute automatically, but producing a plot and a posthoc test at the same time is a lot to handle
-        assert (
-            not self.results.DF_posthoc is "NOT TESTED"
+        assert isinstance(
+            self.results.DF_posthoc, pd.DataFrame
         ), "Posthoc not tested yet, please call .test_pairwise() first"
         PH = self.results.DF_posthoc
 
@@ -484,7 +490,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             exclude_in_facet=exclude_in_facet,
         )
 
-        ### Match user argument selection: Add columns 
+        ### Match user argument selection: Add columns
         PH = self._match_include_exclude(
             PH=PH,
             include=include,
@@ -503,8 +509,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         ### ... ANNOTATE
         self._annotate_pairwise_base(PH)
 
-        ### Save PH
-        self.results.DF_posthoc = PH
+        ## Save PH
+        # self.results.DF_posthoc = PH
 
         ### Show PH if verbose
         if verbose:
@@ -513,7 +519,10 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         return self
 
 
-# %%
+# ! ______________________________________________________________
+
+
+# %% test for FMRI
 
 DF, dims = ut.load_dataset("fmri")
 AN = Annotator(
@@ -523,9 +532,8 @@ AN = Annotator(
     verbose=True,
 )
 
-ph = AN.test_pairwise(paired=False, alpha=0.005)
+ph = AN.test_pairwise(paired=True)
 
-# %%
 
 AN = (
     AN.subplots()
@@ -538,9 +546,173 @@ AN = (
         # include_in_facet={"frontal": [0, "cue"], (0,1): [0, "cue"]}, # ! Correct error
         # include_in_facet={"frontal": [0, "cue"], "parietal": [0, "cue"]},
         # exclude_in_facet={"frontal": [2, "cue"], "parietal": [4, "stim"]},
+        include_in_facet={
+            "frontal": [0, "cue", {"stim": (3, 4)}],
+            "parietal": [0, "cue", {"stim": (4, 6)}],
+        },
+        exclude_in_facet={
+            "frontal": [2, "cue", {"stim": (3, 7)}],
+            "parietal": [4, "stim", {"stim": (2, 9)}],
+        },
         verbose=False,
     )
 )
 
+
+# %% Test for tips
+
+DF, dims = ut.load_dataset("tips")
+AN2 = Annotator(
+    data=DF,
+    dims=dims,
+    verbose=True,
+)
+
+ph = AN2.test_pairwise(paired=False)
+
+AN2 = (
+    AN2.subplots()
+    .fillaxes(kind="box")
+    .annotate_pairwise(
+        include=["Yes", {"1-2": ("Yes", "No")}],
+        exclude=["No", {"Yes": ("1-2", ">=3")}],
+        include_in_facet={
+            ("Lunch", "Male"): ["Yes", {">=3": ("Yes", "No")}],
+            ("Lunch", "Female"): ["No", {"No": ("1-2", ">=3")}],
+        },
+        exclude_in_facet={
+            ("Lunch", "Male"): ["Yes", {">=3": ("No", "Yes")}],
+            ("Lunch", "Female"): ["No", {"Yes": ("1-2", ">=3")}],
+        },
+    )
+)
+
+
+# %%Automatic testing
+
+# ! PostHoc does not support dimensions that produce empty groups in dataframe
+TIPS_dimses = [
+    # dict(y="tip", x="day", hue="sex", col="smoker", row="time"), # ! these make empty groups
+    dict(y="tip", x="size-cut", hue="smoker", col="sex", row="time"),
+    dict(y="tip", x="size-cut", hue="smoker", col="sex"),
+    dict(y="tip", x="size-cut", hue="smoker"),
+    dict(y="tip", x="size-cut"),
+]
+
+TIPS_annot_pairwise_kwargs = [
+    dict(
+        include=["Yes", {"1-2": ("Yes", "No")}],
+        exclude=["No", {"Yes": ("1-2", ">=3")}],
+        include_in_facet={
+            ("Lunch", "Male"): ["Yes", {">=3": ("Yes", "No")}],
+            ("Lunch", "Female"): ["No", {"No": ("1-2", ">=3")}],
+        },
+        exclude_in_facet={
+            ("Lunch", "Male"): ["Yes", {">=3": ("No", "Yes")}],
+            ("Lunch", "Female"): ["No", {"Yes": ("1-2", ">=3")}],
+        },
+    ),
+    dict(
+        include=["Yes", {"1-2": ("Yes", "No")}],
+        exclude=["No", {"Yes": ("1-2", ">=3")}],
+        include_in_facet={
+            "Male": ["Yes", {">=3": ("Yes", "No")}],
+            "Female": ["No", {"No": ("1-2", ">=3")}],
+        },
+        exclude_in_facet={
+            "Male": ["Yes", {">=3": ("No", "Yes")}],
+            "Female": ["No", {"Yes": ("1-2", ">=3")}],
+        },
+    ),
+    dict(
+        include=["Yes", {"1-2": ("Yes", "No")}],
+        exclude=["No", {"Yes": ("1-2", ">=3")}],
+    ),
+    dict(
+        include=["1-2"],
+        exclude=[">=3"],
+    ),
+]
+
+
+FMRI_dimses = [
+    dict(y="signal", x="timepoint", hue="event", col="region"),
+    dict(y="signal", x="timepoint", hue="region", col="event"),
+    dict(y="signal", x="timepoint", hue="region"),
+    dict(y="signal", x="timepoint", hue="event"),
+    dict(y="signal", x="timepoint"),
+]
+
+FMRI_annot_pairwise_kwargs = [
+    dict(
+        include=[0, "stim"],
+        exclude=[1, {"stim": (0, 2)}],
+        include_in_facet={
+            "frontal": [0, "cue", {"stim": (3, 4)}],
+            "parietal": [0, "cue", {"stim": (4, 6)}],
+        },
+        exclude_in_facet={
+            "frontal": [2, "cue", {"stim": (3, 7)}],
+            "parietal": [4, "stim", {"stim": (2, 9)}],
+        },
+    ),
+    dict(
+        include=[0, "frontal"],
+        exclude=[1, {"frontal": (0, 2)}],
+        include_in_facet={
+            "stim": [0, "frontal", {"parietal": (3, 4)}],
+            "cue": [0, "parietal", {"frontal": (4, 6)}],
+        },
+        exclude_in_facet={
+            "stim": [2, "parietal", {"frontal": (3, 7)}],
+            "cue": [4, "frontal", {"parietal": (2, 9)}],
+        },
+    ),
+    dict(
+        include=[0, "frontal"],
+        exclude=[1, {"frontal": (0, 2)}],
+    ),
+    dict(
+        include=[0, "cue"],
+        exclude=[1, {"stim": (0, 2)}],
+    ),
+    dict(
+        include=[0, 2],
+        exclude=[1,],
+    ),
+]
+
+
+def TIPS_tester(DF, dims, annot_pairwise_kwargs):
+    AN = Annotator(data=DF, dims=dims, verbose=True)
+    ph = AN.test_pairwise(paired=False)
+    AN = (
+        AN.subplots()
+        .fillaxes(kind="box")
+        .annotate_pairwise(**annot_pairwise_kwargs, verbose=False)
+    )
+
+
+def FMRI_tester(DF, dims, annot_pairwise_kwargs):
+    AN = Annotator(data=DF, dims=dims, verbose=True, subject="subject")
+    ph = AN.test_pairwise(paired=True)
+    AN = (
+        AN.subplots()
+        .fillaxes(kind="box")
+        .annotate_pairwise(**annot_pairwise_kwargs, verbose=False)
+    )
+
+
+DF, dims = ut.load_dataset("tips")
+for dim, kwargs in zip(TIPS_dimses, TIPS_annot_pairwise_kwargs):
+    print("\n !!!", dim)
+    print(" !!!", kwargs)
+    TIPS_tester(DF, dim, kwargs)
+
+DF, dims = ut.load_dataset("fmri")
+for dim, kwargs in zip(FMRI_dimses, FMRI_annot_pairwise_kwargs):
+    print("\n !!!", dim)
+    print(" !!!", kwargs)
+    TIPS_tester(DF, dim, kwargs)
 
 # %%

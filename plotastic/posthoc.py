@@ -166,10 +166,11 @@ class PostHoc(Assumptions):
             PH["cross"] = "x"
 
         ### Set index
-        print(PH.columns)
-
         PH = ut.drop_columns_by_regex(PH, "level_\d")
-        PH = PH.set_index(self.factors_rowcol_list + ["Contrast", "cross"])
+        if self.dims.hue:
+            PH = PH.set_index(self.factors_rowcol_list + [self.dims.hue, "Contrast"])
+        else:
+            PH = PH.set_index(self.factors_rowcol_list + ["Contrast"])
 
         return PH
 
