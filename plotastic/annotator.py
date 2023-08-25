@@ -5,6 +5,8 @@ import types
 import warnings
 from xml.etree.ElementInclude import include
 
+import statannotations.Annotator as saa
+
 import numpy as np
 import pandas as pd
 
@@ -220,6 +222,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                 self._check_selected_rowcol(rowcol_excluded)
                 self._check_selected_xhue(xhue_excluded)
 
+    #
     # ... Match user Arguments with Data .......................................................
 
     def _match_selected_xhue(
@@ -228,7 +231,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         xhue_selected: list[str | dict] | str,
         true_value: str = "incl.",
     ) -> bool | str:
-        """
+        """Matches selected groups (x, hue)
 
         :param S:
         :param xhue_selected:
@@ -293,7 +296,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         rowcol_selection_dict: dict,
         true_value: str = "incl.",
     ) -> bool | str:
-        """
+        """Matches selected facets (row, col)
 
         :param S:
         :param : This is used in df.apply(), so we iterate through rows, which are pandas Series
@@ -380,6 +383,13 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             )
         return PH
 
+    #
+    #
+    # ... ANNOTATE POSTHOC  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    #
+    # ... Conclude PH Selection and filter Significant Ones.......................................................
+
     @staticmethod
     def _conclude_include_exclude(S: pd.Series, exclude_over_include: bool) -> bool:
         """Concludes matches from selected exclusion/inclusion
@@ -409,13 +419,71 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         return SHOW
 
-    #
-    #
-    # ... ANNOTATE POSTHOC  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    def _get_filtered_pairs_from_ph(
+        self,
+        ph: "pd.DataFrame",
+        only_sig="strict",
+    ) -> (list[tuple], list[float], list[str], dict[tuple:tuple]):
+        """Makes an ultimate list of pairs that are passed to statannot from column in Posthoc Table to pick out certain pairs
+        Selection Strategy:
+            (1.: Pick out only those passing include/exclude)
+            2.: If we want only significant values, Pick out significant values. Keep in mind that p-values barely reaching significance values are also considered, if only_sig = "tolerant" (set to "strict" to remove).
 
-    # ... PostHoc: Main Annotation Function .............................................
 
-    def iter__df_ax_ph(self, PH: "pd.DataFrame"):
+        Args:
+            ph (pd.DataFrame): _description_
+            only_sig, (optional): _description_. Defaults to "tolerant"
+
+        Returns:
+            _type_: _description_
+        """ """"""
+
+        ### Define column of p-values to use
+        pcol = "p-corr" if "p-corr" in ph.columns else "p-unc"
+
+        ###... GATHER PAIRS
+        ###  Pick only those rows passing include/exclude
+        ph_inc = ph[ph["inc+exc"] == True]
+
+        ### Pick only significant rows
+        ph_sig = ph_inc
+        there_are_sig = not ph["Sign."].isnull().all()
+        if there_are_sig and only_sig:
+            """2.2: If we do not want to display "nearly significant p-values, exclude them"""
+            if only_sig == "tolerant":
+                ### Exclude False
+                ph_sig = ph_inc[ph_inc["Sign."].astype(bool) == True]  
+                ### Print those p-values that barely missed significance
+                if len(ph_inc[ph_inc["Sign."] == "toler."]) > 0:
+                    print(
+                        f"#! These are are the p-values that barely missed significance (p < {self.ALPHA_TOLERANCE}): \n",
+                        ph_inc.loc[ph_inc["Sign."] == "toler.", ["pairs", pcol, "Sign."]],
+                    )
+            elif only_sig == "strict":
+                ph_sig = ph_inc[ph_inc["Sign."] == "signif."]
+
+        # print(only_sig)
+        # mku.pp(ph_sig)
+
+        ### This function might be part of a groupby-loop. If selection is empty by now, give signal to skip this facet
+        if len(ph_sig) == 0:
+            return "continue", "continue", "continue"
+
+        # '''4. SAVE RESULTS IN A COLUMN'''
+        # ph["DISPLAYED"] =
+
+        ###... Extract pairs, pvals and stars
+
+        pairs = ph_sig["pairs"].tolist()
+        pvals = ph_sig[pcol].tolist()
+        stars = ph_sig["**" + pcol].tolist()
+
+        return pairs, pvals, stars
+
+    #
+    # ... Traverse through PH and annotate .................................................
+
+    def iter__key_df_ax_ph(self, PH: "pd.DataFrame"):
         """Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
 
         Args:
@@ -425,7 +493,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             _type_: _description_
         """
 
-        if self.factors_rowcol:
+        if not self.factors_is_unfacetted:
             phG = PH.groupby(self.factors_rowcol)
             dfD = self.data_ensure_allgroups.groupby(self.factors_rowcol)
             axD = self.axes_dict
@@ -436,27 +504,66 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                 ph = phG.get_group(key)
                 df = dfD.get_group(key)
                 ax = axD[key]
-                yield df, ax, ph
 
+                yield key, df, ax, ph
         else:
-            yield self.data_ensure_allgroups, self.axes, PH
+            yield None, self.data_ensure_allgroups, self.axes, PH
 
-    def _annotate_pairwise_base(self, PH: "pd.DataFrame"):
-        for df, ax, ph in self.iter__df_ax_ph(PH):
-            pass
-            # ut.pp(df)
-            # ut.pp(ph)
-            # print(ax)
+    def _annotate_pairwise_base(
+        self,
+        PH: "pd.DataFrame",
+        only_sig="strict",
+        **annot_KWS,
+    ):
+        """Annotates pairwise tests to current matplotlib plot
+
+        Args:
+            PH (pd.DataFrame): _description_
+            only_sig (str, optional): _description_. Defaults to "strict".
+        """
+
+        ### Required for initialization of statannotations.Annotator
+        init_KWS = dict(y=self.dims.y, x=self.dims.x, hue=self.dims.hue)
+
+        ### Iterate through facets, axes and posthoc tables
+        for key, df, ax, ph in self.iter__key_df_ax_ph(PH):
+            ### Get pairs, pvals, stars and stardict
+            pairs, pvals, stars = self._get_filtered_pairs_from_ph(
+                ph=ph, only_sig=only_sig
+            )
+
+            ### Skip this facet if it doesn't contain any selected pairs
+            if pairs == "continue":
+                continue
+            assert pairs, f"#! Pairs are empty {pairs} for facet {key}"
+
+            ### ... ANNOTATE
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                (
+                    saa.Annotator(
+                        ax=ax,
+                        data=df,
+                        pairs=pairs,
+                        verbose=False,
+                        **init_KWS,
+                    )
+                    .configure(test=None, **annot_KWS)
+                    .set_custom_annotations(stars)
+                    .set_pvalues(pvals)
+                    .annotate()
+                )
 
     def annotate_pairwise(
         self,
-        only_sig: str = "strict",
         include: dict | list = None,
         exclude: dict | list = None,
         include_in_facet: dict = None,
         exclude_in_facet: dict = None,
         exclude_over_include=True,
-        verbose=False,
+        only_sig: str = "strict",
+        show_ph=False,
+        **annot_KWS,
     ):
         """Annotate pairs of groups with pairwise tests."""
 
@@ -507,146 +614,18 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         )
 
         ### ... ANNOTATE
-        self._annotate_pairwise_base(PH)
+        self._annotate_pairwise_base(PH, only_sig=only_sig, **annot_KWS)
 
         ## Save PH
         # self.results.DF_posthoc = PH
 
         ### Show PH if verbose
-        if verbose:
+        if show_ph:
             ut.pp(PH)
 
         return self
 
 
 # ! ______________________________________________________________
-
-
-# %%Automatic testing
-
-# ! PostHoc does not support dimensions that produce empty groups in dataframe
-TIPS_dimses = [
-    # dict(y="tip", x="day", hue="sex", col="smoker", row="time"), # ! these make empty groups
-    dict(y="tip", x="size-cut", hue="smoker", col="sex", row="time"),
-    dict(y="tip", x="size-cut", hue="smoker", col="sex"),
-    dict(y="tip", x="size-cut", hue="smoker"),
-    dict(y="tip", x="size-cut"),
-]
-
-TIPS_annot_pairwise_kwargs = [
-    dict(
-        include=["Yes", {"1-2": ("Yes", "No")}],
-        exclude=["No", {"Yes": ("1-2", ">=3")}],
-        include_in_facet={
-            ("Lunch", "Male"): ["Yes", {">=3": ("Yes", "No")}],
-            ("Lunch", "Female"): ["No", {"No": ("1-2", ">=3")}],
-        },
-        exclude_in_facet={
-            ("Lunch", "Male"): ["Yes", {">=3": ("No", "Yes")}],
-            ("Lunch", "Female"): ["No", {"Yes": ("1-2", ">=3")}],
-        },
-    ),
-    dict(
-        include=["Yes", {"1-2": ("Yes", "No")}],
-        exclude=["No", {"Yes": ("1-2", ">=3")}],
-        include_in_facet={
-            "Male": ["Yes", {">=3": ("Yes", "No")}],
-            "Female": ["No", {"No": ("1-2", ">=3")}],
-        },
-        exclude_in_facet={
-            "Male": ["Yes", {">=3": ("No", "Yes")}],
-            "Female": ["No", {"Yes": ("1-2", ">=3")}],
-        },
-    ),
-    dict(
-        include=["Yes", {"1-2": ("Yes", "No")}],
-        exclude=["No", {"Yes": ("1-2", ">=3")}],
-    ),
-    dict(
-        include=["1-2"],
-        exclude=[">=3"],
-    ),
-]
-
-
-FMRI_dimses = [
-    dict(y="signal", x="timepoint", hue="event", col="region"),
-    dict(y="signal", x="timepoint", hue="region", col="event"),
-    dict(y="signal", x="timepoint", hue="region"),
-    dict(y="signal", x="timepoint", hue="event"),
-    dict(y="signal", x="timepoint"),
-]
-
-FMRI_annot_pairwise_kwargs = [
-    dict(
-        include=[0, "stim"],
-        exclude=[1, {"stim": (0, 2)}],
-        include_in_facet={
-            "frontal": [0, "cue", {"stim": (3, 4)}],
-            "parietal": [0, "cue", {"stim": (4, 6)}],
-        },
-        exclude_in_facet={
-            "frontal": [2, "cue", {"stim": (3, 7)}],
-            "parietal": [4, "stim", {"stim": (2, 9)}],
-        },
-    ),
-    dict(
-        include=[0, "frontal"],
-        exclude=[1, {"frontal": (0, 2)}],
-        include_in_facet={
-            "stim": [0, "frontal", {"parietal": (3, 4)}],
-            "cue": [0, "parietal", {"frontal": (4, 6)}],
-        },
-        exclude_in_facet={
-            "stim": [2, "parietal", {"frontal": (3, 7)}],
-            "cue": [4, "frontal", {"parietal": (2, 9)}],
-        },
-    ),
-    dict(
-        include=[0, "frontal"],
-        exclude=[1, {"frontal": (0, 2)}],
-    ),
-    dict(
-        include=[0, "cue"],
-        exclude=[1, {"stim": (0, 2)}],
-    ),
-    dict(
-        include=[0, 2],
-        exclude=[1,],
-    ),
-]
-
-
-def TIPS_tester(DF, dims, annot_pairwise_kwargs):
-    AN = Annotator(data=DF, dims=dims, verbose=True)
-    ph = AN.test_pairwise(paired=False)
-    AN = (
-        AN.subplots()
-        .fillaxes(kind="box")
-        .annotate_pairwise(**annot_pairwise_kwargs, verbose=False)
-    )
-
-
-def FMRI_tester(DF, dims, annot_pairwise_kwargs):
-    AN = Annotator(data=DF, dims=dims, verbose=True, subject="subject")
-    ph = AN.test_pairwise(paired=True)
-    AN = (
-        AN.subplots()
-        .fillaxes(kind="box")
-        .annotate_pairwise(**annot_pairwise_kwargs, verbose=False)
-    )
-
-
-DF, dims = ut.load_dataset("tips")
-for dim, kwargs in zip(TIPS_dimses, TIPS_annot_pairwise_kwargs):
-    print("\n !!!", dim)
-    print(" !!!", kwargs)
-    TIPS_tester(DF, dim, kwargs)
-
-DF, dims = ut.load_dataset("fmri")
-for dim, kwargs in zip(FMRI_dimses, FMRI_annot_pairwise_kwargs):
-    print("\n !!!", dim)
-    print(" !!!", kwargs)
-    TIPS_tester(DF, dim, kwargs)
 
 # %%

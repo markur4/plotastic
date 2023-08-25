@@ -18,6 +18,7 @@ from plotastic.dimsandlevels import DimsAndLevels
 
 # %% Class DataFrameTool
 
+
 class DataFrameTool(DimsAndLevels):
     # ... __init__ ...............................................................
 
@@ -415,7 +416,6 @@ class DataFrameTool(DimsAndLevels):
     #
     # ... Iterate through DATA  .......................................................................................................'''
 
-
     @property
     def data_ensure_allgroups(self) -> pd.DataFrame:
         """df.groupby() skips empty groups, so we need to ensure that all groups are present in the data.
@@ -429,7 +429,7 @@ class DataFrameTool(DimsAndLevels):
 
         # * Make index with complete set of keys
         # * If only one factor, we need to use pd.Index instead of pd.MultiIndex
-        if self.is_just_x:
+        if self.factors_is_just_x:
             index_new = pd.Index(data=self.levels_dict_dim["x"], name=self.dims.x)
         else:
             index_new = pd.MultiIndex.from_product(
@@ -456,7 +456,7 @@ class DataFrameTool(DimsAndLevels):
     @property  # * >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
     def data_iter__key_facet(self) -> Generator:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ..."""
-        if self.is_just_x_and_or_hue:
+        if self.factors_is_unfacetted:
             # * If no row or col, return all axes and data
             yield None, self.data_ensure_allgroups  # ! Error for  df.groupby().get_group(None)
 

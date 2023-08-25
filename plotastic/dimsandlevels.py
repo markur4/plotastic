@@ -56,6 +56,7 @@ def catchstate(df, var_name: str = "df"):
 
 # %% Class Analysis ..........................................................
 
+
 class DimsAndLevels:
     def __str__(self):
         # d = self.__dict__
@@ -114,7 +115,7 @@ class DimsAndLevels:
     def factors_all(self) -> list[str]:
         F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
         return [e for e in F if (not e is None)]
-    
+
     # @property
     # def factors_all_include_none(self) -> list[str]:
     #     F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
@@ -197,11 +198,11 @@ class DimsAndLevels:
     # ... Properties of FACTORS  .......................
 
     @property  # * True, False
-    def is_just_x(self) -> bool:
+    def factors_is_just_x(self) -> bool:
         return not self.dims.row and not self.dims.col and not self.dims.hue
 
     @property
-    def is_just_x_and_or_hue(self) -> bool:
+    def factors_is_unfacetted(self) -> bool:
         return not self.dims.row and not self.dims.col
 
     @property  # * {"f1": "continuous", "f2": "category",}
@@ -295,7 +296,6 @@ class DimsAndLevels:
             factor: self.get_levels_from_column(colname=factor)
             for factor in self.factors_all
         }
-    
 
     @property  # * {"row":[row_l1, row_l2, ...], "col":[c_l1, c_l2, ...], "hue":[...], "x":[...]}
     def levels_dict_dim(self) -> dict:
@@ -338,7 +338,6 @@ class DimsAndLevels:
             else key[0]  # * If only one factor, string is needed, not a tuple
             for key in product(*self.levels_tuples_rowcol)
         ]
-
 
     @property  # * (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
     def levels_xhue_flat(self) -> tuple:
