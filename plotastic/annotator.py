@@ -429,7 +429,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         ### Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
         for key in self.levelkeys_rowcol:
-            print(key)
+            # print(key)
             ph = phG.get_group(key)
             df = dfD.get_group(key)
             ax = axD[key]

@@ -129,7 +129,7 @@ class PostHoc(Assumptions):
         # pcol = "p-unc" if padjust in ("none", None) else "p-corr"
 
         ### EDIT PH
-        PH = PH.reset_index()
+        PH = PH.reset_index(drop=False) #* drop is default false, but put it explicitly  here
 
         # * Add Stars
         PH["**p-unc"] = PH["p-unc"].apply(self._p_to_stars, alpha=alpha)
@@ -165,10 +165,11 @@ class PostHoc(Assumptions):
         else:
             PH["cross"] = "x"
 
-        ### Set new index
-        PH = PH.drop(columns=["level_1"]).set_index(
-            self.factors_rowcol_list + ["Contrast", "cross"]
-        )
+        ### Set index
+        print(PH.columns)
+
+        PH = ut.drop_columns_by_regex(PH, "level_\d")
+        PH = PH.set_index(self.factors_rowcol_list + ["Contrast", "cross"])
 
         return PH
 
