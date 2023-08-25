@@ -4,6 +4,7 @@ import markurutils as ut
 from plotastic import Annotator
 
 
+
 # %% test for FMRI
 
 DF, dims = ut.load_dataset("fmri")
@@ -15,16 +16,18 @@ AN = Annotator(
 )
 
 ph = AN.test_pairwise(paired=True, padjust="bonf")
+# ut.pp(ph[ph["p-corr"] < 0.0001])
 
 
-AN = (
+AN, PH2 = (
     AN.subplots()
     .fillaxes(kind="box")
     .annotate_pairwise(
+        include="__hue",
         # include=[0, "stim"],
         # exclude=[1, "cue", {1: ("cue", "stim")}],
         # exclude=[1, {"stim": (0, 2)}],
-        exclude=["X"],
+        # exclude="__X",
         # exclude=[1, "cue", {"cue": ("cue", "stim")}], # ! Correct error
         # include_in_facet={"frontal": [0, "cue"], (0,1): [0, "cue"]}, # ! Correct error
         # include_in_facet={"frontal": [0, "cue"], "parietal": [0, "cue"]},
@@ -38,8 +41,11 @@ AN = (
         #     "parietal": [4, "stim", {"stim": (2, 9)}],
         # },
         verbose=False,
+        return_ph=True,
     )
 )
+
+ut.pp(PH2[PH2["p-corr"] < 0.00001])
 
 
 # %% Test for tips

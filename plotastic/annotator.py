@@ -1,9 +1,8 @@
 #
 # %% imports
 
-import types
 import warnings
-from xml.etree.ElementInclude import include
+
 
 import statannotations.Annotator as saa
 
@@ -63,8 +62,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         if self.dims.hue:
             LVLs_HUE = LVLdict[self.dims.hue]
 
-        ### If hue or x is specified, nothing must be checked as the complete x or hue will be included or excluded
-        if xhue_selected in ("hue", "x", "HUE", "X"):
+        ### If "__hue" or "__x" is specified, nothing must be checked as the complete x or hue will be included or excluded
+        if xhue_selected in ("__hue", "__x", "__HUE", "__X"):
             return None
 
         ### CHECK IF SELECTION IS CORRECT
@@ -242,18 +241,16 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         :return:
         """
 
-        # levels_xhue = self.levels_xhue_flat
-        # leveldict = self.levels
-
         ### Get pairs and flatten them if hue is present (("l1", "l2"),("l3","l4"))
         if self.dims.hue:
             PAIR = ut.flatten(S["pairs"])
         else:
             PAIR = S["pairs"]
-        CROSS = S["cross"]
 
-        if xhue_selected in ("x", "hue"):
-            match = true_value if xhue_selected == CROSS else 0
+        ### If "__hue" or "__x" is specified, those pairs that are crossing x- or hue boundaries will be included or excluded
+        if xhue_selected in ("__x", "__hue", "__X", "__HUE"):
+            cross_selected = "x" if xhue_selected in ("__x", "__X") else "hue"
+            match = true_value if cross_selected == S["cross"] else 0
             return match
 
         for xhue in xhue_selected:
@@ -452,12 +449,14 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             """2.2: If we do not want to display "nearly significant p-values, exclude them"""
             if only_sig == "tolerant":
                 ### Exclude False
-                ph_sig = ph_inc[ph_inc["Sign."].astype(bool) == True]  
+                ph_sig = ph_inc[ph_inc["Sign."].astype(bool) == True]
                 ### Print those p-values that barely missed significance
                 if len(ph_inc[ph_inc["Sign."] == "toler."]) > 0:
                     print(
                         f"#! These are are the p-values that barely missed significance (p < {self.ALPHA_TOLERANCE}): \n",
-                        ph_inc.loc[ph_inc["Sign."] == "toler.", ["pairs", pcol, "Sign."]],
+                        ph_inc.loc[
+                            ph_inc["Sign."] == "toler.", ["pairs", pcol, "Sign."]
+                        ],
                     )
             elif only_sig == "strict":
                 ph_sig = ph_inc[ph_inc["Sign."] == "signif."]
@@ -563,6 +562,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         exclude_over_include=True,
         only_sig: str = "strict",
         show_ph=False,
+        return_ph=False,
         **annot_KWS,
     ):
         """Annotate pairs of groups with pairwise tests."""
@@ -573,7 +573,9 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         assert isinstance(
             self.results.DF_posthoc, pd.DataFrame
         ), "Posthoc not tested yet, please call .test_pairwise() first"
-        PH = self.results.DF_posthoc
+
+        ### Copy PH from results
+        PH = self.results.DF_posthoc.copy()
 
         ### Modify PH
         # * Reset Index for easy access
@@ -623,9 +625,53 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         if show_ph:
             ut.pp(PH)
 
-        return self
+        if return_ph:
+            return self, PH
+        else:
+            return self
 
 
 # ! ______________________________________________________________
 
-# %%
+
+# # %% test for FMRI
+
+# DF, dims = ut.load_dataset("fmri")
+# AN = Annotator(
+#     data=DF,
+#     dims=dims,
+#     subject="subject",
+#     verbose=True,
+# )
+
+# ph = AN.test_pairwise(paired=True, padjust="bonf")
+# # ut.pp(ph[ph["p-corr"] < 0.0001])
+
+
+# AN, PH2 = (
+#     AN.subplots()
+#     .fillaxes(kind="box")
+#     .annotate_pairwise(
+#         include="__hue",
+#         # include=[0, "stim"],
+#         # exclude=[1, "cue", {1: ("cue", "stim")}],
+#         # exclude=[1, {"stim": (0, 2)}],
+#         # exclude="__X",
+#         # exclude=[1, "cue", {"cue": ("cue", "stim")}], # ! Correct error
+#         # include_in_facet={"frontal": [0, "cue"], (0,1): [0, "cue"]}, # ! Correct error
+#         # include_in_facet={"frontal": [0, "cue"], "parietal": [0, "cue"]},
+#         # exclude_in_facet={"frontal": [2, "cue"], "parietal": [4, "stim"]},
+#         # include_in_facet={
+#         #     "frontal": [0, "cue", {"stim": (3, 4)}],
+#         #     "parietal": [0, "cue", {"stim": (4, 6)}],
+#         # },
+#         # exclude_in_facet={
+#         #     "frontal": [2, "cue", {"stim": (3, 7)}],
+#         #     "parietal": [4, "stim", {"stim": (2, 9)}],
+#         # },
+#         verbose=False,
+#         return_ph=True,
+#     )
+# )
+
+# ut.pp(PH2[PH2["p-corr"] < 0.00001])
