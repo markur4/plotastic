@@ -22,10 +22,10 @@ MP = MultiPlot(data=df, dims=dims)
 
 # %% Test boxplot_strip
 
-MP = MP.plot_box_under_strip(marker_size=4, strip_kws=dict(alpha=0.3, linewidth=0.3))
+MP = MP.plot_box_strip(marker_size=4, strip_kws=dict(alpha=0.3, linewidth=0.3))
 
 # %% Test boxplot_strip_SNIP
-s = MP.plot_box_under_strip_SNIP()
+s = MP.plot_box_strip_SNIP()
 
 # # Docs Boxplot:        https://seaborn.pydata.org/generated/seaborn.boxplot.html#seaborn.boxplot
 # # Docs Stripplot:      https://seaborn.pydata.org/generated/seaborn.stripplot.html#seaborn.stripplot
@@ -79,11 +79,8 @@ s = MP.plot_box_under_strip_SNIP()
 
 # ###... PLOT
 # (
-#     DA.subplots() # ! Replace DA with your instance name 
+#     DA.subplots() # ! Replace DA with your instance name
 #     .fillaxes(kind='box', **box_KWS)
 #     .fillaxes(kind='strip', **strip_KWS)
 #     .edit_legend()
 # )
-
-
-

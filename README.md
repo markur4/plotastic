@@ -267,14 +267,7 @@ classDiagram
    class PostHoc{
       ...
       significant_pairs(property): pd.DataFrame
-      test_tukey()
-      test_tukey_snip()
-      test_dunn()
-      test_dunn_snip()
-      test_multiple_paired_t()
-      test_multiple_paired_t_snip()
-      test_multiple_wilcoxon()
-      test_multiple_wilcoxon_snip()
+      test_pairwise(paired, parametric)
       ....()
    }
    class Bivariate{
@@ -323,11 +316,11 @@ classDiagram
       axes_iter__key_ax(property) -> ax
 
       edit_titles(titles:dict) -> None
-      edit_titles_snip()
+      edit_titles_SNIP()
       edit_labels(labels:dict) -> None
-      edit_labels_snip()
+      edit_labels_SNIP()
       edit_ticks(ticks:dict) -> None
-      edit_ticks_snip()
+      edit_ticks_SNIP()
       ....()
    }
    
@@ -337,14 +330,14 @@ classDiagram
    class MultiPlot{
       <<Library of pre-built Plots>>
       ...
-      plot_box_with_dots(dotkind:str["swarm", "strip"])
-      plot_box_with_dots_snip()
-      plot_mean_with_dots(meankind:str["bar", "point"], dotkind:str["swarm", "strip"])
-      plot_mean_with_dots_snip()
+      plot_box_strip()
+      plot_box_strip_SNIP()
+      plot_bar_strip()
+      plot_bar_strip_SNIP()
       plot_paired_dots()
-      plot_paired_dots_snip()
+      plot_paired_dots_SNIP()
       plot_scatter_with_line()
-      plot_scatter_with_line_snip()
+      plot_scatter_with_line_SNIP()
       plot_qqplot()
       ....()
    }

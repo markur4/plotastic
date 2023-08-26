@@ -31,7 +31,7 @@ class MultiPlot(PlotTool):
     #
     # ... Boxplots .................................................................................
 
-    def plot_box_under_strip(
+    def plot_box_strip(
         self,
         marker_size: float = 2,
         marker_alpha: float = 0.5,
@@ -99,7 +99,7 @@ class MultiPlot(PlotTool):
         (
             self.subplots()
             .fillaxes(kind="box", **box_KWS)
-            .fillaxes(kind="strip", **strip_KWS)
+            .fillaxes(kind="swarm", **strip_KWS)
         )
 
         if legend:
@@ -107,7 +107,7 @@ class MultiPlot(PlotTool):
 
         return self
 
-    def plot_box_under_strip_SNIP(self, doclink=True):
+    def plot_box_strip_SNIP(self, doclink=True):
         s = "\n"
         if doclink:
             s += f"# {'Docs Boxplot:'.ljust(20)} {self.DOCS['box']}\n"
@@ -186,8 +186,6 @@ df, dims = ut.load_dataset("tips")  # * Tips
 # df, dims = ut.load_dataset("fmri") # * FMRI
 
 MP = MultiPlot(data=df, dims=dims)
-
-
 
 
 
