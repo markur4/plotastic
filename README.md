@@ -289,6 +289,12 @@ classDiagram
 
    %% PLOTTING #......................................................................................
 
+   class rc{
+      <<Runtime Config>>
+      ...
+      ...()
+   }
+
    class matplotlib{
       <<Plotting Objects>>
       ...
@@ -324,6 +330,7 @@ classDiagram
       ....()
    }
    
+rc ..> matplotlib: Configured by
    matplotlib *-- PlotTool
 
 

@@ -9,7 +9,8 @@ import plotastic as plst
 print(plst.__all__)
 # from plotastic import *
 # Dims
-from plotastic.analysis import Dims, DimsAndLevels
+from plotastic.dims import Dims
+# from plotastic.dimsandlevels import DimsAndLevels
 
 
 # %%
@@ -36,12 +37,12 @@ dims = Dims(**dict(y="signal", x="timepoint", hue="event", col="subject"))
 
 print(
     "#\t 'dims.by' before switching:",
-    dims.by,
+    dims.col,
 )
-print("#\t 'dims.by' in chain:        ", dims.switch(col="event", inplace=False).by)
-print("#\t 'dims.by' after switching: ", dims.by, "(inplace=False)")
-print("#\t 'dims.by' in chain:        ", dims.switch(col="event", inplace=True).by)
-print("#\t 'dims.by' after switching: ", dims.by, "(inplace=True)")
+print("#\t 'dims.by' in chain:        ", dims.switch(col="event", inplace=False).col)
+print("#\t 'dims.by' after switching: ", dims.col, "(inplace=False)")
+print("#\t 'dims.by' in chain:        ", dims.switch(col="event", inplace=True).col)
+print("#\t 'dims.by' after switching: ", dims.col, "(inplace=True)")
 
 
 # - Switching method can be called passing in two *args without knowing the column names. One of them may be one of `[y,x,hue,row,col]`, which is helpful if you don't remember the exact column names "
@@ -50,8 +51,8 @@ print("#\t 'dims.by' after switching: ", dims.by, "(inplace=True)")
 
 # * Switching method can be called passing in two *args without knowing the column names One of them may be one of [y,x,hue,row,col]"
 
-print("#\t 'dims.by' during witching: ", dims.switch(col="event", inplace=False).by)
-print("#\t 'dims.by' after switching: ", dims.by, "(inplace=False)")
+print("#\t 'dims.by' during witching: ", dims.switch(col="event", inplace=False).col)
+print("#\t 'dims.by' after switching: ", dims.col, "(inplace=False)")
 
 
 # # Analysis

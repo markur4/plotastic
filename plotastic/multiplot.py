@@ -99,7 +99,7 @@ class MultiPlot(PlotTool):
         (
             self.subplots()
             .fillaxes(kind="box", **box_KWS)
-            .fillaxes(kind="swarm", **strip_KWS)
+            .fillaxes(kind="strip", **strip_KWS)
         )
 
         if legend:
