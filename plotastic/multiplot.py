@@ -23,7 +23,8 @@ class MultiPlot(PlotTool):
 
     def mp_box_strip(
         self,
-        markersize: float = 2,
+        marker_size: float = 2,
+        marker_alpha: float = 0.5,
         box_kws: dict = dict(),
         strip_kws: dict = dict(),
     ):
@@ -31,6 +32,7 @@ class MultiPlot(PlotTool):
 
         Args:
             markersize (float, optional): _description_. Defaults to 2.
+            markeralpha (float, optional): _description_. Defaults to 0.5.
             box_kws (dict, optional): _description_. Defaults to dict().
             strip_kws (dict, optional): _description_. Defaults to dict().
         """
@@ -40,7 +42,7 @@ class MultiPlot(PlotTool):
         thick = 1.0
         ### Alpha
         covering = 1.0
-        translucent = 0.5
+        translucent = 0.5 # * markeralpha
         hazy = 0.3
         ### z-order
         front = 100
@@ -80,8 +82,8 @@ class MultiPlot(PlotTool):
             jitter=0.2,  # * How far the points scatter across the x-axis
             zorder=front,
             ### Marker Style
-            alpha=translucent,
-            size=markersize,
+            alpha=marker_alpha,
+            size=marker_size,
             # color="none",
             edgecolor="white",
             linewidth=thin,  # * Edge width of the marker
