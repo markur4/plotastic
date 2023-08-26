@@ -72,12 +72,12 @@ for i, ax in enumerate(PT.axes.flatten()):
         ax.set_title("THIRD!")
 
 ### Don't memorize this, just copy code to the clipboard!
-PT.subplots_snip(doclink=True)
+PT.subplots_SNIP(doclink=True)
 DA = PT  # ! If you use DataAnalysis of PlotTool, it makes no difference!
 # !(We use DA, since its' not intended to use PT directly)
 
 ### There's a snippet for fillaxes too!
-PT.fillaxes_snip(kind="bar", doclink=True)
+PT.fillaxes_SNIP(kind="bar", doclink=True)
 # . . . https://seaborn.pydata.org/generated/seaborn.barplot.html#seaborn.barplot #
 # kws = dict(alpha=.8)
 # for ax, df in DA.iter_axes_and_data:
@@ -86,7 +86,7 @@ PT.fillaxes_snip(kind="bar", doclink=True)
 # DA.edit_legend()  # * Add legend to figure
 
 ### A snippet for configuring Legends
-PT.edit_legend_snip()
+PT.edit_legend_SNIP()
 # # . . . https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.legend #
 # DA.fig.legend(
 #     title='sex', #* Hue factor
@@ -115,7 +115,7 @@ PT.set(row="none", col="none").plot()
 PT.edit_y_scale_log(base=2)
 
 ### Snippet for Logarithmic scaling
-PT.edit_xy_scale_snip(doclink=True)
+PT.edit_xy_scale_SNIP(doclink=True)
 # # . . . https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html#matplotlib.axes.Axes.set_xscale #
 # for ax in DA.axes.flatten():
 #     ax.set_yscale('log',  # * 'symlog', 'linear', 'logit',
@@ -128,7 +128,7 @@ PT.edit_xy_scale_snip(doclink=True)
 PT.edit_grid()
 
 ### Snippet for Gridlines
-PT.edit_grid_snip()
+PT.edit_grid_SNIP()
 # for ax in PT.axes.flatten():
 #     ax.yaxis.grid(True, which='major', ls='-', linewidth=0.5, c='grey')
 #     ax.yaxis.grid(True, which='minor', ls='-', linewidth=0.2, c='grey')
@@ -154,7 +154,7 @@ PT.edit_y_ticklabels_log_minor()
 PT.edit_fontsizes(ticklabels=9, xylabels=10, axis_titles=11)
 
 ### Snippet for Font Sizes
-PT.edit_fontsizes_snip()
+PT.edit_fontsizes_SNIP()
 # ticklabels, xylabels, axis_titles = 9, 10, 11 ### <--- CHANGE THIS [pt]
 # for ax in PT.axes.flatten():
 #     ax.tick_params(axis='y', which='major', labelsize=ticklabels) # * Ticklabels
@@ -173,7 +173,7 @@ PT.edit_titles_with_func(
 )
 
 ### Snippet for axes title formatting
-PT.edit_titles_with_func_snip()
+PT.edit_titles_with_func_SNIP()
 # row_format = lambda x: x.upper() #* e.g. try lambda x: x.upper()
 # col_format = lambda x: x
 # connect = '\n' #* newline. Try ' | ' as a separator in the same line
@@ -199,7 +199,7 @@ PT.edit_title_replace(
 )
 
 ### Snippet for replacing titles
-PT.edit_title_replace_snip()
+PT.edit_title_replace_SNIP()
 # titles = ['Lunch \nThsdfr ', 'Lunch \nFri ', 'Lunch \nSat ', 'Lunch \nSun ', 'Dinner \nThur ', 'Dinner \nFri ', 'Dinner \nSat ', 'Dinner \nSun ']
 # for ax, title in zip(PT.axes.flatten(), titles):
 #     ax.set_title(title)
@@ -213,7 +213,7 @@ PT.edit_xy_axis_labels(
 )
 
 ### Snipper for changing the axis labels
-PT.edit_xy_axis_labels_snip()
+PT.edit_xy_axis_labels_SNIP()
 # ### y-axis labels
 # for ax in PT.axes_iter_leftmost:
 #     ax.set_ylabel('tip')
@@ -234,7 +234,7 @@ PT.edit_x_ticklabels(
     pad=1,
 )
 ### Snippet for changing the axis labels
-PT.edit_x_ticklabels_snip()
+PT.edit_x_ticklabels_SNIP()
 # DA=PT
 # notlowerrow = ['', '']
 # lowerrow = ['Yes', 'No']
@@ -279,7 +279,6 @@ def tester(DF, dims):
     if PT.dims.hue:  # * Only when legend
         PT = PT.edit_legend()
     # plt.close()
-
 
 
 dimses = [

@@ -97,7 +97,7 @@ class MultiPlot(PlotTool):
         )
 
         return self
-    
+
     def mp_box_strip_SNIP(self):
         pass
 
@@ -105,16 +105,21 @@ class MultiPlot(PlotTool):
 # !
 # !  __________________________________________________________________________
 
-## %% Matplotlib Runtime Config (RC)
+# %% Matplotlib Runtime Config (RC)
+
 mpl.rc("figure", dpi=250)
 
 # %% get data
 
-df, dims = ut.load_dataset("tips")
-# df, dims = ut.load_dataset("fmri")
+df, dims = ut.load_dataset("tips")  # * Tips
+# df, dims = ut.load_dataset("fmri") # * FMRI
 
-DA = MultiPlot(data=df, dims=dims)
+MP = MultiPlot(data=df, dims=dims)
 
-DA = DA.mp_box_strip()
+
+# %% Test boxplot_strip
+
+MP = MP.mp_box_strip()
+
 
 # %%

@@ -268,7 +268,7 @@ class PlotTool(DataFrameTool):
 
         return self
 
-    def subplots_snip(self, doclink=True) -> str:
+    def subplots_SNIP(self, doclink=True) -> str:
         s = ""
         if doclink:
             s += f"# . . . {self.DOCS['plt.subplots']} #\n"
@@ -325,7 +325,7 @@ class PlotTool(DataFrameTool):
 
         return self
 
-    def fillaxes_snip(self, kind: str = "strip", doclink=True) -> str:
+    def fillaxes_SNIP(self, kind: str = "strip", doclink=True) -> str:
         s = ""
         if doclink:
             s += f"# . . . {self.DOCS[kind]} #\n"
@@ -434,7 +434,7 @@ class PlotTool(DataFrameTool):
                 ax.set_title(title)
         return self
 
-    def edit_titles_with_func_snip(self) -> str:
+    def edit_titles_with_func_SNIP(self) -> str:
         s = ""
         s += "row_format = lambda x: x #* e.g. try lambda x: x.upper() \n"
         s += "col_format = lambda x: x \n"
@@ -465,7 +465,7 @@ class PlotTool(DataFrameTool):
             ax.set_title(title)
         return self
 
-    def edit_title_replace_snip(self):
+    def edit_title_replace_SNIP(self):
         s = ""
         s += f"titles = {[ax.get_title() for ax in self.axes.flatten()]} \n"
         s += "for ax, title in zip(DA.axes.flatten(), titles): \n"
@@ -510,7 +510,7 @@ class PlotTool(DataFrameTool):
             ax.set_xlabel(notlowerrow)
         return self
 
-    def edit_xy_axis_labels_snip(self) -> str:
+    def edit_xy_axis_labels_SNIP(self) -> str:
         s = ""
         s += "### y-axis labels \n"
         s += "for ax in DA.axes_iter_leftmost: \n"
@@ -555,7 +555,7 @@ class PlotTool(DataFrameTool):
             )
         return self
 
-    def edit_xy_scale_snip(self, doclink=True) -> str:
+    def edit_xy_scale_SNIP(self, doclink=True) -> str:
         s = ""
         if doclink:
             s += f"# . . . {self.DOCS['set_xscale']} #\n"
@@ -585,7 +585,7 @@ class PlotTool(DataFrameTool):
             )
         return self
 
-    def edit_y_ticklabel_percentage_snip(self, doclink=True) -> str:
+    def edit_y_ticklabel_percentage_SNIP(self, doclink=True) -> str:
         s = ""
         if doclink:
             s += f"# . . . {self.DOCS['percent_formatter']} #\n"
@@ -622,7 +622,7 @@ class PlotTool(DataFrameTool):
                     label.set_visible(False)  # * Set those not in subs to invisible
         return self
 
-    def edit_y_ticklabels_log_minor_snip(self) -> str:
+    def edit_y_ticklabels_log_minor_SNIP(self) -> str:
         s = ""
         s += "for ax in DA.axes.flatten(): \n"
         s += "\t#* Set minor ticks, we need ScalarFormatter, others can't get casted into float \n"
@@ -674,7 +674,7 @@ class PlotTool(DataFrameTool):
             ax.tick_params(axis="x", pad=pad)  # * Sets distance to figure
         return self
 
-    def edit_x_ticklabels_snip(self) -> str:
+    def edit_x_ticklabels_SNIP(self) -> str:
         s = ""
         s += f"notlowerrow = {self.levels_dict_dim['x']} \n"
         s += f"lowerrow = {self.levels_dict_dim['x']} \n"
@@ -704,7 +704,7 @@ class PlotTool(DataFrameTool):
             ax.xaxis.grid(True, which="major", ls="-", linewidth=0.3, c="grey")
         return self
 
-    def edit_grid_snip(self) -> str:
+    def edit_grid_SNIP(self) -> str:
         s = ""
         s += "for ax in DA.axes.flatten(): \n"
         s += "\tax.yaxis.grid(True, which='major', ls='-', linewidth=0.5, c='grey') \n"
@@ -746,7 +746,7 @@ class PlotTool(DataFrameTool):
         )
         return self
 
-    def edit_legend_snip(self, doclink=True) -> str:
+    def edit_legend_SNIP(self, doclink=True) -> str:
         s = ""
         if doclink:
             s += f"# . . . {self.DOCS['legend']} #\n"
@@ -793,7 +793,7 @@ class PlotTool(DataFrameTool):
             ax.title.set_fontsize(axis_titles)  # * Title
         return self
 
-    def edit_fontsizes_snip(self) -> str:
+    def edit_fontsizes_SNIP(self) -> str:
         s = ""
         s = "ticklabels, xylabels, axis_titles = 9, 10, 11 ### <--- CHANGE THIS [pt]\n"
         s += "for ax in DA.axes.flatten(): \n"
