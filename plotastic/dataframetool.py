@@ -264,14 +264,25 @@ class DataFrameTool(DimsAndLevels):
     #
     # ... DESCRIBE DATA ...............................................................................................'''
 
-    def catplot(self, kind="strip") -> sns.FacetGrid:
+    def catplot(self, kind="strip", **catplot_kws) -> sns.FacetGrid:
         """
         A simple seaborn catplot
 
         Returns:
             _type_: sns.FacetGrid
         """
-        g = sns.catplot(kind=kind, data=self.data, **self.factors_as_dict)
+
+        ### Handle kwargs
+        kws = dict(
+            kind=kind,
+            data=self.data,
+            height=2.5,
+            **self.factors_as_dict,
+            facet_kws=dict(despine=False),
+        )
+        kws.update(catplot_kws)
+
+        g = sns.catplot(**kws)
         plt.show()
         return g
 

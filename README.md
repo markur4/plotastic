@@ -451,16 +451,19 @@ flowchart TD
 
 
 
-The author is not a dedicated statistician. He derives his knowledge from ...
 
-- ... *Intuitive Biostatistics - Fourth Edition (2017) Harvey MotulskyOxford University Press*
+### The author is not a dedicated statistician! BUT, he derives his knowledge from ...
+
+- ... ***Intuitive Biostatistics*** - Fourth Edition (2017); Harvey Motulsky
+- ... ***Introduction to Statistical Learning with applications in Python*** - First Edition (2023); Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani, Jonathan Taylor
 - ... talking to other scientists struggling with statistics
 
 **✅ plotastic can help you with...**
 
-- ... choosing correct statistical tests
-- ... a playground to experiment with plotting and statsistics which can turn into ...
-- ... publication grade figures
+- ... gaining some practical experience when learning statistics
+- ... quickly gain statistical implications about your data without switching to another software
+- ... making first steps towards a full statistical analysis
+- ... plotting publication grade figures (without statistics)
 - ... publication grade statistical analysis **IF** you really know what you're doing OR you have back-checked your results by a professional statistician
 - ... quickly test data transformations (log)
 
