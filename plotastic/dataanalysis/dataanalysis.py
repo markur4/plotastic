@@ -12,7 +12,7 @@ import pickle
 import pandas as pd
 
 import markurutils as ut
-from plotastic.annotator import Annotator
+from plotastic.dataanalysis.annotator import Annotator
 
 # from statresult import StatResult
 

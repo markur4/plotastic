@@ -10,7 +10,7 @@ import pyperclip
 
 import markurutils as ut
 
-from plotastic.plottool import PlotTool
+from plotastic.plotting.plottool import PlotTool
 
 
 # %% Matplotlib Runtime Config (RC)

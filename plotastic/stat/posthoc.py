@@ -7,7 +7,7 @@ import pandas as pd
 import pingouin as pg
 
 
-from plotastic.assumptions import Assumptions
+from plotastic.stat.assumptions import Assumptions
 
 
 # %% Class PostHoc

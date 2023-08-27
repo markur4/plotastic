@@ -1,6 +1,6 @@
 import pandas as pd
 
-from plotastic.assumptions import Assumptions
+from plotastic.stat.assumptions import Assumptions
 
 
 class Omnibus(Assumptions):

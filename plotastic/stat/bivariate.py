@@ -2,7 +2,7 @@
 
 import pingouin as pg
 
-from plotastic.dataframetool import DataFrameTool
+from plotastic.dimensions.dataframetool import DataFrameTool
 
 # %%
 

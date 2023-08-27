@@ -34,7 +34,7 @@ import matplotlib.pyplot as plt
 import markurutils as ut
 
 # from old.dataanalysis import DataAnalysis
-from plotastic.dims import Dims
+from plotastic.dimensions.dims import Dims
 
 # %% Utils
 df = None  # * Prevent warning when using catchstate

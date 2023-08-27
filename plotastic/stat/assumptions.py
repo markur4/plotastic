@@ -3,9 +3,9 @@
 
 import pandas as pd
 
-from plotastic.dataframetool import DataFrameTool
-from plotastic.statresults import StatResults
-from plotastic.stattest import StatTest
+from plotastic.dimensions.dataframetool import DataFrameTool
+from plotastic.stat.statresults import StatResults
+from plotastic.stat.stattest import StatTest
 
 
 # %% Class Assumptions

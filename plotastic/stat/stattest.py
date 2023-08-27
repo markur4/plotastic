@@ -1,7 +1,7 @@
 import numpy as np
 
-from plotastic.dataframetool import DataFrameTool
-from plotastic.statresults import StatResults
+from plotastic.dimensions.dataframetool import DataFrameTool
+from plotastic.stat.statresults import StatResults
 
 
 class StatTest(DataFrameTool):

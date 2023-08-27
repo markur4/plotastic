@@ -14,7 +14,7 @@ from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
 
 import markurutils as ut
-from plotastic.dimsandlevels import DimsAndLevels
+from plotastic.dimensions.dimsandlevels import DimsAndLevels
 
 # %% Class DataFrameTool
 

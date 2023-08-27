@@ -2,7 +2,7 @@
 #%% Imports
 import markurutils as ut
 import plotastic as plst
-from plotastic.posthoc import PostHoc
+from plotastic.stat.posthoc import PostHoc
 
 
 

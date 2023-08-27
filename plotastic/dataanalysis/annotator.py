@@ -13,10 +13,10 @@ pd.options.mode.chained_assignment = None
 
 import markurutils as ut
 
-from plotastic.posthoc import PostHoc
-from plotastic.multiplot import MultiPlot
-from plotastic.omnibus import Omnibus
-from plotastic.bivariate import Bivariate
+from plotastic.stat.posthoc import PostHoc
+from plotastic.plotting.multiplot import MultiPlot
+from plotastic.stat.omnibus import Omnibus
+from plotastic.stat.bivariate import Bivariate
 
 # %% class Annotator
 

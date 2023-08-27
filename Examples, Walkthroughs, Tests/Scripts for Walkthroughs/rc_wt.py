@@ -51,7 +51,7 @@ DA = plst.DataAnalysis(df, dims)
 plst.rc.set_style("default")
 DA.catplot()
 
-# %% Apply settings
+# %% Apply Style
 
 plst.rc.set_style("paper")
 g = DA.catplot()
@@ -59,9 +59,13 @@ g = DA.catplot()
 
 # %% Apply Palette
 
-plst.rc.set_palette(verbose=True) #* defaults to "Paired"
+plst.rc.set_palette(verbose=True)  # * defaults to "Paired"
 g = DA.catplot()
 
-# %%
-plst.rc.set_palette("bright", verbose=False) #* pick another color, suppress demonstration of colors
+# %% Apply different palette
+plst.rc.set_palette(
+    "bright", verbose=False
+)  # * pick another color, suppress demonstration of colors
 g = DA.catplot()
+
+g.savefig("test.pdf")

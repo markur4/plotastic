@@ -9,7 +9,7 @@ import plotastic as plst
 print(plst.__all__)
 # from plotastic import *
 # Dims
-from plotastic.dims import Dims
+from plotastic.dimensions.dims import Dims
 # from plotastic.dimsandlevels import DimsAndLevels
 
 

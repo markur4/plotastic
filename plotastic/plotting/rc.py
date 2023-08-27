@@ -61,8 +61,13 @@ FONTSIZE = 10
 
 STYLE_PAPER = {
     # ... Figure
-    "figure.dpi": 300,
+    "figure.dpi": 200,  # * Displaying figures doesn't need as much dpi as saving them
     "figure.figsize": (1, 1),  # * default is way too big
+    "figure.facecolor": "grey",  # * it's easier on the eyes
+    # ... Savefig
+    "savefig.dpi": 300,
+    "savefig.format": "pdf",
+    "savefig.transparent": True,
     # ... Font
     "font.family": "sans-serif",
     "font.sans-serif": "Arial Narrow",
@@ -108,7 +113,7 @@ STYLE_PAPER = {
 }
 
 
-## !!                                                
+## !!
 
 # # %% Default Style
 

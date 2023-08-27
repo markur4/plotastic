@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import plotastic as plst
 import markurutils as ut
 
-from plotastic.plottool import PlotTool
+from plotastic.plotting.plottool import PlotTool
 
 # %% Quick testing . . . . . . . . . . . . . . . . . . . . . . .
 

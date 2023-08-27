@@ -3,7 +3,7 @@
 
 import markurutils as ut
 import plotastic as plst
-from plotastic.multiplot import MultiPlot
+from plotastic.plotting.multiplot import MultiPlot
 
 import matplotlib as mpl
 

@@ -21,7 +21,7 @@ import seaborn as sns
 
 import markurutils as ut
 
-from plotastic.dataframetool import DataFrameTool
+from plotastic.dimensions.dataframetool import DataFrameTool
 
 if TYPE_CHECKING:
     import numpy as np
