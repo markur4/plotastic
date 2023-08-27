@@ -16,16 +16,17 @@ __author__ = "markur4"
 
 # ... Specify what to import when using import * .....................................................
 # *  https://stackoverflow.com/questions/1057431/how-to-load-all-modules-in-a-folder
-### List all .py files in this directory and subdirectories
+### Get subdirectories that store all .py Files. Exclude hidden folders
 cwd = Path(__file__).parent
 directories = [
     f for f in cwd.iterdir() if f.is_dir() and not f.name.startswith(("_", "."))
 ]
+### Get all .py files in subdirectories
 module_paths = []
 for dir in directories:
     module_paths += glob.glob(str(dir / "*.py"))
 
-### Put all modules in __all__ except __init__.py. Take care to include parent folders of modules
+### Put all modules in __all__. Take care to include parent folders of modules
 # __all__ = [Path(f).stem for f in module_paths if "__init__" not in f]
 __all__ = []
 for f in module_paths:
