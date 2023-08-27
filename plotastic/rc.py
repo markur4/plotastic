@@ -2,12 +2,24 @@
 # %% Imports
 
 import matplotlib as mpl
-from matplotlib.pyplot import grid
-from numpy import size
+import seaborn as sns
+
+import markurutils as ut
 
 
 # %% .... Apply settings ........................................................
 def set_style(settings: dict | str):
+    """Iterates through settings dictionary and applies them to matplotlib rcParams via mpl.rcParams[setting] = value.
+
+    Args:
+        settings (dict | str): _description_
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        _type_: _description_
+    """
     if isinstance(settings, str):
         if settings == "paper":
             settings = STYLE_PAPER
@@ -22,6 +34,25 @@ def set_style(settings: dict | str):
     ### Define settings
     for setting, value in settings.items():
         mpl.rcParams[setting] = value
+
+
+def set_palette(palette: str | list = "Paired", verbose=True):
+    """Sets the color palette via sns.set_theme(palette=palette).
+
+    Args:
+        palette (str | list, optional): _description_. Defaults to "Paired".
+        verbose (bool, optional): _description_. Defaults to True.
+    """
+    if verbose:
+        pal = sns.color_palette(palette, 8).as_hex()
+        print(f"#! You chose this color palette: {pal}")
+        if ut.is_notebook():
+            from IPython.display import display
+
+            display(pal)
+
+    # sns.set_theme(palette=palette) # ! resets rcParams
+    mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=sns.color_palette(palette))
 
 
 # %% .... Style: Paper .............................................................
@@ -75,3 +106,22 @@ STYLE_PAPER = {
     # 'text.usetex': True,
     # 'scatter.marker': 'x',
 }
+
+
+## !!                                                
+
+# # %% Default Style
+
+# import plotastic as plst
+# df, dims = ut.load_dataset("fmri")
+# DA = plst.DataAnalysis(df, dims)
+
+# set_style("default")
+# g = DA.catplot()
+
+# # %% Apply settings
+
+# set_palette() #* defaults to "Paired"
+# g = DA.catplot()
+
+# %%

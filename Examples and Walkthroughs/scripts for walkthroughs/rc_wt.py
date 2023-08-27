@@ -10,7 +10,7 @@ import plotastic as plst
 # %% Some info on matplotlib rc files
 
 ### How Plotastic changes your rc settings
-"""Basically, plst iterates through dictionaries stored in plst.rc executing mpl.rcParams['setting'] = value, e.g.:
+"""Basically,  plst iterates through dictionaries stored in plst.rc executing mpl.rcParams['setting'] = value, e.g.:
 
     mpl.rcParams["figure.dpi"] = 300
     mpl.rcParams["lines.linewidth"] = 0.75
@@ -35,6 +35,11 @@ Matplotlib looks for matplotlibrc in four locations, in the following order:
 4. It looks in the installation directory (usually something like /usr/local/lib/python3.9/site-packages/matplotlib/mpl-data/matplotlibrc, but note that this depends on the installation).
 """
 
+# %% Check where matplotlib is looking for rc files
+print(mpl.get_configdir())  # * This prints a directory where no rc file is found
+
+print(mpl.matplotlib_fname())  # * This seems more correct
+
 
 # %% Default Style
 
@@ -48,14 +53,15 @@ DA.catplot()
 
 # %% Apply settings
 
-
 plst.rc.set_style("paper")
 g = DA.catplot()
 
 
-# %% Check where matplotlib is looking for rc files
-print(mpl.get_configdir())  # * This prints a directory where no rc file is found
+# %% Apply Palette
 
-print(mpl.matplotlib_fname())  # * This seems more correct
+plst.rc.set_palette(verbose=True) #* defaults to "Paired"
+g = DA.catplot()
 
 # %%
+plst.rc.set_palette("bright", verbose=False) #* pick another color, suppress demonstration of colors
+g = DA.catplot()
