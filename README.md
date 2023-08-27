@@ -291,8 +291,10 @@ classDiagram
 
    class rc{
       <<Runtime Config>>
-      ...
-      ...()
+      FONTSIZE
+      STYLE_PAPER
+      STYLE_PRESENTATION
+      set_style()
    }
 
    class matplotlib{
@@ -330,8 +332,8 @@ classDiagram
       ....()
    }
    
-rc ..> matplotlib: Configured by
-   matplotlib *-- PlotTool
+matplotlib <.. rc: Configures
+matplotlib *-- PlotTool
 
 
    class MultiPlot{

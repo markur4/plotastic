@@ -7,10 +7,10 @@ from numpy import size
 
 
 # %% .... Apply settings ........................................................
-def mplstyle_set(settings: dict | str):
+def set_style(settings: dict | str):
     if isinstance(settings, str):
         if settings == "paper":
-            settings = SETTINGS_PLST_PAPER
+            settings = STYLE_PAPER
         elif settings in ("default", "defaults"):
             mpl.rcParams.update(mpl.rcParamsDefault)
             return None
@@ -24,11 +24,11 @@ def mplstyle_set(settings: dict | str):
         mpl.rcParams[setting] = value
 
 
-# %% .... Settings .............................................................
+# %% .... Style: Paper .............................................................
 
 FONTSIZE = 10
 
-SETTINGS_PLST_PAPER = {
+STYLE_PAPER = {
     # ... Figure
     "figure.dpi": 300,
     "figure.figsize": (1, 1),  # * default is way too big
@@ -75,60 +75,3 @@ SETTINGS_PLST_PAPER = {
     # 'text.usetex': True,
     # 'scatter.marker': 'x',
 }
-
-
-# %% Some info on matplotlib rc files
-
-### How Plotastic changes your rc settings
-"""Basically, plst iterates through dictionaries stored in plst.rc executing mpl.rcParams['setting'] = value, e.g.:
-
-    mpl.rcParams["figure.dpi"] = 300
-    mpl.rcParams["lines.linewidth"] = 0.75
-    mpl.rcParams["axes.linewidth"] = 0.75
-    mpl.rcParams["axes.labelweight"] = "bold"
-    ... etc.
-
-Hence, no styles are permanently changed. You can always reset your rc settings by restarting your kernel or executing mpl.rcParams.update(mpl.rcParamsDefault).
-The reason for not working with .mplstyle files is that I don't know how to influence the fontsize-increments from relative sizes (large, large-x, etc.).
-"""
-
-### About matplotlib rc files
-"""From: https://matplotlib.org/stable/tutorials/introductory/customizing.html
-
-Matplotlib looks for matplotlibrc in four locations, in the following order:
-1. matplotlibrc in the current working directory, usually used for specific customizations that you do not want to apply elsewhere.
-2. $MATPLOTLIBRC if it is a file, else $MATPLOTLIBRC/matplotlibrc.
-3. It next looks in a user-specific place, depending on your platform:
-    On Linux and FreeBSD, it looks in .config/matplotlib/matplotlibrc (or $XDG_CONFIG_HOME/matplotlib/matplotlibrc) if you’ve customized your environment.
-    On other platforms, it looks in .matplotlib/matplotlibrc.
-    https://matplotlib.org/stable/users/faq/troubleshooting_faq.html#locating-matplotlib-config-dir
-4. It looks in the installation directory (usually something like /usr/local/lib/python3.9/site-packages/matplotlib/mpl-data/matplotlibrc, but note that this depends on the installation).
-"""
-
-
-# %% test
-
-import markurutils as ut
-from plotastic.dataanalysis import DataAnalysis
-import seaborn as sns
-
-
-df, dims = ut.load_dataset("fmri")
-DA = DataAnalysis(df, dims)
-
-
-### Default plot
-mplstyle_set("default")
-DA.catplot()
-
-# %% Apply settings
-
-
-mplstyle_set(SETTINGS_PLST_PAPER)
-g = DA.catplot()
-
-
-# %% Check where matplotlib is looking for rc files
-print(mpl.get_configdir())  # * This prints a directory where no rc file is found
-
-print(mpl.matplotlib_fname())  # * This seems more correct
