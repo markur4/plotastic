@@ -54,7 +54,7 @@ class DataFrameTool(DimsAndLevels):
         self.subject = subject
 
         # ### Initialize a dataframe that contains  groups for every combination of factor levels (with dv = N)
-        # self.data_allgroups = self.data_ensure_allgroups
+        # self.data_allgroups = self.data_ensure_allgroups()
 
         ### Transformations
         self.is_transformed = False
@@ -354,14 +354,14 @@ class DataFrameTool(DimsAndLevels):
 
     def data_get_rows_with_NaN(self) -> pd.DataFrame:
         ### Make complete df with all possible groups/facets and with factors as index
-        df = self.data_ensure_allgroups.set_index(self.factors_all)
+        df = self.data_ensure_allgroups().set_index(self.factors_all)
         # * Pick only rows where some datapoints are missing, not all
         hasNaN_df: "pd.DataFrame" = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
         return hasNaN_df
 
     def data_get_empty_groupkeys(self) -> list[str | tuple[str]]:
         ### Make complete df with all possible groups/facets and with factors as index
-        df = self.data_ensure_allgroups.set_index(self.factors_all)
+        df = self.data_ensure_allgroups().set_index(self.factors_all)
         # * Rows with only NaNs (these are completely missing in self.data)
         allNaN_df = df[df.isna().all(axis=1)]
         return allNaN_df.index.to_list()
@@ -427,12 +427,18 @@ class DataFrameTool(DimsAndLevels):
     #
     # ... Iterate through DATA  .......................................................................................................'''
 
-    @property
-    def data_ensure_allgroups(self) -> pd.DataFrame:
+
+    def data_ensure_allgroups(self, factors=None) -> pd.DataFrame:
         """df.groupby() skips empty groups, so we need to ensure that all groups are present in the data.
-        :return: _description_
-        :rtype: _type_
-        """
+
+        Args:
+            factors (_type_, optional): Factors to include for completion. Defaults to None.
+
+        Returns:
+            pd.DataFrame: _description_
+        """        
+
+        factors = self.factors_all  if factors is None else factors
 
         # * Set columns with factors to index, yielding an index with incomplete keys
         reindex_DF = self.data.set_index(self.factors_all)
@@ -469,10 +475,10 @@ class DataFrameTool(DimsAndLevels):
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ..."""
         if self.factors_is_unfacetted:
             # * If no row or col, return all axes and data
-            yield None, self.data_ensure_allgroups  # ! Error for  df.groupby().get_group(None)
+            yield None, self.data_ensure_allgroups()  # ! Error for  df.groupby().get_group(None)
 
         else:
-            grouped = self.data_ensure_allgroups.groupby(
+            grouped = self.data_ensure_allgroups().groupby(
                 ut.ensure_list(self.factors_rowcol)
             )
             for key in self.levelkeys_rowcol:
@@ -500,7 +506,7 @@ class DataFrameTool(DimsAndLevels):
     @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
     def data_iter__allkeys_groups(self):
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ..."""
-        for key, df in self.data_ensure_allgroups.groupby(self.factors_all):
+        for key, df in self.data_ensure_allgroups().groupby(self.factors_all):
             yield key, df
 
     @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...

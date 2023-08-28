@@ -506,7 +506,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
                 yield key, df, ax, ph
         else:
-            yield None, self.data_ensure_allgroups, self.axes, PH
+            yield None, self.data_ensure_allgroups(), self.axes, PH
 
     def _annotate_pairwise_base(
         self,
