@@ -129,7 +129,9 @@ class PostHoc(Assumptions):
         # pcol = "p-unc" if padjust in ("none", None) else "p-corr"
 
         ### EDIT PH
-        PH = PH.reset_index(drop=False) #* drop is default false, but put it explicitly  here
+        PH = PH.reset_index(
+            drop=False
+        )  # * drop is default false, but put it explicitly  here
 
         # * Add Stars
         PH["**p-unc"] = PH["p-unc"].apply(self._p_to_stars, alpha=alpha)
