@@ -394,8 +394,13 @@ class PlotTool(DataFrameTool):
         if isinstance(key, str):
             return ut.capitalize(key)
         elif isinstance(key, tuple):
-            key = [ut.capitalize(k) for k in key]
-            return connect.join(key)
+            keys = []
+            for k in key:
+                if isinstance(k, str):
+                    keys.append(ut.capitalize(k))
+                else:
+                    keys.append(str(k))  # * Can't capitalize int
+            return connect.join(keys)
 
     def edit_axtitles_reset(self) -> PlotTool:
         for key, ax in self.axes_iter__keys_ax:
