@@ -166,13 +166,13 @@ class PlotTool(DataFrameTool):
     #
     # * Associate with Rowcol   ................................#
 
-    @property  # * row_lvl1, (ax11, ax21, ...) >>> row_lvl2, (ax12, ax22, ...) >>> ...
+    @property  # * >>> row_lvl1, (ax11, ax21, ...) >>> row_lvl2, (ax12, ax22, ...) >>> ...
     def axes_iter__row_axes(self):
         """Returns: row_lvl1, (ax11, ax21, ...) >> row_lvl2, (ax12, ax22, ...) >> ..."""
         for rowkey, axes in zip(self.levels_dict_dim["row"], self.axes_nested):
             yield rowkey, axes
 
-    @property  # *  col_lvl1, (ax11, ax21, ...) >>> col_lvl2, (ax12, ax22, ...) >>> ...
+    @property  # * >>> col_lvl1, (ax11, ax21, ...) >>> col_lvl2, (ax12, ax22, ...) >>> ...
     def axes_iter__col_axes(self):
         """Returns: col_lvl1, (ax11, ax21, ...) >> col_lvl2, (ax12, ax22, ...) >> ..."""
         for colkey, axes in zip(self.levels_dict_dim["col"], self.axes_nested.T):
@@ -187,17 +187,27 @@ class PlotTool(DataFrameTool):
         if self.factors_rowcol is None:
             yield self.axes, self.data  # * If no row or col, return all axes and data
         else:
-            for (key_ax, ax), (key_df, df) in zip(
-                self.axes_iter__keys_ax, self.data_iter__key_facet
-            ):
-                assert (
-                    key_df == key_ax
-                ), f"Mismatch of dataframe_key and ax_key: {key_df} != {key_ax}"
+            for key in self.levelkeys_rowcol:
+                ax = self.axes_dict[key]
+                df = self.data_dict[key]
                 # * Seaborn breaks on Dataframes that are only NaNs
                 if df[self.dims.y].isnull().all():
                     continue
                 else:
                     yield ax, df
+
+            # ! old Version: Unelegant, but tested
+            # for (key_ax, ax), (key_df, df) in zip(
+            #     self.axes_iter__keys_ax, self.data_iter__key_facet
+            # ):
+            #     assert (
+            #         key_df == key_ax
+            #     ), f"Mismatch of dataframe_key and ax_key: {key_df} != {key_ax}"
+            #     # * Seaborn breaks on Dataframes that are only NaNs
+            #     if df[self.dims.y].isnull().all():
+            #         continue
+            #     else:
+            #         yield ax, df
 
     #
     # * Selective   ............................................#

@@ -479,6 +479,10 @@ class DataFrameTool(DimsAndLevels):
                 df = grouped.get_group(key)
                 yield key, df
 
+    @property  # * {key: df1, key2: df2, ...}
+    def data_dict(self):
+        return dict(self.data_iter__key_facet)
+
     @property  # * >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
     def data_iter__key_facet_skip_empty(self) -> Generator:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ...
