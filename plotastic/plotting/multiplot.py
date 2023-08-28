@@ -36,6 +36,7 @@ class MultiPlot(PlotTool):
         marker_size: float = 2,
         marker_alpha: float = 0.5,
         legend=True,
+        subplot_kws: dict = dict(),
         box_kws: dict = dict(),
         strip_kws: dict = dict(),
     ):
@@ -97,7 +98,7 @@ class MultiPlot(PlotTool):
 
         ###... PLOT
         (
-            self.subplots()
+            self.subplots(**subplot_kws)
             .fillaxes(kind="box", **box_KWS)
             .fillaxes(kind="strip", **strip_KWS)
         )
