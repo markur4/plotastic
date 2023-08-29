@@ -187,9 +187,12 @@ class PlotTool(DataFrameTool):
         if self.factors_rowcol is None:
             yield self.axes, self.data  # * If no row or col, return all axes and data
         else:
+            # data_dict = self.data.groupby(self.factors_rowcol) # ! works too!
             for key in self.levelkeys_rowcol:
                 ax = self.axes_dict[key]
-                df = self.data_dict[key]
+                df = self.data_dict_skip_empty[key]
+                # df = data_dict.get_group(key) # ! works, too! 
+                # ut.pp(df)
                 # * Seaborn breaks on Dataframes that are only NaNs
                 if df[self.dims.y].isnull().all():
                     continue

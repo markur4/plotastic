@@ -62,7 +62,7 @@ FONTSIZE = 10
 STYLE_PAPER = {
     # ... Figure
     "figure.dpi": 200,  # * Displaying figures doesn't need as much dpi as saving them
-    "figure.figsize": (1, 1),  # * default is way too big
+    "figure.figsize": (3, 3),  # * default is way too big
     "figure.facecolor": "grey",  # * it's easier on the eyes
     # ... Savefig
     "savefig.dpi": 300,

@@ -494,7 +494,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         if not self.factors_is_unfacetted:
             phG = PH.groupby(self.factors_rowcol)
-            dfD = self.data_dict
+            dfD = self.data_dict_skip_empty
             axD = self.axes_dict
 
             ### Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc

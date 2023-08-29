@@ -427,18 +427,17 @@ class DataFrameTool(DimsAndLevels):
     #
     # ... Iterate through DATA  .......................................................................................................'''
 
-
     def data_ensure_allgroups(self, factors=None) -> pd.DataFrame:
         """df.groupby() skips empty groups, so we need to ensure that all groups are present in the data.
-
+        Takes Levels of factors. Returns a DataFrame with all possible combinations of levels as index.
         Args:
-            factors (_type_, optional): Factors to include for completion. Defaults to None.
+            factors (_type_, optional): Factors whose levels are to be used. Defaults to None.
 
         Returns:
             pd.DataFrame: _description_
-        """        
+        """
 
-        factors = self.factors_all  if factors is None else factors
+        factors = self.factors_all if factors is None else factors
 
         # * Set columns with factors to index, yielding an index with incomplete keys
         reindex_DF = self.data.set_index(self.factors_all)
@@ -478,16 +477,13 @@ class DataFrameTool(DimsAndLevels):
             yield None, self.data_ensure_allgroups()  # ! Error for  df.groupby().get_group(None)
 
         else:
+            # * Only fill in empty groups for row and col,
             grouped = self.data_ensure_allgroups().groupby(
                 ut.ensure_list(self.factors_rowcol)
             )
             for key in self.levelkeys_rowcol:
                 df = grouped.get_group(key)
                 yield key, df
-
-    @property  # * {key: df1, key2: df2, ...}
-    def data_dict(self):
-        return dict(self.data_iter__key_facet)
 
     @property  # * >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
     def data_iter__key_facet_skip_empty(self) -> Generator:
@@ -502,6 +498,14 @@ class DataFrameTool(DimsAndLevels):
             for key in self.levelkeys_rowcol:
                 df = grouped.get_group(key)
                 yield key, df
+
+    @property  # * {key: df1, key2: df2, ...}
+    def data_dict(self):
+        return dict(self.data_iter__key_facet)
+
+    @property  # * {key: df1, key2: df2, ...}
+    def data_dict_skip_empty(self):
+        return dict(self.data_iter__key_facet_skip_empty)
 
     @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
     def data_iter__allkeys_groups(self):
@@ -518,6 +522,52 @@ class DataFrameTool(DimsAndLevels):
 
     #
     # ... TRANSFORM  ..................................................................................................'''
+
+    @staticmethod
+    def _rename_y(y: str, func: str) -> str:
+        """Renames the y column to reflect the transformation
+
+        Args:
+            y (str): _description_
+            func (str): _description_
+
+        Returns:
+            str: _description_
+        """
+        if type(func) is str:
+            return f"{y}_({func})"
+        elif callable(func):
+            return f"{y}_({func.__name__})"
+
+    @staticmethod
+    def _add_transform_col(
+        df: "pd.DataFrame",
+        y_raw: str,
+        y_new: str,
+        func: str,
+    ) -> "pd.DataFrame":
+        """Adds a column to the dataframe that contains the transformed data
+
+        Args:
+            df (pd.DataFrame): _description_
+            y_raw (str): _description_
+            y_new (str): _description_
+            func (str): _description_
+
+        Returns:
+            pd.DataFrame: _description_
+        """
+        nan_count_before = df[y_raw].isna().sum()
+        if not y_new in df:
+            df = ut.insert_after(df=df, after=y_raw, newcol_name=y_new, func=func)
+        nan_count_after = df[y_new].isna().sum()
+        if nan_count_before != nan_count_after:
+            warnings.warn(
+                f"\n#! '{y_new}' has changed NaN-count ({nan_count_before} -> {nan_count_after}) after "
+                f"transformation!\n",
+                stacklevel=1000,
+            )
+        return df
 
     def y_transform(self, func: str | Callable, inplace=False):
         """Transforms the data, changes dv property"""
@@ -539,31 +589,16 @@ class DataFrameTool(DimsAndLevels):
         a = self if inplace else ut.copy_by_pickling(self)
         func = func if callable(func) else default_trafofuncs[func]
 
-        def rename_y(y: str) -> str:
-            if type(func) is str:
-                return f"{y}_({func})"
-            elif callable(func):
-                return f"{y}_({func.__name__})"
-
-        def add_transform_col(
-            df: "pd.DataFrame", y_raw: str, y_new: str
-        ) -> "pd.DataFrame":
-            nan_count_before = df[y_raw].isna().sum()
-            if not y_new in df:
-                df = ut.insert_after(df=df, after=y_raw, newcol_name=y_new, func=func)
-            nan_count_after = df[y_new].isna().sum()
-            if nan_count_before != nan_count_after:
-                warnings.warn(
-                    f"\n#! '{y_new}' has changed NaN-count ({nan_count_before} -> {nan_count_after}) after "
-                    f"transformation!\n",
-                    stacklevel=1000,
-                )
-            return df
-
         y_raw = a._y_untransformed
-        y_new = rename_y(y=y_raw)
+        y_new = self._rename_y(y=y_raw, func=func)
+        ### Change dims.y to y-transform!
         a = a.set(y=y_new, inplace=inplace)
-        a.data = add_transform_col(df=a.data, y_raw=y_raw, y_new=y_new)
+        a.data = self._add_transform_col(
+            df=a.data,
+            y_raw=y_raw,
+            y_new=y_new,
+            func=func,
+        )
         self.is_transformed = True
         self.transform_history.append(func)
 
