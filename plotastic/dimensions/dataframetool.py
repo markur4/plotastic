@@ -3,9 +3,10 @@
 # %% Imports
 
 from re import L  # for type hinting my Class type for return values
-from typing import Callable, Generator, List, TYPE_CHECKING
+from typing import Callable, Generator
 import warnings
 from itertools import product
+from copy import deepcopy
 
 import pandas as pd
 import numpy as np
@@ -31,8 +32,7 @@ class DataFrameTool(DimsAndLevels):
         verbose=False,
         **dims_data_kws,
     ):
-        """
-        _summary_
+        """_summary_
 
         Args:
             data (pd.DataFrame): _description_
@@ -57,7 +57,7 @@ class DataFrameTool(DimsAndLevels):
         # self.data_allgroups = self.data_ensure_allgroups()
 
         ### Transformations
-        self.is_transformed = False
+        self.transformed = False
         self.transform_history = []  # * HISTORY OF TRANSFORMATIONS
         # * Store y so we can reset it after transformations
         self._y_untransformed = self.dims.y
@@ -77,6 +77,7 @@ class DataFrameTool(DimsAndLevels):
         # if levels_ignore:
         #     self.check_inputlevels_with_data(input_lvls=levels_ignore, verbose=verbose)
 
+    #
     # ...  Make Levels Categorical...............................................................................
 
     def make_catdict_from_input(self, input_lvls: list[list[str]], skip_notfound=True):
@@ -128,7 +129,9 @@ class DataFrameTool(DimsAndLevels):
         # * Values: Levels from DATA
         # * -> {f1: [input_lvl1, input_lvl2], f2: [input_lvl1, input_lvl2], ...}
         # * This ensures that we can categorize only those columns whose levels were specified in the input
-        catdict = self.make_catdict_from_input(input_lvls, skip_notfound=False)
+        catdict = self.make_catdict_from_input(
+            input_lvls, skip_notfound=False
+        )  # * dsfaadsf
         LVLS = {}
         for factor_from_input, lvls_from_input in catdict.items():
             if factor_from_input == "NOT_FOUND":
@@ -569,8 +572,8 @@ class DataFrameTool(DimsAndLevels):
             )
         return df
 
-    def y_transform(self, func: str | Callable, inplace=False):
-        """Transforms the data, changes dv property"""
+    def transform_y(self, func: str | Callable, inplace=True) -> "DataFrameTool":
+        """DOC: Transforms the data, changes dv property"""
 
         default_trafofuncs = {
             "ln": np.log,
@@ -586,27 +589,32 @@ class DataFrameTool(DimsAndLevels):
             func
         ), f"#! '{func}' should be callable OR one of {list(default_trafofuncs.keys())}"
 
-        a = self if inplace else ut.copy_by_pickling(self)
+        A = self if inplace else deepcopy(self)
         func = func if callable(func) else default_trafofuncs[func]
 
-        y_raw = a._y_untransformed
-        y_new = self._rename_y(y=y_raw, func=func)
+        y_raw = A._y_untransformed
+        y_new = A._rename_y(y=y_raw, func=func)
+
         ### Change dims.y to y-transform!
-        a = a.set(y=y_new, inplace=inplace)
-        a.data = self._add_transform_col(
-            df=a.data,
+        A.dims.y = y_new
+        # a = a.set(y=y_new, inplace=inplace)
+
+        ### Add transformed column
+        A.data = A._add_transform_col(
+            df=A.data,
             y_raw=y_raw,
             y_new=y_new,
             func=func,
         )
-        self.is_transformed = True
-        self.transform_history.append(func)
+        A.transformed = True
+        A.transform_history.append(func)
 
-        return a
+        return A
 
-    def y_reset(self, inplace=False):
-        a = self if inplace else ut.copy_by_pickling(self)
-        a = a.set(y=self._y_untransformed, inplace=inplace)
-        self.is_transformed = False
+    def transform_reset(self, inplace=False) -> "DataFrameTool":
+        A = self if inplace else deepcopy(self)
+        A = A.set(y=self._y_untransformed, inplace=inplace)
+        A.is_transformed = False
+        A.transform_history.append("reset")
         # self.transform_func = []  #* KEEP HISTORY OF TRANSFORMATION
-        return a
+        return A

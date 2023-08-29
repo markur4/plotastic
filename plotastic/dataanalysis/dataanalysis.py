@@ -21,6 +21,7 @@ from plotastic.dataanalysis.annotator import Annotator
 
 
 class DataAnalysis(Annotator):
+    ### ... __init__ ..........................................................................
     def __init__(
         self,
         data: pd.DataFrame,
@@ -49,7 +50,8 @@ class DataAnalysis(Annotator):
         ### statistics
         # self.test = Test()
 
-    ### TITLE .......................................................................................................'''
+    #
+    ### ... TITLE .......................................................................................................'''
 
     @property
     def title(self):
@@ -61,8 +63,12 @@ class DataAnalysis(Annotator):
         self.filer.title = value
 
     def add_to_title(
-        self, to_end: str = "", to_start: str = "", con: str = "_", inplace=False
-    ) -> "Analysis":
+        self,
+        to_end: str = "",
+        to_start: str = "",
+        con: str = "_",
+        inplace=False,
+    ) -> "DataAnalysis":
         """
         :param to_start: str, optional (default="")
         String to add to start of title
@@ -168,6 +174,7 @@ class DataAnalysis(Annotator):
     #     new_manager.canvas.figure = fig  # * Associate it with the figure
     #     fig.set_canvas(new_manager.canvas)
     #     return fig
+
 
 # %%
 

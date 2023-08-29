@@ -46,14 +46,14 @@ class PostHoc(Assumptions):
             df,
         ) in (
             self.data_iter__key_facet_skip_empty
-        ):  # * skip empty means that no empty groups of level combinations are artificially added
+        ):  # * Skip empty means that no empty groups of level combinations are artificially added
             # print(key)
             # ut.pp(df)
 
         # for key in self.levelkeys_rowcol:
         #     df = self.data_dict_skip_empty[key]
 
-            if self.dims.hue:  # * perform twice with x and hue turned around (= huex)
+            if self.dims.hue:  # * Perform twice with x and hue turned around (= huex)
                 ph_xhue = pg.pairwise_tests(data=df, **kwargs)
                 ph_huex = pg.pairwise_tests(data=df, **kwargs_2)
                 PH_dict[key] = ph_xhue.merge(ph_huex, how="outer")
