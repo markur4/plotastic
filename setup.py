@@ -10,7 +10,7 @@ REQUIREMENTS = (
     "seaborn",
     "matplotlib",
     "numpy",
-    "pandas",
+    "pandas==1.5.3", # ! pingouin Not working with 2.0 yet
     "scipy",
     # "statannot",
     "statannotations",

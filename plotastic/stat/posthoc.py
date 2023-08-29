@@ -4,6 +4,7 @@ import markurutils as ut
 
 import numpy as np
 import pandas as pd
+print(pd.__version__)
 import pingouin as pg
 
 
@@ -50,10 +51,12 @@ class PostHoc(Assumptions):
             # print(key)
             # ut.pp(df)
 
-        # for key in self.levelkeys_rowcol:
-        #     df = self.data_dict_skip_empty[key]
+            # for key in self.levelkeys_rowcol:
+            #     df = self.data_dict_skip_empty[key]
 
             if self.dims.hue:  # * Perform twice with x and hue turned around (= huex)
+                print(kwargs)
+                print(kwargs_2)
                 ph_xhue = pg.pairwise_tests(data=df, **kwargs)
                 ph_huex = pg.pairwise_tests(data=df, **kwargs_2)
                 PH_dict[key] = ph_xhue.merge(ph_huex, how="outer")
@@ -234,6 +237,12 @@ class PostHoc(Assumptions):
 
 # PH = PostHoc(data=DF, dims=dims, verbose=False, subject="subject")
 
+
+#%% Check functionality of pingouin
+
+# # ! Raises TypeError: Could not convert value 'cuestim' to numeric. This didn't happen before changing to new environment. 
+# # ! Downgraded pandas from 2.0.3 (released april 2023) to 1.5.3 -> FIXED IT
+# ph = pg.pairwise_tests(data=DF, dv="signal", within=["timepoint", "event"], subject="subject", parametric=True, padjust="bonf", nan_policy="pairwise")
 
 # %% test with pingouin
 
