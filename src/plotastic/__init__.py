@@ -52,11 +52,11 @@ __author__ = "markur4"
 
 ### Vscode requires explicit imports for syntax highlighting
 
-from .dimensions.dataframetool import DataFrameTool
 from .dimensions.dims import Dims
 from .dimensions.dimsandlevels import DimsAndLevels
+from .dimensions.dataframetool import DataFrameTool
 
-from .plotting.rc import *
+from .plotting.rc import set_style, set_palette
 from .plotting.plottool import PlotTool
 from .plotting.multiplot import MultiPlot
 
@@ -72,22 +72,21 @@ from .dataanalysis.dataanalysis import DataAnalysis
 
 ### Use __all__ to let type checkers know what's available
 __all__ = [
-    "DataFrameTool",
-    "Dims",
-    "DimsAndLevels",
-    "PlotTool",
-    "MultiPlot",
-    "StatResults",
-    "StatTest",
-    "Assumptions",
-    "Bivariate",
-    "PostHoc",
-    "Omnibus",
-    "Annotator",
-    "DataAnalysis",
-    "rc",
-    "set_style",
-    "set_palette",
+    DataFrameTool,
+    Dims,
+    DimsAndLevels,
+    PlotTool,
+    MultiPlot,
+    StatResults,
+    StatTest,
+    Assumptions,
+    Bivariate,
+    PostHoc,
+    Omnibus,
+    Annotator,
+    DataAnalysis,
+    set_style,
+    set_palette,
 ]
 
 # ... Cleanup Namespace ....................................................... """

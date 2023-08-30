@@ -1,10 +1,6 @@
 from setuptools import setup, find_packages
 
 
-# from markurutils import __name__, __download_url__, __version__, __author__, install_requires
-# from markurutils.__init__ import name, url, __version__, __author__, requirements
-
-
 NAME = "plotastic"
 REQUIREMENTS = (
     "seaborn",
@@ -21,6 +17,26 @@ REQUIREMENTS = (
     # "ipynbname",
 )
 
+# https://setuptools.pypa.io/en/latest/references/keywords.html
+### LAYOUT:
+# * project_root/                 # Project root: 'plotastic'
+# * ├── setup.py
+# * ├── ...
+# * └── src/                      # Source root
+# *    └── package/               # Package root: 'plotastic'
+# *        ├── __init__.py
+# *        ├── py.typed
+# *        ├── ...
+# *        ├── (module.py)
+# *        ├── subpkg1/           # Subpackage root: 'plotastic.dimensions'
+# *        │   ├── __init__.py
+# *        │   ├── ...
+# *        │   └── module1.py
+# *        └── subpkg2/           # Subpackage root: 'plotastic.plotting'
+# *            ├── __init__.py
+# *            ├── ...
+# *            └── module2.py
+
 setup(
     description="A wrapper for seaborn plotters for convenient statistics powered by pingouin!",
     python_requires=">=3.10",  # * 3.11 recommended, 3.10 might work, too
@@ -28,12 +44,12 @@ setup(
     version="0.0.1",
     url="https://github.com/markur4/plotastic",
     author="markur4",
-    # * List all packages. If you have just one package, put the name of the package.
-    packages=[NAME],
-    # * Package paths relative to setup.py that each have a __init__.py file
-    package_dir={NAME: "plotastic"},
+    # * Find all packages in src that have a __init__.py file and match the name of the package
+    packages=find_packages(where="src", include=[NAME]),
+    # * Define location of all packages. "" is the current directory (where setup.py is)
+    package_dir={"": "src"},
     # * Non- .py files (e.g. py.typed, documentation...) required by package
-    package_data={NAME: ["plotastic/py.typed"]},
+    package_data={NAME: [f"src/{NAME}/py.typed"]},
     # * Non- .py files (e.g. .gif .txt, ...) that should be installed with the package
     data_files={},
     install_requires=REQUIREMENTS,
