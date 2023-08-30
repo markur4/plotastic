@@ -2,9 +2,9 @@
 
 # %% Imports
 
-from cgi import test
-from typing import Dict
-from copy import copy, deepcopy
+from copy import deepcopy
+
+# from typing import Self # ! only for python 3.11. Not really needed, since "DataAnalysis" as typehint works with vscode
 
 from pathlib import Path
 import pickle
@@ -30,7 +30,7 @@ class DataAnalysis(Annotator):
         levels: list[tuple[str]] = None,
         title: str = "untitled",
         verbose=True,
-    ):
+    ) -> "DataAnalysis":
         ### Inherit
         # * verbosity false, since each subclass can test its own DataFrame
         dataframetool_kws = dict(
@@ -42,9 +42,9 @@ class DataAnalysis(Annotator):
         self.filer = ut.Filer(title=title)
 
         if verbose:
-            self.warn_about_empties_and_NaNs()
+            self._data_check_empties_and_NaNs()
             if subject:
-                self.warn_about_subjects_with_missing_data()
+                self._data_check_subjects_with_missing_data()
 
         # self.plot = plot
         ### statistics
@@ -54,7 +54,7 @@ class DataAnalysis(Annotator):
     ### ... TITLE .......................................................................................................'''
 
     @property
-    def title(self):
+    def title(self) -> str:
         return self._title
 
     @title.setter
@@ -78,7 +78,7 @@ class DataAnalysis(Annotator):
         Conjunction-character to put between string addition and original title
         :return: str
         """
-        a = self if inplace else ut.copy_by_pickling(self)
+        a: "DataAnalysis" = self if inplace else deepcopy(self)
 
         if to_start:
             a.title = f"{to_start}{con}{a.title}"

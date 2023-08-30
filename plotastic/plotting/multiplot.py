@@ -39,7 +39,7 @@ class MultiPlot(PlotTool):
         subplot_kws: dict = dict(),
         box_kws: dict = dict(),
         strip_kws: dict = dict(),
-    ):
+    ) -> "MultiPlot":
         """A boxplot with a stripplott (scatter) on top
 
         Args:
@@ -111,8 +111,8 @@ class MultiPlot(PlotTool):
     def plot_box_strip_SNIP(self, doclink=True):
         s = "\n"
         if doclink:
-            s += f"# {'Docs Boxplot:'.ljust(20)} {self.DOCS['box']}\n"
-            s += f"# {'Docs Stripplot:'.ljust(20)} {self.DOCS['strip']}\n"
+            s += f"# {'Docs Boxplot:'.ljust(20)} {self._DOCS['box']}\n"
+            s += f"# {'Docs Stripplot:'.ljust(20)} {self._DOCS['strip']}\n"
         s += "\n"
         s += "### ... PARAMETERS\n"
         s += "### Linewidths\n"
@@ -187,7 +187,6 @@ df, dims = ut.load_dataset("tips")  # * Tips
 # df, dims = ut.load_dataset("fmri") # * FMRI
 
 MP = MultiPlot(data=df, dims=dims)
-
 
 
 # %%

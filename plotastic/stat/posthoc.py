@@ -4,7 +4,7 @@ import markurutils as ut
 
 import numpy as np
 import pandas as pd
-print(pd.__version__)
+# print(pd.__version__)
 import pingouin as pg
 
 
@@ -55,8 +55,6 @@ class PostHoc(Assumptions):
             #     df = self.data_dict_skip_empty[key]
 
             if self.dims.hue:  # * Perform twice with x and hue turned around (= huex)
-                print(kwargs)
-                print(kwargs_2)
                 ph_xhue = pg.pairwise_tests(data=df, **kwargs)
                 ph_huex = pg.pairwise_tests(data=df, **kwargs_2)
                 PH_dict[key] = ph_xhue.merge(ph_huex, how="outer")

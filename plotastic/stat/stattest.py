@@ -43,7 +43,6 @@ class StatTest(DataFrameTool):
 
         assert type(alpha) in [
             float,
-            np.float,
         ], f"#! Alpha was type{alpha}, float required"
         a = alpha
         # use other stars ☆  ★ ★ ★   ٭★☆✡✦✧✩✪✫✬✭✮✯✰✵✶✷✸✹⭑⭒✴︎

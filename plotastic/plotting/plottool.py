@@ -1,7 +1,6 @@
 # !
 # %% Imports
 
-from __future__ import annotations
 
 
 from typing import TYPE_CHECKING, Callable
@@ -35,7 +34,7 @@ if TYPE_CHECKING:
 
 
 class PlotTool(DataFrameTool):
-    SNS_FUNCS = {
+    _SNS_FUNCS = {
         "bar": sns.barplot,
         "point": sns.pointplot,
         "strip": sns.stripplot,
@@ -52,7 +51,7 @@ class PlotTool(DataFrameTool):
         "rel": sns.relplot,
     }
 
-    SNS_FUNCS_STR = {
+    _SNS_FUNCS_STR = {
         "bar": "sns.barplot",
         "point": "sns.pointplot",
         "strip": "sns.stripplot",
@@ -69,7 +68,7 @@ class PlotTool(DataFrameTool):
         "rel": "sns.relplot",
     }
 
-    DOCS = {
+    _DOCS = {
         ### plt functions
         "plt.subplots": "https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots",
         "set_xscale": "https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html#matplotlib.axes.Axes.set_xscale",
@@ -93,7 +92,7 @@ class PlotTool(DataFrameTool):
         "rel": "https://seaborn.pydata.org/generated/seaborn.relplot.html#seaborn.relplot",
     }
 
-    # ...__INIT__ .....................
+    # ...__INIT__ ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     def __init__(self, **dataframetool_kws):
         """
@@ -131,7 +130,7 @@ class PlotTool(DataFrameTool):
     # * NESTED / FLAT....................................#
 
     @property  # * [[ax11, ax12], [ax21, ax22]]
-    def axes_nested(self) -> np.ndarray:
+    def axes_nested(self) -> "np.ndarray":
         """Always returns a 2D nested array of axes, even if there is only one row or column."""
         if self.dims.row and self.dims.col:  # * both row and col
             return self.axes
@@ -141,7 +140,7 @@ class PlotTool(DataFrameTool):
             return np.array([self.axes]).reshape(1, 1)
 
     @property  # * [ax11, ax12, ax21, ax22]
-    def axes_flat(self) -> np.ndarray:
+    def axes_flat(self) -> "np.ndarray":
         """Always returns a 1D flattened array of axes, regardless of row, column, or single figure."""
         return self.axes_nested.flatten()
 
@@ -191,7 +190,7 @@ class PlotTool(DataFrameTool):
             for key in self.levelkeys_rowcol:
                 ax = self.axes_dict[key]
                 df = self.data_dict_skip_empty[key]
-                # df = data_dict.get_group(key) # ! works, too! 
+                # df = data_dict.get_group(key) # ! works, too!
                 # ut.pp(df)
                 # * Seaborn breaks on Dataframes that are only NaNs
                 if df[self.dims.y].isnull().all():
@@ -253,7 +252,7 @@ class PlotTool(DataFrameTool):
         height_ratios: list[int] = None,
         figsize: tuple[int] = None,
         **subplot_kws: dict,
-    ) -> PlotTool:
+    ) -> "PlotTool":
         """Initialise matplotlib figure and axes objects
 
         Returns:
@@ -284,7 +283,7 @@ class PlotTool(DataFrameTool):
     def subplots_SNIP(self, doclink=True) -> str:
         s = ""
         if doclink:
-            s += f"# . . . {self.DOCS['plt.subplots']} #\n"
+            s += f"# . . . {self._DOCS['plt.subplots']} #\n"
         s += "DA = DataAnalysis(data=DF, dims=DIMS)"
         s += f"""
         DA.fig, DA.axes = plt.subplots(
@@ -302,7 +301,7 @@ class PlotTool(DataFrameTool):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def fillaxes(self, kind: str = "strip", **sns_kws: dict) -> PlotTool:
+    def fillaxes(self, kind: str = "strip", **sns_kws: dict) -> "PlotTool":
         """_summary_
 
         Args:
@@ -324,7 +323,7 @@ class PlotTool(DataFrameTool):
 
         ### Iterate through data and axes
         for ax, df in self.axes_iter__ax_df:
-            self.SNS_FUNCS[kind](
+            self._SNS_FUNCS[kind](
                 data=df,
                 ax=ax,
                 y=self.dims.y,
@@ -341,10 +340,10 @@ class PlotTool(DataFrameTool):
     def fillaxes_SNIP(self, kind: str = "strip", doclink=True) -> str:
         s = ""
         if doclink:
-            s += f"# . . . {self.DOCS[kind]} #\n"
+            s += f"# . . . {self._DOCS[kind]} #\n"
         s += "kws = dict(alpha=.8) \n"
         s += "for ax, df in DA.iter_axes_and_data: \n"
-        s += f"\t{self.SNS_FUNCS_STR[kind]}(data=df, ax=ax, y='{self.dims.y}', x='{self.dims.x}', hue='{self.dims.hue}', **kws)\n"
+        s += f"\t{self._SNS_FUNCS_STR[kind]}(data=df, ax=ax, y='{self.dims.y}', x='{self.dims.x}', hue='{self.dims.hue}', **kws)\n"
         s += "\tax.legend_.remove() \n"  # * Remove legend, unless we want one per axes"
         s += "DA.legend()  # * Add one standard legend to figure \n"
         pyperclip.copy(s)
@@ -353,7 +352,7 @@ class PlotTool(DataFrameTool):
 
     def plot(
         self, kind: str = "strip", subplot_kws: dict = None, **sns_kws
-    ) -> PlotTool:
+    ) -> "PlotTool":
         """Quick plotting, combines self.subplots and self.fillaxes its axes with seaborn graphics
 
         Args:
@@ -415,7 +414,7 @@ class PlotTool(DataFrameTool):
                     keys.append(str(k))  # * Can't capitalize int
             return connect.join(keys)
 
-    def edit_axtitles_reset(self) -> PlotTool:
+    def edit_axtitles_reset(self) -> "PlotTool":
         for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))
         return self
@@ -424,7 +423,7 @@ class PlotTool(DataFrameTool):
         self,
         axes: mpl.axes.Axes = None,
         axtitles: dict = None,
-    ) -> PlotTool:
+    ) -> "PlotTool":
         axes = axes or self.axes
 
         if not axtitles is None:
@@ -437,7 +436,7 @@ class PlotTool(DataFrameTool):
         row_func: Callable = None,
         col_func: Callable = None,
         connect="\n",
-    ) -> PlotTool:
+    ) -> "PlotTool":
         """Applies formatting functions (e.g. lambda x: x.upper()) to row and col titles)"""
         row_func = row_func or (lambda x: x)
         col_func = col_func or (lambda x: x)
@@ -469,7 +468,7 @@ class PlotTool(DataFrameTool):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def edit_title_replace(self, titles: list) -> PlotTool:
+    def edit_title_replace(self, titles: list) -> "PlotTool":
         """Edits axes titles. If list is longer than axes, the remaining titles are ignored
 
         Args:
@@ -501,7 +500,7 @@ class PlotTool(DataFrameTool):
         notleftmost: str = "",
         lowerrow: str = "",
         notlowerrow: str = "",
-    ) -> PlotTool:
+    ) -> "PlotTool":
         """Edits x- and y-axis labels
 
         Args:
@@ -549,7 +548,7 @@ class PlotTool(DataFrameTool):
 
     def edit_y_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
-    ) -> PlotTool:
+    ) -> "PlotTool":
         for ax in self.axes_flat:
             ax.set_yscale(
                 value="log",  # * "symlog", "linear", "logit", ...
@@ -563,7 +562,7 @@ class PlotTool(DataFrameTool):
 
     def edit_x_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
-    ) -> PlotTool:
+    ) -> "PlotTool":
         for ax in self.axes.flatten():
             ax.set_xscale(
                 value="log",  # * "symlog", "linear", "logit", ...
@@ -576,7 +575,7 @@ class PlotTool(DataFrameTool):
     def edit_xy_scale_SNIP(self, doclink=True) -> str:
         s = ""
         if doclink:
-            s += f"# . . . {self.DOCS['set_xscale']} #\n"
+            s += f"# . . . {self._DOCS['set_xscale']} #\n"
         s += "for ax in DA.axes.flatten(): \n"
         s += "\tax.set_yscale('log',  # * 'symlog', 'linear', 'logit',  \n"
         s += "\t\tbase=10,  \n"
@@ -593,7 +592,7 @@ class PlotTool(DataFrameTool):
 
     def edit_y_ticklabel_percentage(
         self, decimals_major: int = 0, decimals_minor: int = 0
-    ) -> PlotTool:
+    ) -> "PlotTool":
         for ax in self.axes_flat:
             ax.yaxis.set_major_formatter(
                 mpl.ticker.PercentFormatter(xmax=1, decimals=decimals_major)
@@ -606,7 +605,7 @@ class PlotTool(DataFrameTool):
     def edit_y_ticklabel_percentage_SNIP(self, doclink=True) -> str:
         s = ""
         if doclink:
-            s += f"# . . . {self.DOCS['percent_formatter']} #\n"
+            s += f"# . . . {self._DOCS['percent_formatter']} #\n"
         s += "for ax in DA.axes.flatten(): \n"
         s += "\tax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(xmax=1, decimals=0)) \n"
         s += "\tax.yaxis.set_minor_formatter(mpl.ticker.PercentFormatter(xmax=1, decimals=1)) \n"
@@ -665,7 +664,7 @@ class PlotTool(DataFrameTool):
         va: str = "top",
         pad: float = 1,
         **text_kws,
-    ) -> PlotTool:
+    ) -> "PlotTool":
         """Edits x- ticklabels
 
         Args:
@@ -715,7 +714,7 @@ class PlotTool(DataFrameTool):
     #
     # * Grid ...................................................#
 
-    def edit_grid(self) -> PlotTool:
+    def edit_grid(self) -> "PlotTool":
         for ax in self.axes_flat:
             ax.yaxis.grid(True, which="major", ls="-", linewidth=0.5, c="grey")
             ax.yaxis.grid(True, which="minor", ls="-", linewidth=0.2, c="grey")
@@ -750,7 +749,7 @@ class PlotTool(DataFrameTool):
         labels = [ut.capitalize(l) for l in labels]
         return handles, labels
 
-    def edit_legend(self) -> PlotTool:
+    def edit_legend(self) -> "PlotTool":
         """Adds standard legend to figure"""
         self.fig.legend(
             title=ut.capitalize(self.dims.hue),
@@ -767,7 +766,7 @@ class PlotTool(DataFrameTool):
     def edit_legend_SNIP(self, doclink=True) -> str:
         s = ""
         if doclink:
-            s += f"# . . . {self.DOCS['legend']} #\n"
+            s += f"# . . . {self._DOCS['legend']} #\n"
         s += "DA.fig.legend( \n"
         s += f"\ttitle='{self.dims.hue}', #* Hue factor \n"
         s += "\thandles=DA.legend_handles_and_labels[0], #* If single axes, remove square brackets\n"
@@ -787,7 +786,7 @@ class PlotTool(DataFrameTool):
     #
     # * fontsizes ..............................................#
 
-    def edit_fontsizes(self, ticklabels=10, xylabels=10, axis_titles=10) -> PlotTool:
+    def edit_fontsizes(self, ticklabels=10, xylabels=10, axis_titles=10) -> "PlotTool":
         """Edits fontsizes in [pt]. Does not affect legent or suptitle
 
         Args:

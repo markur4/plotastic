@@ -5,7 +5,7 @@
 from re import L  # for type hinting my Class type for return values
 from typing import Callable, Generator
 import warnings
-from itertools import product
+
 from copy import deepcopy
 
 import pandas as pd
@@ -64,15 +64,15 @@ class DataFrameTool(DimsAndLevels):
 
         ### Check for empties or missing group combinations
         if verbose:
-            self.warn_about_empties_and_NaNs()
+            self._data_check_empties_and_NaNs()
             if subject:
-                self.warn_about_subjects_with_missing_data()
+                self._data_check_subjects_with_missing_data()
 
         ### Make Categorical
         if levels:
-            self.check_inputlevels_with_data(input_lvls=levels, verbose=verbose)
+            self._check_inputlevels_with_data(input_lvls=levels, verbose=verbose)
             self.input_levels = levels
-            self.data_categorize(verbose=verbose)
+            _ = self.data_categorize(verbose=verbose)
 
         # if levels_ignore:
         #     self.check_inputlevels_with_data(input_lvls=levels_ignore, verbose=verbose)
@@ -80,7 +80,9 @@ class DataFrameTool(DimsAndLevels):
     #
     # ...  Make Levels Categorical...............................................................................
 
-    def make_catdict_from_input(self, input_lvls: list[list[str]], skip_notfound=True):
+    def _make_catdict_from_input(
+        self, input_lvls: list[list[str]], skip_notfound=True
+    ) -> dict:
         """Convert the lazy list input of levels into a dictionary with factors as keys and levels as values
         Args:
             levels (list[list[str]]): List of list of strings
@@ -105,20 +107,20 @@ class DataFrameTool(DimsAndLevels):
         catdict = {k: v for k, v in catdict.items() if len(v) > 0}
         return catdict
 
-    def count_matching_levels(self, input_lvls: list[list[str]]):
+    def _count_matching_levels(self, input_lvls: list[list[str]]) -> int:
         """Counts how many levels match with the dataframe
         Args:
             levels (list[list[str]]): List of list of strings
         """
-        catdict = self.make_catdict_from_input(input_lvls, skip_notfound=True)
+        catdict = self._make_catdict_from_input(input_lvls, skip_notfound=True)
         return sum([len(v) for v in catdict.values()])
 
-    def check_inputlevels_with_data(
+    def _check_inputlevels_with_data(
         self,
         input_lvls: list[list[str]],
         verbose=True,
         strict=False,
-    ):
+    ) -> None:
         """Checks input levels with Dataframe and detects dissimilarities
         Args:
             all_lvls (list[list[str]]): List of lists of all levels. The order of the lists do not have to match that of the dataframe.
@@ -129,7 +131,7 @@ class DataFrameTool(DimsAndLevels):
         # * Values: Levels from DATA
         # * -> {f1: [input_lvl1, input_lvl2], f2: [input_lvl1, input_lvl2], ...}
         # * This ensures that we can categorize only those columns whose levels were specified in the input
-        catdict = self.make_catdict_from_input(
+        catdict = self._make_catdict_from_input(
             input_lvls, skip_notfound=False
         )  # * dsfaadsf
         LVLS = {}
@@ -156,7 +158,7 @@ class DataFrameTool(DimsAndLevels):
         if verbose:
             self._print_levelmatches(input_lvls, matchdict)
 
-    def _print_levelmatches(self, input_lvls, matchdict):
+    def _print_levelmatches(self, input_lvls, matchdict) -> None:
         """Prints the level matches and mismatches
 
         Args:
@@ -182,20 +184,20 @@ class DataFrameTool(DimsAndLevels):
                     f"🟠 Levels incomplete: For '{factor}', your input does not cover all levels"
                 )
         # * Give feedback how much was matched
-        if self.count_matching_levels(input_lvls) == 0:
+        if self._count_matching_levels(input_lvls) == 0:
             print("🛑🛑🛑 Levels bad: No input matched with data")
         elif not problems and not warnings:
             print("✅ Levels perfect: All specified levels were found in the data")
         elif not problems:
             print("✅ Levels good: No partially defined factors")
-        elif self.count_matching_levels(input_lvls) > 0:
+        elif self._count_matching_levels(input_lvls) > 0:
             print("🆗 Levels ok: Some input was found")
 
         # * Search through input levels and data levels
         if problems:
             self._print_levelmatches_detailed(input_lvls)
 
-    def _print_levelmatches_detailed(self, input_lvls):
+    def _print_levelmatches_detailed(self, input_lvls) -> None:
         """Prints out detailed summary of level mismatches between user input and data
 
         Args:
@@ -208,7 +210,7 @@ class DataFrameTool(DimsAndLevels):
         RJ = 17  # * Right Justification to have everything aligned nicely
 
         ### Make a catdict
-        catdict = self.make_catdict_from_input(input_lvls)
+        catdict = self._make_catdict_from_input(input_lvls)
 
         ### In DATA (but not in INPUT)
         print("\n   >> Searching levels that are in DATA but not in INPUT...")
@@ -245,9 +247,9 @@ class DataFrameTool(DimsAndLevels):
             print("     ", f"{lvl}: ".rjust(RJ), message)
         print()
 
-    def data_categorize(self, verbose=True):
+    def data_categorize(self, verbose=True) -> "DataFrameTool":
         """Categorize the data according to the levels specified in the constructor"""
-        catdict = self.make_catdict_from_input(self.input_levels)
+        catdict = self._make_catdict_from_input(self.input_levels)
 
         if verbose:
             nans_before = self.data.isna().sum().sum()
@@ -263,6 +265,7 @@ class DataFrameTool(DimsAndLevels):
             print(
                 f"    NaNs after:  {str(nans_after).rjust(5)} / {self.data.size} total cells, >> +{nans_after - nans_before} NaNs"
             )
+        return self
 
     #
     # ... DESCRIBE DATA ...............................................................................................'''
@@ -369,7 +372,7 @@ class DataFrameTool(DimsAndLevels):
         allNaN_df = df[df.isna().all(axis=1)]
         return allNaN_df.index.to_list()
 
-    def warn_about_empties_and_NaNs(self) -> None:
+    def _data_check_empties_and_NaNs(self) -> None:
         allNaN_list = self.data_get_empty_groupkeys()
         hasNaN_df = self.data_get_rows_with_NaN()
 
@@ -394,7 +397,7 @@ class DataFrameTool(DimsAndLevels):
         else:
             print("✅ Groups complete: No groups with NaNs")
 
-    def warn_about_subjects_with_missing_data(self) -> None:
+    def _data_check_subjects_with_missing_data(self) -> None:
         """Prints a warning if there are subjects with missing data"""
 
         ### Get numbers of samples for each subject
@@ -544,11 +547,11 @@ class DataFrameTool(DimsAndLevels):
 
     @staticmethod
     def _add_transform_col(
-        df: "pd.DataFrame",
+        df: pd.DataFrame,
         y_raw: str,
         y_new: str,
         func: str,
-    ) -> "pd.DataFrame":
+    ) -> pd.DataFrame:
         """Adds a column to the dataframe that contains the transformed data
 
         Args:
@@ -589,7 +592,7 @@ class DataFrameTool(DimsAndLevels):
             func
         ), f"#! '{func}' should be callable OR one of {list(default_trafofuncs.keys())}"
 
-        A = self if inplace else deepcopy(self)
+        A: "DataFrameTool" = self if inplace else deepcopy(self)
         func = func if callable(func) else default_trafofuncs[func]
 
         y_raw = A._y_untransformed
@@ -612,9 +615,9 @@ class DataFrameTool(DimsAndLevels):
         return A
 
     def transform_reset(self, inplace=False) -> "DataFrameTool":
-        A = self if inplace else deepcopy(self)
+        A: "DataFrameTool" = self if inplace else deepcopy(self)
         A = A.set(y=self._y_untransformed, inplace=inplace)
-        A.is_transformed = False
+        A.transformed = False
         A.transform_history.append("reset")
         # self.transform_func = []  #* KEEP HISTORY OF TRANSFORMATION
         return A
