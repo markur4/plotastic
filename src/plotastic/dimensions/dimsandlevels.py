@@ -1,10 +1,10 @@
 # !
 # %% Imports
 
-from __future__ import annotations
 
 # from nis import cat
 
+# %% Imports
 # from operator import index, le
 from re import L  # for type hinting my Class type for return values
 from typing import Dict, Generator, List, Callable, TYPE_CHECKING
@@ -12,29 +12,19 @@ from typing import Dict, Generator, List, Callable, TYPE_CHECKING
 from copy import copy
 from itertools import product
 
-# from dataclasses import dataclass
-# import importlib
 
-# import warnings
-
-# from requests import get
-
-# import numpy as np
 import pandas as pd
 
-# import seaborn as sns
 from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
 
-# from zmq import has
 
-# import markurutils.UTILS as ut
-# from markurutils.builtin_types import printable_dict
-# from markurutils.filer import Filer
 import markurutils as ut
 
-# from old.dataanalysis import DataAnalysis
 from plotastic.dimensions.dims import Dims
+
+if TYPE_CHECKING:
+    from plotastic.dataanalysis.dataanalysis import DataAnalysis
 
 # %% Utils
 df = None  # * Prevent warning when using catchstate
@@ -90,7 +80,7 @@ class DimsAndLevels:
         self,
         data: pd.DataFrame,
         dims: dict | Dims,
-    ) -> DimsAndLevels:
+    ) :
         """_summary_
 
         Args:
@@ -392,7 +382,7 @@ class DimsAndLevels:
     # !
     def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
-    ) -> DimsAndLevels:
+    ) -> "DimsAndLevels | DataAnalysis":
         a = self if inplace else copy(self)
 
         # * NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply
@@ -403,7 +393,7 @@ class DimsAndLevels:
     # !
     def set(
         self,
-        dims: "Dims" | dict = None,
+        dims: "Dims | dict" = None,
         y: str = None,
         x: str = None,
         hue: str = None,
@@ -414,7 +404,7 @@ class DimsAndLevels:
         title: str = None,  # type: ignore
         inplace=False,
         verbose=True,
-    ) -> DimsAndLevels:
+    ) -> "DimsAndLevels | DataAnalysis":
         """Redefines values of Analysis.dims (y,x,hue,row,col) and also title,"""
 
         ### HANDLE COPY"""
@@ -460,7 +450,7 @@ class DimsAndLevels:
         title: str = None,
         inplace=False,
         verbose=True,
-    ) -> DimsAndLevels:
+    ) -> "DimsAndLevels | DataAnalysis":
         """Same as `self.update_analysis`, just with inplace=True"""
 
         return self.set(

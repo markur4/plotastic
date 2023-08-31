@@ -96,7 +96,7 @@ class DataAnalysis(Annotator):
         format=".pdf",
         overwrite=None,
         verbose=True,
-    ):
+    ) -> "DataAnalysis":
         """
 
         :param g:
@@ -161,10 +161,8 @@ class DataAnalysis(Annotator):
         filename = Path(self.buffer + name).with_suffix(".pickle")
         with open(filename, "rb") as file:
             fig, axes = pickle.load(file)
-        return (
-            fig,
-            axes,
-        )  # ! can#t return the whole PlotTool object, since pyplot will mix the fig with previous objects
+        # ! can#t return the whole PlotTool object, since pyplot will mix the fig with previous objects
+        return fig, axes
 
     # @staticmethod
     # def _redraw_fig(fig):

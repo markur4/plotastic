@@ -1,9 +1,13 @@
 #
-#%% Importds
-from __future__ import annotations
+# %% Importds
+
+from typing import TYPE_CHECKING
 
 from typing import Dict, Literal
 from copy import copy, deepcopy
+
+if TYPE_CHECKING:
+    from plotastic.dataanalysis.dataanalysis import DataAnalysis
 
 
 # TODO maybe refactor this to specify statistical type of data
@@ -50,7 +54,7 @@ from copy import copy, deepcopy
 #     #
 #     #
 
-# %% class Dims 
+# %% class Dims
 
 
 class Dims:
@@ -63,7 +67,7 @@ class Dims:
         hue: str = None,
         row: str = None,
         col: str = None,
-    ) -> "Dims":
+    ):
         ### Define Dims
         self.y = y
         self.x = x
@@ -107,7 +111,7 @@ class Dims:
             d = {k: v for (k, v) in d.items() if (not v is None)}
         return d
 
-    def set(self, inplace=False, **kwargs) -> "Dims":
+    def set(self, inplace=False, **kwargs) -> "Dims | DataAnalysis":
         newobj = self if inplace else copy(self)
         for k, v in kwargs.items():
             v = v if not v == "none" else None
@@ -130,7 +134,7 @@ class Dims:
 
     def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
-    ) -> Dims:
+    ) -> "Dims | DataAnalysis":
         """
         Set attributes. Detects Duplicates, switches automatically
         :param keys: Two dimensions to switch. Only 2 Positional arguments allowed. Use e.g. dims.switch("x", "hue", **kwargs)

@@ -1,6 +1,7 @@
 #
 # %% imports
 
+from typing import TYPE_CHECKING
 import warnings
 
 
@@ -17,6 +18,10 @@ from plotastic.stat.posthoc import PostHoc
 from plotastic.plotting.multiplot import MultiPlot
 from plotastic.stat.omnibus import Omnibus
 from plotastic.stat.bivariate import Bivariate
+
+if TYPE_CHECKING:
+    from plotastic.dataanalysis.dataanalysis import DataAnalysis
+
 
 # %% class Annotator
 
@@ -564,7 +569,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         show_ph=False,
         return_ph=False,
         **annot_KWS,
-    ):
+    ) -> "Annotator | DataAnalysis":
         """Annotate pairs of groups with pairwise tests."""
 
         ### Assert presence of a posthoc table and plot

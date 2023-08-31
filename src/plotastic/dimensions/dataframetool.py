@@ -2,8 +2,8 @@
 
 # %% Imports
 
-from re import L  # for type hinting my Class type for return values
-from typing import Callable, Generator
+from re import L, T  # for type hinting my Class type for return values
+from typing import Callable, Generator, Self, TYPE_CHECKING
 import warnings
 
 from copy import deepcopy
@@ -16,6 +16,9 @@ import matplotlib.pyplot as plt
 
 import markurutils as ut
 from plotastic.dimensions.dimsandlevels import DimsAndLevels
+
+if TYPE_CHECKING:
+    from plotastic.dataanalysis.dataanalysis import DataAnalysis
 
 # %% Class DataFrameTool
 
@@ -506,21 +509,21 @@ class DataFrameTool(DimsAndLevels):
                 yield key, df
 
     @property  # * {key: df1, key2: df2, ...}
-    def data_dict(self):
+    def data_dict(self) -> dict:
         return dict(self.data_iter__key_facet)
 
     @property  # * {key: df1, key2: df2, ...}
-    def data_dict_skip_empty(self):
+    def data_dict_skip_empty(self) -> dict:
         return dict(self.data_iter__key_facet_skip_empty)
 
     @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
-    def data_iter__allkeys_groups(self):
+    def data_iter__allkeys_groups(self) -> Generator:
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ..."""
         for key, df in self.data_ensure_allgroups().groupby(self.factors_all):
             yield key, df
 
     @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
-    def data_iter__allkeys_groups_skip_empty(self):
+    def data_iter__allkeys_groups_skip_empty(self) -> Generator:
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ...
         SKIPS EMPTY GROUPS!"""
         for key, df in self.data.groupby(self.factors_all):
@@ -575,7 +578,9 @@ class DataFrameTool(DimsAndLevels):
             )
         return df
 
-    def transform_y(self, func: str | Callable, inplace=True) -> "DataFrameTool":
+    def transform_y(
+        self, func: str | Callable, inplace=True
+    ) -> "DataFrameTool | DataAnalysis":
         """DOC: Transforms the data, changes dv property"""
 
         default_trafofuncs = {
@@ -614,7 +619,7 @@ class DataFrameTool(DimsAndLevels):
 
         return A
 
-    def transform_reset(self, inplace=False) -> "DataFrameTool":
+    def transform_reset(self, inplace=False) -> "DataFrameTool | DataAnalysis":
         A: "DataFrameTool" = self if inplace else deepcopy(self)
         A = A.set(y=self._y_untransformed, inplace=inplace)
         A.transformed = False

@@ -72,6 +72,9 @@ from .dataanalysis.dataanalysis import DataAnalysis
 
 ### Use __all__ to let type checkers know what's available
 __all__ = [
+    DataAnalysis,
+    set_style,
+    set_palette,
     DataFrameTool,
     Dims,
     DimsAndLevels,
@@ -84,9 +87,6 @@ __all__ = [
     PostHoc,
     Omnibus,
     Annotator,
-    DataAnalysis,
-    set_style,
-    set_palette,
 ]
 
 # ... Cleanup Namespace ....................................................... """

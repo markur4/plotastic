@@ -1,9 +1,7 @@
 # !
 # %% Imports
 
-
-
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Generator
 
 
 import pyperclip
@@ -24,6 +22,7 @@ from plotastic.dimensions.dataframetool import DataFrameTool
 
 if TYPE_CHECKING:
     import numpy as np
+    from plotastic.dataanalysis.dataanalysis import DataAnalysis
 
     # import io
 
@@ -148,7 +147,7 @@ class PlotTool(DataFrameTool):
     # * Associate with Keys ....................................#
 
     @property  # * >>> (R_lvl1, C_lvl1), ax11 >>> (R_lvl1, C_lv2), ax12 >>> (R_lvl2, C_lvl1), ax21 >> ...
-    def axes_iter__keys_ax(self):
+    def axes_iter__keys_ax(self) -> Generator:
         """Returns: >> (R_lvl1, C_lvl1), ax11 >> (R_lvl1, C_lv2), ax12 >> (R_lvl2, C_lvl1), ax21 >> ..."""
         if self.factors_rowcol is None:
             # * If no row or col, return all axes and data
@@ -158,7 +157,7 @@ class PlotTool(DataFrameTool):
                 yield key, ax
 
     @property
-    def axes_dict(self):
+    def axes_dict(self) -> Generator:
         """Returns: {key: ax}"""
         return dict(self.axes_iter__keys_ax)
 
@@ -252,7 +251,7 @@ class PlotTool(DataFrameTool):
         height_ratios: list[int] = None,
         figsize: tuple[int] = None,
         **subplot_kws: dict,
-    ) -> "PlotTool":
+    ) -> "PlotTool | DataAnalysis":
         """Initialise matplotlib figure and axes objects
 
         Returns:
@@ -301,7 +300,7 @@ class PlotTool(DataFrameTool):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def fillaxes(self, kind: str = "strip", **sns_kws: dict) -> "PlotTool":
+    def fillaxes(self, kind: str = "strip", **sns_kws: dict) -> "PlotTool | DataAnalysis":
         """_summary_
 
         Args:
@@ -352,7 +351,7 @@ class PlotTool(DataFrameTool):
 
     def plot(
         self, kind: str = "strip", subplot_kws: dict = None, **sns_kws
-    ) -> "PlotTool":
+    ) -> "PlotTool | DataAnalysis":
         """Quick plotting, combines self.subplots and self.fillaxes its axes with seaborn graphics
 
         Args:
@@ -414,7 +413,7 @@ class PlotTool(DataFrameTool):
                     keys.append(str(k))  # * Can't capitalize int
             return connect.join(keys)
 
-    def edit_axtitles_reset(self) -> "PlotTool":
+    def edit_axtitles_reset(self) -> "PlotTool | DataAnalysis":
         for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))
         return self
@@ -423,7 +422,7 @@ class PlotTool(DataFrameTool):
         self,
         axes: mpl.axes.Axes = None,
         axtitles: dict = None,
-    ) -> "PlotTool":
+    ) -> "PlotTool | DataAnalysis":
         axes = axes or self.axes
 
         if not axtitles is None:
@@ -436,7 +435,7 @@ class PlotTool(DataFrameTool):
         row_func: Callable = None,
         col_func: Callable = None,
         connect="\n",
-    ) -> "PlotTool":
+    ) -> "PlotTool | DataAnalysis":
         """Applies formatting functions (e.g. lambda x: x.upper()) to row and col titles)"""
         row_func = row_func or (lambda x: x)
         col_func = col_func or (lambda x: x)
@@ -468,7 +467,7 @@ class PlotTool(DataFrameTool):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def edit_title_replace(self, titles: list) -> "PlotTool":
+    def edit_title_replace(self, titles: list) -> "PlotTool | DataAnalysis":
         """Edits axes titles. If list is longer than axes, the remaining titles are ignored
 
         Args:
@@ -500,7 +499,7 @@ class PlotTool(DataFrameTool):
         notleftmost: str = "",
         lowerrow: str = "",
         notlowerrow: str = "",
-    ) -> "PlotTool":
+    ) -> "PlotTool | DataAnalysis":
         """Edits x- and y-axis labels
 
         Args:
@@ -548,7 +547,7 @@ class PlotTool(DataFrameTool):
 
     def edit_y_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
-    ) -> "PlotTool":
+    ) -> "PlotTool | DataAnalysis":
         for ax in self.axes_flat:
             ax.set_yscale(
                 value="log",  # * "symlog", "linear", "logit", ...
@@ -562,7 +561,7 @@ class PlotTool(DataFrameTool):
 
     def edit_x_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
-    ) -> "PlotTool":
+    ) -> "PlotTool | DataAnalysis":
         for ax in self.axes.flatten():
             ax.set_xscale(
                 value="log",  # * "symlog", "linear", "logit", ...
@@ -592,7 +591,7 @@ class PlotTool(DataFrameTool):
 
     def edit_y_ticklabel_percentage(
         self, decimals_major: int = 0, decimals_minor: int = 0
-    ) -> "PlotTool":
+    ) -> "PlotTool | DataAnalysis":
         for ax in self.axes_flat:
             ax.yaxis.set_major_formatter(
                 mpl.ticker.PercentFormatter(xmax=1, decimals=decimals_major)
@@ -664,7 +663,7 @@ class PlotTool(DataFrameTool):
         va: str = "top",
         pad: float = 1,
         **text_kws,
-    ) -> "PlotTool":
+    ) -> "PlotTool | DataAnalysis":
         """Edits x- ticklabels
 
         Args:
@@ -714,7 +713,7 @@ class PlotTool(DataFrameTool):
     #
     # * Grid ...................................................#
 
-    def edit_grid(self) -> "PlotTool":
+    def edit_grid(self) -> "PlotTool | DataAnalysis":
         for ax in self.axes_flat:
             ax.yaxis.grid(True, which="major", ls="-", linewidth=0.5, c="grey")
             ax.yaxis.grid(True, which="minor", ls="-", linewidth=0.2, c="grey")
@@ -749,7 +748,7 @@ class PlotTool(DataFrameTool):
         labels = [ut.capitalize(l) for l in labels]
         return handles, labels
 
-    def edit_legend(self) -> "PlotTool":
+    def edit_legend(self) -> "PlotTool | DataAnalysis":
         """Adds standard legend to figure"""
         self.fig.legend(
             title=ut.capitalize(self.dims.hue),
@@ -786,7 +785,7 @@ class PlotTool(DataFrameTool):
     #
     # * fontsizes ..............................................#
 
-    def edit_fontsizes(self, ticklabels=10, xylabels=10, axis_titles=10) -> "PlotTool":
+    def edit_fontsizes(self, ticklabels=10, xylabels=10, axis_titles=10) -> "PlotTool | DataAnalysis":
         """Edits fontsizes in [pt]. Does not affect legent or suptitle
 
         Args:

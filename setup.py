@@ -47,9 +47,16 @@ setup(
     # * Find all packages in src that have a __init__.py file and match the name of the package
     packages=find_packages(where="src", include=[NAME]),
     # * Define location of all packages. "" is the current directory (where setup.py is)
-    package_dir={"": "src"},
+    package_dir={
+        "": "src",
+        # NAME: f"src/{NAME}",
+        # "dataanalysis": "src/plotastic/dataanalysis",
+    },
     # * Non- .py files (e.g. py.typed, documentation...) required by package
-    package_data={NAME: [f"src/{NAME}/py.typed"]},
+    package_data={
+        NAME: [f"src/{NAME}/py.typed"],
+        "dataanalysis": [f"src/plotastic/dataanalysis/py.typed"],
+    },
     # * Non- .py files (e.g. .gif .txt, ...) that should be installed with the package
     data_files={},
     install_requires=REQUIREMENTS,

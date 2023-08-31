@@ -1,6 +1,8 @@
 #
 # %% imports
 
+from typing import TYPE_CHECKING
+
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -11,7 +13,8 @@ import pyperclip
 import markurutils as ut
 
 from plotastic.plotting.plottool import PlotTool
-
+if TYPE_CHECKING:
+    from plotastic.dataanalysis.dataanalysis import DataAnalysis
 
 # %% Matplotlib Runtime Config (RC)
 
@@ -25,6 +28,7 @@ class MultiPlot(PlotTool):
 
     #
     # ... __init__ .................................................................................
+    
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
 
@@ -39,7 +43,7 @@ class MultiPlot(PlotTool):
         subplot_kws: dict = dict(),
         box_kws: dict = dict(),
         strip_kws: dict = dict(),
-    ) -> "MultiPlot":
+    ) -> "MultiPlot | DataAnalysis":
         """A boxplot with a stripplott (scatter) on top
 
         Args:
@@ -108,7 +112,7 @@ class MultiPlot(PlotTool):
 
         return self
 
-    def plot_box_strip_SNIP(self, doclink=True):
+    def plot_box_strip_SNIP(self, doclink=True) -> str:
         s = "\n"
         if doclink:
             s += f"# {'Docs Boxplot:'.ljust(20)} {self._DOCS['box']}\n"
