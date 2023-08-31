@@ -1,5 +1,6 @@
 # plotastic
-### A wrapper for seaborn plotters for convenient statistics powered by pingouin!
+
+**Combining seaborn and pingouin into convenient data analysis!**
 
 ## Installation 📦
 
@@ -7,33 +8,67 @@
 pip install git+https://github.com/markur4/plotastic.git
 ```
 
-## Why use plotastic? 🤔
+## Information 📚
+### Why use plotastic? 🤔
 
-**Fast**: Make figures and statistics with just a few lines!
+<details>
+<summary> 🤔 Why use plotastic? (click to unfold) </summary>
 
-**Controllable**: Plotastic outputs common matplotlib figures. We also captures hidden state of matplotlib so that plot is re-usable and modifyable at any point in your notebook/script!
+#### Optimized Workflow:
+- Plot figures and perform statistics in few lines!
+- No need need to retype the same arguments all over again!
+- Make multi-layered pre-configured plots in just one line!
+- Save all plots and tables in one line!
 
-**Easy**: Don't google/remember code, print out pre-built snippets of complex MultiPlot and modify them!
+#### Sturdy:
+- plotastic doesn't re-invent the wheel: It's focused on using well established classes, functions and libraries (`pd.DataFrame`, `plt.subplots`, `sns.catplot`, pingouin, statannotations, etc). It's just a wrapper that makes it easier to use them together!
+- plotastic provides feedback on how each step of data transformation, formatting or categorization has affected your table, giving beginners the confidence of knowing what they're doing!
+  
+#### Controllable:
+- plotastic outputs common matplotlib figures (`ax, fig`). You can modify them like any other!
+- User arguments are passed through to seaborn and pingouin, so you can use all their options!
 
-**Sturdy**: plotastic doesn't re-invent the wheel: It's combining these packages (maplotlib, seaborn, pingouin, statannotator). It's just a wrapper that makes it easier to use them together.
+#### Easy:
+- Don't google/remember code, print out pre-built snippets of complex multi-layered plots and modify them!
 
-## Workflow ⏳
+#### Reviewable:
+- We provide snippets that demonstrate of what just happened under the hood, so you can backcheck and thoroughly document your work!
+</details>
+
+
+
+### Workflow ⏳
+
+<details>
+<summary> ⏳ Workflow (click to unfold) </summary>
 
 1. **🧮 Import & Prepare your pandas DataFrame**
+   - We require a long-format pandas dataframe with categorical columns
+   - If it works with seaborn, it works with plotastic!
 2. **🔀 Make a DataAnalysis Object**
    - `DataAnalysis(DataFrame, dims={x, y, hue, row, col})`
-3. **📊 Plot figure**
-   - Print ready to use matplotlib snippets (kinda like Copilot, but tested!) ... 
-   - ... or execute automated functions!
+   - Check for empty data groups, differing samplesizes, NaN-count, etc. automatically
+3. **✅ Explore and Adapt Data**
+   - Quick preliminary plotting
+   - Categorize multiple columns at once
+   - Transform dependent variable
+   - Each step warns you, if you introduced NaNs without knowledge!
 4. **✨ Perform statistical tests** ✨
-   - Snippets for better documentation or functions, you choose!
-5. **💿 Save all results at once!**
+   - Currently just PostHoc tests (`pg.pairwise_tests` and all its options), more will soon follow ((RM-)ANOVA, Kruskal, Spearman, etc!)  !
+5. **📊 Plot figure**
+   - Print ready to use matplotlib snippets (kinda like Copilot, but tested!) ...
+   - ... or execute automated functions!
+   - Annotate statistical results in one line and with great control over which parameters to show!
+6. **💿 Save all results at once!**
+   - One DataAnalysis object holds 1 DataFrame, 1 figure and multiple statistical results!
+
+</details>
 
 
+### How plotastic translates seaborn into statistical terms! 📊
 
-
-
-## Statistical Anatomy of a Plotastic Plot 📊
+<details>
+<summary> 📊 (click to unfold) </summary>
 
 - Every Data is separable into seaborn's `x`, `y`, `hue`, `row`, `col` dimensions
 - These dimensions are assigned to statistical terms:
@@ -43,63 +78,129 @@ pip install git+https://github.com/markur4/plotastic.git
   - A `subject` may be specified for within/paired study designs (categorical variable)
 - For each level of `row` or `col` (or for each combination of `row`- and `col` levels), statistical tests will be performed with regards to the two-factors `x` and `hue`
 - Example with ANOVA:
-  -  If `x = "day"`, `hue = "gender"`, `row = "smoker"`, `col = "age-group"`, then for each level of `smoker` and `age-group` (e.g. `smoker: "yes"` and `age-group: "young"`), a *two-way ANOVA* will be performed with `day` and `gender` as factors.
+  - If `x = "day"`, `hue = "gender"`, `row = "smoker"`, `col = "age-group"`, then for each level of `smoker` and `age-group` (e.g. `smoker: "yes"` and `age-group: "young"`), a *two-way ANOVA* will be performed with `day` and `gender` as factors.
   - Three-way ANOVAs are not possible (yet), since that would require setting e.g. `col` as the third factor, or implementing another dimension (e.g. `hue2`).
+</details>
 
 
 
-## Feature List ⚙️
+
+### Disclaimer about Statistics (READ if you're new to statistics) ❗️
+
+<details>
+<summary>❗️ Disclaimer about Statistics (Click to unfold)</summary>
+
+
+#### The author is not a dedicated statistician! BUT, he derives his knowledge from ...
+
+- ... ***Intuitive Biostatistics*** - Fourth Edition (2017); Harvey Motulsky
+- ... ***Introduction to Statistical Learning with applications in Python*** - First Edition (2023); Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani, Jonathan Taylor
+- ... talking to other scientists struggling with statistics
+
+**✅ plotastic can help you with...**
+
+- ... gaining some practical experience when learning statistics
+- ... quickly gain statistical implications about your data without switching to another software
+- ... making first steps towards a full statistical analysis
+- ... plotting publication grade figures (without statistics)
+- ... publication grade statistical analysis **IF** you really know what you're doing OR you have back-checked your results by a professional statistician
+- ... quickly test data transformations (log)
+
+**🛑 plotastic can NOT ...**
+
+- ... replace a professional statistician
+- ... teach you statistics, you need some basic knowledge (but plotastic is awesome for practicing!)
+- ... test for multicolinearity (Absence of multicolinearity is required by ANOVA!)
+- ... perform stringent correction for multiple testing (e.g. bonferoni), as statistical tests are applied to sub-facets of the whole dataframe for each axes, which depends on the definition of x, hue, col, etc. Hence, corrected p-values might over-estimate the significance of your results.
+
+
+#### Be **critical** and **responsible** with your statistical analysis!
+
+- **Expect Errors:** Don't trust automated systems like this one!
+- **Document your work in *ridiculous detail***:
+  - Include the applied tests, the number of technical replicates and the number of biological/independent in each figure legend
+  - State explicitly what each datapoint represents:
+    - 1 datapoint = 1 Technical replicate?  
+    - 1 datapoint = The mean of all technical replicate per independent replicate/subject?
+  - State explicitly what the error-bars mean: Standard deviation? Confidence interval?
+  - (Don't mix technical with biological/independent variance)
+  - Report if/how you removed outliers
+  - Report if you did or did not apply correction methods (multiple comparisons, Greenhouse Geyser, etc.) and what your rationale is (exploratory vs. confirmatory study? Validation through other methods to reduce Type I error?)
+- **Check results with professionnals:**
+  - *"Here is my data, here is my question, here is my analysis, here is my interpretation. What do you think?"*
+
+</details>
+
+## Features ⚙️
+
+### Implementation List ⚙️
 
 <details>
 <summary>⚙️ Feature List (click to unfold) </summary>
 
-### Implemented
 
+#### *Implemented*
+- **Base plotting and Editing of plots:**
+  - Done 90%
+  - All (non-facetgrid) seaborn plots should work
+- **Multi-Layered single-line plots**
+  - Multi-layerd plots with arguments configured for one another
+  - Box-plot + swarm/strip
+- **PostHoc**
+  - pg.pairwise_tests works with all primary options
+- **Plot Annotations**
+  - Stars! PostHoc Tables can be annotated in plots and specific pairs are user-selectable!
+
+#### *Planned*
 - **Plotting:**
-  - still refactoring!
-
-
-### Planned
-
-- **Plotting:**
-  - All possible seaborn plote
-  - QQ-MultiPlot
+  - QQ-Plot
+  - Kaplan-Meyer plots
 - **Assumption testing:**
   - Normality (Shapiro-Wilk)
   - Sphericity (Levene)
 - **Omnibus tests:**
-  - lorem
-  - lorem
+  - All of 'em, ANOVA, kruskal, etc.
 - **Post-hoc tests:**
-  - lorem
-  - lorem
+  - Make correction for multiple testing go over complete DataFrame and not Facet-wise.
+- **Bivariate tests:**
+  - Make an special sub-class of dims for `x` that handles numerical and categorical types so that we don't get cryptic error messages when trying to plot a scatterplot with a numerical `x` and a categorical `hue`.
+  - Function to convert numerical data into categorical data by binning
+  - Pearson, Spearman, Kendall
+- **Plot Annotations**
+  - Omnibus results
 
 
-### Maybe..?
-
+#### *Maybe..?*
 - Interactive MultiPlot (where you click stuff and adjust scale etc.)
+- Full Pipelines:
+  - Putting all those statistical tests into one line. 
+  - Will work on this only after everything's implemented and working confidently and well! 
+  - Sth. like this:
+    - `between_samples(parametric=True)`:    ANOVA + Tukey (✅ Normality, ✅ Homoscedasticity )
+    - `between_samples(parametric=False)`:  Kruskal-Wallis + Dunn
+    - `within_samples(parametric=True)`:      RM-ANOVA + multiple paired t-tests (✅ Normality, ✅ Sphericity)
+    - `within_samples(parametric=False)`:    Friedman + multiple Wilcoxon
 
-### Not planned
 
+#### *Not planned*
 - Support for seaborn FacetGrid
   - Plotastic uses matplotlib figures and fills its axes with seaborn plot functions. In my opinion, that's the best solution that offers the best adaptibility of every plot detail while bieng easy to maintain
 - Support for seaborn objects (same as Facetgrid)
 
-### Not possible
-
+#### *Not possible*
 - NOTHING
+
 
 </details>
 
-## Internal Structure of Plotastic 🌳
 
+
+### Internal Structure of Plotastic 🌳
 
 <details>
-
-
 <summary>🌳 Class Diagram (click to unfold) </summary>
 
-### Not everything is implemented. But this is where we're headed. See Features to see what's possible snd what not
+🛑 **Not everything shown here is implemented!** 🛑 But this is where we're headed. See Features to see what's possible and what not
 
 ```mermaid
 classDiagram
@@ -387,13 +488,13 @@ matplotlib *-- PlotTool
   Annotator --|> DataAnalysis
 
 
-
 ```
-
 </details>
 
-<details>
 
+
+
+<details>
 <summary>📈 Pseudo-Flowchart how plotting works (click to unfold) </summary>
 
 
@@ -445,52 +546,9 @@ flowchart TD
 ```
 </details>
 
-## Disclaimer about Statistics (READ if you're new to statistics)
-
-<details>
-
-<summary>❗️ Disclaimer about Statistics (Click to unfold)</summary>
 
 
 
-
-### The author is not a dedicated statistician! BUT, he derives his knowledge from ...
-
-- ... ***Intuitive Biostatistics*** - Fourth Edition (2017); Harvey Motulsky
-- ... ***Introduction to Statistical Learning with applications in Python*** - First Edition (2023); Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani, Jonathan Taylor
-- ... talking to other scientists struggling with statistics
-
-**✅ plotastic can help you with...**
-
-- ... gaining some practical experience when learning statistics
-- ... quickly gain statistical implications about your data without switching to another software
-- ... making first steps towards a full statistical analysis
-- ... plotting publication grade figures (without statistics)
-- ... publication grade statistical analysis **IF** you really know what you're doing OR you have back-checked your results by a professional statistician
-- ... quickly test data transformations (log)
-
-**🛑 plotastic can NOT ...**
-
-- ... replace a professional statistician
-- ... teach you statistics, you need some basic knowledge (but is awesome for practicing)
-- ... test for multicolinearity (Absence of multicolinearity is required by ANOVA!)
-- ... perform stringent correction for multiple testing (e.g. bonferoni), as statistical tests are applied to sub-facets of the whole dataframe for each axes, which depends on the definition of x, hue, col, etc. Hence, corrected p-values might over-estimate the significance of your results. 
-
-
-### Be **critical** and **responsible** with your statistical analysis!
-
-
-
-- **Expect Errors:** Don't trust automated systems like this one!
-- **Document your work in *ridiculous detail***:
-  - ... how technical and biological replicates contributed to your data
-  - ... if/how you removed outliers
-  - ... if you did or did not apply correction methods (multiple comparisons, Greenhouse Geyser, etc.) and what your rationale is (exploratory vs. confirmatory study?, validation through other methods to reduce Type II error?)
-  - Include the applied tests, the number of technical replicates (per datapoint) and the number of biological/independent in each figure legend replicates (per group)>
-- **Check results with professionnals:**
-  - *"Here is my data, here is my question, here is my analysis, here is my interpretation. What do you think?"*
-
-</details>
 
 ## Cite these papers! ✍🏻
 
@@ -558,10 +616,6 @@ lorem ipsum dolor
 
 #### Automated pipelines
 
-- `between_samples(parametric=True)`:    ANOVA + Tukey (✅ Normality, ✅ Homoscedasticity )
-- `between_samples(parametric=False)`:  Kruskal-Wallis + Dunn
-- `within_samples(parametric=True)`:      RM-ANOVA + multiple paired t-tests (✅ Normality, ✅ Sphericity)
-- `within_samples(parametric=False)`:    Friedman + multiple Wilcoxon
 
 lorem
 

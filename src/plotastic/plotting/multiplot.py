@@ -13,6 +13,7 @@ import pyperclip
 import markurutils as ut
 
 from plotastic.plotting.plottool import PlotTool
+
 if TYPE_CHECKING:
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
 
@@ -28,7 +29,7 @@ class MultiPlot(PlotTool):
 
     #
     # ... __init__ .................................................................................
-    
+
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
 
@@ -84,7 +85,6 @@ class MultiPlot(PlotTool):
                 linewidth=thick,
             ),
         )
-        box_KWS.update(box_kws)
 
         ### Stripplot kws
         strip_KWS = dict(
@@ -98,6 +98,9 @@ class MultiPlot(PlotTool):
             edgecolor="white",
             linewidth=thin,  # * Edge width of the marker
         )
+
+        ### User KWS
+        box_KWS.update(box_kws)
         strip_KWS.update(strip_kws)
 
         ###... PLOT
@@ -177,6 +180,84 @@ class MultiPlot(PlotTool):
         pyperclip.copy(s)
         print("#! Code copied to clipboard, press ctrl+v to paste")
         return s
+
+    def plot_box_swarm(
+        self,
+        marker_size: float = 1.5,
+        marker_alpha: float = 0.9,
+        legend=True,
+        subplot_kws: dict = dict(),
+        box_kws: dict = dict(),
+        swarm_kws: dict = dict(),
+    ) -> "MultiPlot | DataAnalysis":
+        """A boxplot with a stripplott (scatter) on top
+
+        Args:
+            markersize (float, optional): _description_. Defaults to 2.
+            markeralpha (float, optional): _description_. Defaults to 0.5.
+            box_kws (dict, optional): _description_. Defaults to dict().
+            strip_kws (dict, optional): _description_. Defaults to dict().
+        """
+        # ... PARAMETERS
+        ### Linewidths
+        thin, thick = 0.2, 1.0
+        ### Alpha
+        covering, translucent, hazy = 1.0, 0.5, 0.3
+        ### z-order
+        front, mid, background, hidden = 100, 50, 1, -1
+
+        ### ... KEYWORD ARGUMENTS
+        ### Boxplot kws
+        box_KWS = dict(
+            showfliers=False,
+            boxprops=dict(  # * Box line and surface
+                alpha=translucent,
+                linewidth=thin,
+            ),
+            medianprops=dict(  # * Median line
+                alpha=covering,
+                zorder=front,
+                linewidth=thick,
+            ),
+            whiskerprops=dict(  # * Lines conencting box and caps
+                alpha=covering,
+                zorder=mid,
+                linewidth=thin,
+            ),
+            capprops=dict(  # * Caps at the end of whiskers
+                alpha=covering,
+                zorder=mid,
+                linewidth=thick,
+            ),
+        )
+
+        ### Swarmplot kws
+        swarm_KWS = dict(
+            dodge=True,  # * Separates the points in hue
+            zorder=front,
+            ### Marker Style
+            alpha=marker_alpha,
+            size=marker_size,
+            # color="none",
+            edgecolor="black",
+            linewidth=thin,  # * Edge width of the marker
+        )
+
+        ### User KWS
+        box_KWS.update(box_kws)
+        swarm_KWS.update(swarm_kws)
+
+        ###... PLOT
+        (
+            self.subplots(**subplot_kws)
+            .fillaxes(kind="box", **box_KWS)
+            .fillaxes(kind="swarm", **swarm_KWS)
+        )
+
+        if legend:
+            self.edit_legend()
+
+        return self
 
 
 ## !__________________________________________________________________________
