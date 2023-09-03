@@ -206,10 +206,10 @@ PT.edit_title_replace_SNIP()
 
 ### Change the axis labels
 PT.edit_xy_axis_labels(
-    leftmost="tipdf",
-    notleftmost="",
-    lowerrow="smoker",
-    notlowerrow="d",
+    leftmost_col="tipdf",
+    notleftmost_col="",
+    lowest_row="smoker",
+    notlowest_row="d",
 )
 
 ### Snipper for changing the axis labels

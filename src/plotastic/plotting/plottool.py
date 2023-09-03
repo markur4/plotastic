@@ -133,7 +133,7 @@ class PlotTool(DataFrameTool):
         """Always returns a 2D nested array of axes, even if there is only one row or column."""
         if self.dims.row and self.dims.col:  # * both row and col
             return self.axes
-        elif self.dims.row or self.dims.col:  # * either or
+        elif self.factors_is_1_facet:  # * either or
             return np.array([self.axes])
         else:  # * Single figure
             return np.array([self.axes]).reshape(1, 1)
@@ -216,27 +216,27 @@ class PlotTool(DataFrameTool):
     @property  # * ax11 >>> ax12 >>> ax21 >>> ax22 >>> ...
     def axes_iter_leftmost(self):
         """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
-        for row in self.axes_nested:
-            yield row[0]
+        for row in self.axes_nested:  # * Through rows
+            yield row[0]  # * Leftmost column
 
     @property  # * >> axes excluding leftmost column
     def axes_iter_notleftmost(self):
         """Returns: >> axes excluding leftmost column"""
-        for row in self.axes_nested:
-            for ax in row[1:]:
+        for row in self.axes_nested:  # * Through rows
+            for ax in row[1:]:  # * Through all columns except leftmost
                 yield ax
 
     @property  # * ax31 >>> ax32 >>> ax33 >>> ax34 >>> ...
     def axes_iter_lowerrow(self):
         """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
-        for ax in self.axes_nested[-1]:
+        for ax in self.axes_nested[-1]:  # * Pick Last row, iterate through columns
             yield ax
 
     @property  # * >> axes excluding lowest row
     def axes_iter_notlowerrow(self):
         """Returns: >> axes excluding lowest row"""
-        for row in self.axes_nested[:-1]:
-            for ax in row:
+        for row in self.axes_nested[:-1]:  # * All but last row
+            for ax in row:  # * Through columns
                 yield ax
 
     #
@@ -245,7 +245,7 @@ class PlotTool(DataFrameTool):
 
     def subplots(
         self,
-        wspace=0.4,
+        wspace=0.25,
         hspace=0.7,
         width_ratios: list[int] = None,
         height_ratios: list[int] = None,
@@ -300,7 +300,9 @@ class PlotTool(DataFrameTool):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def fillaxes(self, kind: str = "strip", **sns_kws: dict) -> "PlotTool | DataAnalysis":
+    def fillaxes(
+        self, kind: str = "strip", **sns_kws: dict
+    ) -> "PlotTool | DataAnalysis":
         """_summary_
 
         Args:
@@ -495,35 +497,43 @@ class PlotTool(DataFrameTool):
 
     def edit_xy_axis_labels(
         self,
-        leftmost: str = "",
-        notleftmost: str = "",
-        lowerrow: str = "",
-        notlowerrow: str = "",
+        leftmost_col: str = None,
+        notleftmost_col: str = "",
+        lowest_row: str = None,
+        notlowest_row: str = "",
     ) -> "PlotTool | DataAnalysis":
-        """Edits x- and y-axis labels
+        """Edits x- and y-axis labels of facets
 
         Args:
-            leftmost (str): Y-axis label for leftmost axes
-            notleftmost (str): Y-axis label for not-leftmost axes
-            lowerrow (str): x-axis label for lower row of axes
-            notlowerrow (str): x-axis label for not-lower row of axes
+            leftmost (str): Y-axis label for leftmost axes. Defaults to None.
+            notleftmost (str): Y-axis label for not-leftmost axes. Defaults to "".
+            lowerrow (str): x-axis label for lower row of axes. Defaults to None.
+            notlowerrow (str): x-axis label for not-lower row of axes. Defaults to "".
         """
-        leftmost = leftmost or self.dims.y
-        notleftmost = notleftmost or ""
-        lowerrow = lowerrow or self.dims.x
-        notlowerrow = notlowerrow or ""
+        # * Standard Args
+        leftmost_col = self.dims.y if leftmost_col is None else leftmost_col
+        lowest_row = self.dims.x if lowest_row is None else lowest_row
+
+        # leftmost = leftmost or self.dims.y
+        # notleftmost = notleftmost or ""
+        # lowerrow = lowerrow or self.dims.x
+        # notlowerrow = notlowerrow or ""
 
         ### y-axis labels
-        for ax in self.axes_iter_leftmost:
-            ax.set_ylabel(leftmost)
-        for ax in self.axes_iter_notleftmost:
-            ax.set_ylabel(notleftmost)
+        if not leftmost_col is None:
+            for ax in self.axes_iter_leftmost:
+                ax.set_ylabel(leftmost_col)
+        if not notleftmost_col is None:
+            for ax in self.axes_iter_notleftmost:
+                ax.set_ylabel(notleftmost_col)
 
         ### x-axis labels
-        for ax in self.axes_iter_lowerrow:
-            ax.set_xlabel(lowerrow)
-        for ax in self.axes_iter_notlowerrow:
-            ax.set_xlabel(notlowerrow)
+        if not lowest_row is None:
+            for ax in self.axes_iter_lowerrow:
+                ax.set_xlabel(lowest_row)
+        if not notlowest_row is None:
+            for ax in self.axes_iter_notlowerrow:
+                ax.set_xlabel(notlowest_row)
         return self
 
     def edit_xy_axis_labels_SNIP(self) -> str:
@@ -785,7 +795,9 @@ class PlotTool(DataFrameTool):
     #
     # * fontsizes ..............................................#
 
-    def edit_fontsizes(self, ticklabels=10, xylabels=10, axis_titles=10) -> "PlotTool | DataAnalysis":
+    def edit_fontsizes(
+        self, ticklabels=10, xylabels=10, axis_titles=10
+    ) -> "PlotTool | DataAnalysis":
         """Edits fontsizes in [pt]. Does not affect legent or suptitle
 
         Args:

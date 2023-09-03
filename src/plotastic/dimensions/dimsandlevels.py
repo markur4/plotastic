@@ -80,7 +80,7 @@ class DimsAndLevels:
         self,
         data: pd.DataFrame,
         dims: dict | Dims,
-    ) :
+    ):
         """_summary_
 
         Args:
@@ -161,7 +161,7 @@ class DimsAndLevels:
     #         xhue = [self.dims.x]
     #     return xhue
 
-    @property
+    @property # * [row, col]; row; col; None
     def factors_rowcol(self) -> str | list[str] | None:
         if self.dims.row and self.dims.col:
             rowcol = [self.dims.row, self.dims.col]
@@ -173,7 +173,7 @@ class DimsAndLevels:
             rowcol = None
         return rowcol
 
-    @property
+    @property # * [row, col]; [row]; [col]; [""]
     def factors_rowcol_list(self) -> list[str]:
         if self.dims.row and self.dims.col:
             rowcol = [self.dims.row, self.dims.col]
@@ -191,7 +191,11 @@ class DimsAndLevels:
     def factors_is_just_x(self) -> bool:
         return not self.dims.row and not self.dims.col and not self.dims.hue
 
-    @property
+    @property # * True, False
+    def factors_is_1_facet(self) -> bool:
+        return (not self.dims.row is None) or (not self.dims.col is None)
+
+    @property # * True, False
     def factors_is_unfacetted(self) -> bool:
         return not self.dims.row and not self.dims.col
 

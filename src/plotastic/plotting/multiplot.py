@@ -210,6 +210,9 @@ class MultiPlot(PlotTool):
         ### Boxplot kws
         box_KWS = dict(
             showfliers=False,
+            # * Widths of boxes
+            # ! Throws TypeError: matplotlib.axes._axes.Axes.boxplot() got multiple values for keyword argument 'widths'
+            # widths=0.9,  
             boxprops=dict(  # * Box line and surface
                 alpha=translucent,
                 linewidth=thin,
