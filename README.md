@@ -416,14 +416,17 @@ classDiagram
       fillaxes(kind="strip") -> (fig, axes)
       plot(kind="strip") -> (fig, axes)
 
+      axes_nested(property) -> np.ndarray(axes).shape(1,1)
+      axes_iter__key_ax(property) -> ax
+      
       save_plot_tofile() -> None
       save_plot_tobuffer() -> io.BytesIO
       load_plot_frombuffer() -> (fig, axes)
+   }
+matplotlib *-- PlotTool
+matplotlib <.. rc: Configures
 
-
-      axes_nested(property) -> np.ndarray(axes).shape(1,1)
-      axes_iter__key_ax(property) -> ax
-
+   class PlotEdits{
       edit_titles(titles:dict) -> None
       edit_titles_SNIP()
       edit_labels(labels:dict) -> None
@@ -433,9 +436,7 @@ classDiagram
       ....()
    }
    
-matplotlib <.. rc: Configures
-matplotlib *-- PlotTool
-
+PlotTool <|-- PlotEdits
 
    class MultiPlot{
       <<Library of pre-built Plots>>
@@ -452,7 +453,8 @@ matplotlib *-- PlotTool
       ....()
    }
 
-   PlotTool <|-- MultiPlot
+   PlotEdits <|-- MultiPlot
+
 
 
    %% DATAANALYSIS #......................................................................................

@@ -58,6 +58,7 @@ from .dimensions.dataframetool import DataFrameTool
 
 from .plotting.rc import set_style, set_palette
 from .plotting.plottool import PlotTool
+from .plotting.plotedits import PlotEdits
 from .plotting.multiplot import MultiPlot
 
 from .stat.statresults import StatResults
@@ -79,6 +80,7 @@ __all__ = [
     Dims,
     DimsAndLevels,
     PlotTool,
+    PlotEdits,
     MultiPlot,
     StatResults,
     StatTest,
