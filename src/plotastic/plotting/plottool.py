@@ -214,26 +214,26 @@ class PlotTool(DataFrameTool):
     # * Selective   ............................................#
 
     @property  # * ax11 >>> ax12 >>> ax21 >>> ax22 >>> ...
-    def axes_iter_leftmost(self):
+    def axes_iter_leftmost_col(self):
         """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
         for row in self.axes_nested:  # * Through rows
             yield row[0]  # * Leftmost column
 
     @property  # * >> axes excluding leftmost column
-    def axes_iter_notleftmost(self):
+    def axes_iter_notleftmost_col(self):
         """Returns: >> axes excluding leftmost column"""
         for row in self.axes_nested:  # * Through rows
             for ax in row[1:]:  # * Through all columns except leftmost
                 yield ax
 
     @property  # * ax31 >>> ax32 >>> ax33 >>> ax34 >>> ...
-    def axes_iter_lowerrow(self):
+    def axes_iter_lowest_row(self):
         """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
         for ax in self.axes_nested[-1]:  # * Pick Last row, iterate through columns
             yield ax
 
     @property  # * >> axes excluding lowest row
-    def axes_iter_notlowerrow(self):
+    def axes_iter_notlowest_row(self):
         """Returns: >> axes excluding lowest row"""
         for row in self.axes_nested[:-1]:  # * All but last row
             for ax in row:  # * Through columns
@@ -242,6 +242,16 @@ class PlotTool(DataFrameTool):
     #
     #
     #  ... PLOT .........................................................................................................
+
+    def _subplots_autokwargs(self, **subplot_KWS: dict) -> dict:
+        """Adds further kwargs depending on kwargs already present
+
+        Returns:
+            dict: _description_
+        """
+        pass
+
+        return subplot_KWS
 
     def subplots(
         self,
@@ -257,7 +267,11 @@ class PlotTool(DataFrameTool):
         Returns:
             tuple["mpl.figure.Figure", "mpl.axes.Axes"]: matplotlib figure and axes objects
         """
-        ### Define standard kws
+
+        # ... Handle kwargs
+        # KWS = self._subplots_autokwargs(**subplot_kws) # * Adds extra kwargs depending on kwargs already present
+
+        ### Redirect kwargs, provide function defaults, flatten access
         KWS = dict(
             nrows=self.len_rowlevels,
             ncols=self.len_collevels,
@@ -265,15 +279,19 @@ class PlotTool(DataFrameTool):
             gridspec_kw=dict(
                 wspace=wspace,
                 hspace=hspace,
-                width_ratios=width_ratios or [1] * self.len_collevels,
-                height_ratios=height_ratios or [1] * self.len_rowlevels,
+                width_ratios=width_ratios or [1] * self.len_collevels,  # * [1,1, ...]
+                height_ratios=height_ratios or [1] * self.len_rowlevels,  # * [1,1, ...]
             ),
         )
-        KWS = ut.update_dict_recursive(KWS, subplot_kws)
+        # KWS = ut.remove_None_recursive(KWS) # * Kick out Nones from dict
+        KWS = ut.update_dict_recursive(
+            KWS, subplot_kws
+        )  # * User args override defaults
 
-        ### SUBPLOTS
+        # ... SUBPLOTS
         self.fig, self.axes = plt.subplots(**KWS)
 
+        # ... Edits
         ### Add titles to axes to provide basic orientation
         self.edit_axtitles_reset()
 
@@ -521,18 +539,18 @@ class PlotTool(DataFrameTool):
 
         ### y-axis labels
         if not leftmost_col is None:
-            for ax in self.axes_iter_leftmost:
+            for ax in self.axes_iter_leftmost_col:
                 ax.set_ylabel(leftmost_col)
         if not notleftmost_col is None:
-            for ax in self.axes_iter_notleftmost:
+            for ax in self.axes_iter_notleftmost_col:
                 ax.set_ylabel(notleftmost_col)
 
         ### x-axis labels
         if not lowest_row is None:
-            for ax in self.axes_iter_lowerrow:
+            for ax in self.axes_iter_lowest_row:
                 ax.set_xlabel(lowest_row)
         if not notlowest_row is None:
-            for ax in self.axes_iter_notlowerrow:
+            for ax in self.axes_iter_notlowest_row:
                 ax.set_xlabel(notlowest_row)
         return self
 
@@ -664,40 +682,60 @@ class PlotTool(DataFrameTool):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-    def edit_x_ticklabels(
-        self,
-        lowerrow: list = None,
-        notlowerrow: list = None,
-        rotation: int = 0,
-        ha: str = "center",
-        va: str = "top",
-        pad: float = 1,
-        **text_kws,
-    ) -> "PlotTool | DataAnalysis":
-        """Edits x- ticklabels
+    @staticmethod
+    def _exchange_ticklabels(ax, labels: list | str) -> None:
+        """Exchange ticklabels iterating through labels and ticks. Works with labels having different length than labels
 
         Args:
-            lowerrow (list): x-axis ticklabels for lower row of axes
-            notlowerrow (list): x-axis ticklabels for not-lower row of axes
-            etc.
+            ax (_type_): _description_
+            labels (list | str): _description_
         """
-        notlowerrow = notlowerrow or self.levels_dict_dim["x"]
-        lowerrow = lowerrow or self.levels_dict_dim["x"]
 
-        kws = dict(
-            rotation=rotation,  # * Rotation in degrees
-            ha=ha,  # * Horizontal alignment [ 'center' | 'right' | 'left' ]
-            va=va,  # * Vertical Alignment   [ 'center' | 'top' | 'bottom' | 'baseline' ]
-        )
-        kws.update(text_kws)
+        ### Retrieve xticks
+        ticks = ax.get_xticks()
 
-        ticks = [i for i in range(len(lowerrow))]
-        for ax in self.axes_iter_notlowerrow:
-            ax.set_xticks(ticks=ticks, labels=notlowerrow, **kws)
-            ax.tick_params(axis="x", pad=pad)
-        for ax in self.axes_iter_lowerrow:
-            ax.set_xticks(ticks=ticks, labels=lowerrow, **kws)
-            ax.tick_params(axis="x", pad=pad)  # * Sets distance to figure
+        ### If we want labels removed:
+        labels = [""] * len(ticks) if labels is "" else labels
+
+        ### Change lables independently of numbers of ticks and previous labels!
+        old_labels = [item.get_text() for item in ax.get_xticklabels()]
+        i = 0
+        while i < len(labels) and i < len(old_labels):
+            old_labels[i] = labels[i]
+            i += 1
+
+        # ... Set new labels
+        ax.set_xticklabels(labels=old_labels)
+
+    def edit_x_ticklabels_exchange(
+        self,
+        labels: list | str = None,
+        labels_lowest_row: list | str = None,
+        labels_notlowest_row: list | str = None,
+    ) -> "PlotTool | DataAnalysis":
+        """Changes text of x-ticklabels
+
+        Args:
+            labels (list, optional): _description_. Defaults to None.
+            labels_lowest_row (list, optional): _description_. Defaults to None.
+            labels_notlowest_row (list, optional): _description_. Defaults to None.
+
+        Returns:
+            PlotTool | DataAnalysis: _description_
+        """
+
+        # ... EDIT
+        ### Labels for all axes:
+        if not labels is None:
+            for ax in self.axes_flat:
+                self._exchange_ticklabels(ax, labels)
+        if not labels_lowest_row is None:
+            for ax in self.axes_iter_lowest_row:
+                self._exchange_ticklabels(ax, labels_lowest_row)
+        if not labels_notlowest_row is None:
+            for ax in self.axes_iter_notlowest_row:
+                self._exchange_ticklabels(ax, labels_notlowest_row)
+
         return self
 
     def edit_x_ticklabels_SNIP(self) -> str:
@@ -719,6 +757,63 @@ class PlotTool(DataFrameTool):
         pyperclip.copy(s)
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
+
+    def edit_x_ticklabels_rotate(
+        self,
+        rotation: int = 0,
+        ha: str = None,
+        va: str = None,
+        pad: float = None,
+        rotation_mode: str = "anchor",
+        **set_kws: dict,
+    ) -> "PlotTool | DataAnalysis":
+        """Rotates the x-ticklabels and changes other parameters accordingly
+
+        Args:
+            rotation (int, optional): _description_. Defaults to 0.
+            ha (str, optional): _description_. Defaults to None.
+            va (str, optional): _description_. Defaults to None.
+            pad (float, optional): Distance between tick and ticklabel. Defaults to None.
+            rotation_mode (str, optional): _description_. Defaults to "anchor".
+
+        Returns:
+            PlotTool | DataAnalysis: _description_
+        """
+        
+        # ... KWS
+        ### Redirect kwargs, provide function defaults
+        
+        set_KWS = dict(
+            rotation=rotation,
+            ha=ha,
+            va=va,
+            rotation_mode=rotation_mode,
+            pad=pad,
+        )
+        ### Remove None values so we can detect user defined values
+        set_KWS = ut.remove_None_recursive(set_KWS)
+        
+        ### Change kwargs depending on selection
+        if 20 < rotation < 89:
+            set_KWS["ha"] = "right"
+            set_KWS["va"] = "center"
+            set_KWS["rotation_mode"] = "anchor"
+            set_KWS["pad"] = 2.5
+
+        ### Use user defined values if present
+        set_KWS.update(set_kws)
+
+        ### separate KWS into different dicts, since matplotlib has special needs
+        ticklabel_KWS = {k:v for k,v in set_KWS.items() if not k in ["pad"]}
+        params_KWS = {k:v for k,v in set_KWS.items() if k in ["pad"]}
+
+        # ... Rotate
+        for ax in self.axes.flatten():
+            obj = ax.get_xticklabels()  # * Retrieve ticks
+            plt.setp(obj, **ticklabel_KWS)
+            ax.tick_params(axis="x", **params_KWS)
+            
+        return self
 
     #
     # * Grid ...................................................#

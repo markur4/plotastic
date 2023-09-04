@@ -226,9 +226,9 @@ PT.edit_xy_axis_labels_SNIP()
 #     ax.set_xlabel('')
 
 ### Edit xtick-labels
-PT.edit_x_ticklabels(
-    lowerrow=["NOO", "yup"],
-    notlowerrow=["dd", "ee"],
+PT.edit_x_ticklabels_exchange(
+    labels_lowest_row=["NOO", "yup"],
+    labels_notlowest_row=["dd", "ee"],
     rotation=0,
     ha="center",
     pad=1,
@@ -271,7 +271,7 @@ def tester(DF, dims):
         .edit_y_scale_log(base=10)
         .edit_y_ticklabel_percentage()
         .edit_y_ticklabels_log_minor(subs=[2, 3, 5, 7])
-        .edit_x_ticklabels()
+        .edit_x_ticklabels_exchange()
         .edit_grid()
         .edit_fontsizes(9, 10, 7)
         # .edit_replace_titles(titles = ["1", "2", "3", "4", "5", "6", "7", "8"])

@@ -526,9 +526,22 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             only_sig (str, optional): _description_. Defaults to "strict".
         """
 
+        # ... KWS
         ### Required for initialization of statannotations.Annotator
         init_KWS = dict(y=self.dims.y, x=self.dims.x, hue=self.dims.hue)
 
+        ### Standard KWS for annotate
+        config_KWS = dict(
+            text_format="star",  # * ['full', 'simple', 'star']
+            loc="inside",  # * ['inside', 'outside'] where to display stars
+            text_offset=-4,  # * u*10, # Distance between star and its line
+            line_height=0.02,  # * Length of vertical lines at both ends
+            verbose=0,
+            line_width=0.7,
+        )
+        config_KWS.update(annot_KWS)
+
+        # ... Annootate
         ### Iterate through facets, axes and posthoc tables
         for key, df, ax, ph in self.iter__key_df_ax_ph(PH):
             ### Get pairs, pvals, stars and stardict
@@ -552,7 +565,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                         verbose=False,
                         **init_KWS,
                     )
-                    .configure(test=None, **annot_KWS)
+                    .configure(test=None, **config_KWS)
                     .set_custom_annotations(stars)
                     .set_pvalues(pvals)
                     .annotate()
