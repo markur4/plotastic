@@ -243,20 +243,13 @@ class PlotTool(DataFrameTool):
     #
     #  ... PLOT .........................................................................................................
 
-    def _subplots_autokwargs(self, **subplot_KWS: dict) -> dict:
-        """Adds further kwargs depending on kwargs already present
-
-        Returns:
-            dict: _description_
-        """
-        pass
-
-        return subplot_KWS
-
     def subplots(
         self,
-        wspace=0.25,
-        hspace=0.7,
+        sharey: bool = True,
+        y_scale: str = None,
+        y_scale_kws: dict = dict(),
+        wspace=None,
+        hspace=None,
         width_ratios: list[int] = None,
         height_ratios: list[int] = None,
         figsize: tuple[int] = None,
@@ -269,10 +262,12 @@ class PlotTool(DataFrameTool):
         """
 
         # ... Handle kwargs
-        # KWS = self._subplots_autokwargs(**subplot_kws) # * Adds extra kwargs depending on kwargs already present
+        ### Adds extra kwargs depending on kwargs already present
+        wspace = 0.05 if sharey and (wspace is None) else wspace
 
         ### Redirect kwargs, provide function defaults, flatten access
         KWS = dict(
+            sharey=sharey,
             nrows=self.len_rowlevels,
             ncols=self.len_collevels,
             figsize=figsize,
@@ -284,9 +279,8 @@ class PlotTool(DataFrameTool):
             ),
         )
         # KWS = ut.remove_None_recursive(KWS) # * Kick out Nones from dict
-        KWS = ut.update_dict_recursive(
-            KWS, subplot_kws
-        )  # * User args override defaults
+        # * User args override defaults
+        KWS = ut.update_dict_recursive(KWS, subplot_kws)
 
         # ... SUBPLOTS
         self.fig, self.axes = plt.subplots(**KWS)
@@ -294,7 +288,11 @@ class PlotTool(DataFrameTool):
         # ... Edits
         ### Add titles to axes to provide basic orientation
         self.edit_axtitles_reset()
-
+        ### Scale
+        # ! Must sometimes be done BEFORE seaborn functions, otherwise they might look weird
+        if not y_scale is None:
+            plt.yscale(y_scale, **y_scale_kws)
+        
         return self
 
     def subplots_SNIP(self, doclink=True) -> str:
@@ -369,7 +367,6 @@ class PlotTool(DataFrameTool):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
-
     #
     #
     # ... Fig properties ............................................................................
@@ -379,11 +376,15 @@ class PlotTool(DataFrameTool):
 
     #
     #
-    #... Small Edits ......................................................
+    # ... Small EDITS and those required to be set BEFORE seaborn plots......................................................
     def edit_axtitles_reset(self) -> "PlotTool | DataAnalysis":
         for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))
         return self
+
+    def _edit_scale_base():
+        pass
+        
 
 # ! # end class
 # !

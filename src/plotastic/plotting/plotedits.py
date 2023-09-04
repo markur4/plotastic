@@ -52,11 +52,6 @@ class PlotEdits(PlotTool):
                     keys.append(str(k))  # * Can't capitalize int
             return connect.join(keys)
 
-    def edit_axtitles_reset(self) -> "PlotEdits | DataAnalysis":
-        for key, ax in self.axes_iter__keys_ax:
-            ax.set_title(self._standard_axtitle(key))
-        return self
-
     def edit_titles(
         self,
         axes: mpl.axes.Axes = None,
@@ -209,7 +204,7 @@ class PlotEdits(PlotTool):
     def edit_x_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
     ) -> "PlotEdits | DataAnalysis":
-        for ax in self.axes.flatten():
+        for ax in self.axes_flat:
             ax.set_xscale(
                 value="log",  # * "symlog", "linear", "logit", ...
                 base=base,  # * Base of the logarithm

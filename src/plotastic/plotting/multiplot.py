@@ -263,6 +263,7 @@ class MultiPlot(PlotEdits):
         )
 
         ### Swarmplot kws
+
         swarm_KWS = dict(
             dodge=True,  # * Separates the points in hue
             zorder=front,
@@ -279,6 +280,7 @@ class MultiPlot(PlotEdits):
         swarm_KWS.update(swarm_kws)
 
         ###... PLOT
+        # ! If log y scale, you should pass y_scale = "log" in sublot_kws! Otherwise Points will not cluster in the middle!
         (
             self.subplots(**subplot_kws)
             .fillaxes(kind="box", **box_KWS)
