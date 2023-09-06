@@ -1,5 +1,6 @@
 #
-#%% imports
+# %% imports
+from os import remove
 from typing import TYPE_CHECKING, Callable
 
 import matplotlib as mpl
@@ -11,18 +12,17 @@ from plotastic.plotting.plottool import PlotTool
 
 if TYPE_CHECKING:
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
-    
-    
+
+
 # %% Class PlotEdit:
 
+
 class PlotEdits(PlotTool):
-    
     #
-    #... __init__ .......................................................................
-    
+    # ... __init__ .......................................................................
+
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
-
 
     #
     # ... EDIT .........................................................................
@@ -393,10 +393,10 @@ class PlotEdits(PlotTool):
         Returns:
             PlotTool | DataAnalysis: _description_
         """
-        
+
         # ... KWS
         ### Redirect kwargs, provide function defaults
-        
+
         set_KWS = dict(
             rotation=rotation,
             ha=ha,
@@ -406,7 +406,7 @@ class PlotEdits(PlotTool):
         )
         ### Remove None values so we can detect user defined values
         set_KWS = ut.remove_None_recursive(set_KWS)
-        
+
         ### Change kwargs depending on selection
         if 20 < rotation < 89:
             set_KWS["ha"] = "right"
@@ -418,15 +418,15 @@ class PlotEdits(PlotTool):
         set_KWS.update(set_kws)
 
         ### separate KWS into different dicts, since matplotlib has special needs
-        ticklabel_KWS = {k:v for k,v in set_KWS.items() if not k in ["pad"]}
-        params_KWS = {k:v for k,v in set_KWS.items() if k in ["pad"]}
+        ticklabel_KWS = {k: v for k, v in set_KWS.items() if not k in ["pad"]}
+        params_KWS = {k: v for k, v in set_KWS.items() if k in ["pad"]}
 
         # ... Rotate
         for ax in self.axes.flatten():
             obj = ax.get_xticklabels()  # * Retrieve ticks
             plt.setp(obj, **ticklabel_KWS)
             ax.tick_params(axis="x", **params_KWS)
-            
+
         return self
 
     #
@@ -467,18 +467,41 @@ class PlotEdits(PlotTool):
         labels = [ut.capitalize(l) for l in labels]
         return handles, labels
 
-    def edit_legend(self) -> "PlotEdits | DataAnalysis":
+    def edit_legend(
+        self,
+        reset_legend: bool = False,
+        title: str = None,
+        handles: list = None,
+        labels: list = None,
+        loc: str = "center right",
+        bbox_to_anchor: tuple = (1.15, 0.50),
+        borderaxespad: float = 4,
+        pad: float = None,
+        frameon: bool = False,
+        **kws,
+    ) -> "PlotEdits | DataAnalysis":
         """Adds standard legend to figure"""
-        self.fig.legend(
-            title=ut.capitalize(self.dims.hue),
-            handles=self.legend_handles_and_labels[0],
-            labels=self.legend_handles_and_labels[1],
-            loc="center right",
-            bbox_to_anchor=(1.15, 0.50),
-            borderaxespad=3,
-            frameon=False,
+        ### Prevent legend duplication:
+        if reset_legend:
+            self.remove_legend()
+        ### An Alias for borderaxespad
+        if not pad is None and borderaxespad == 4:
+            borderaxespad = pad
+
+        KWS = dict(
+            title=ut.capitalize(self.dims.hue) if title is None else title,
+            handles=self.legend_handles_and_labels[0] if handles is None else handles,
+            labels=self.legend_handles_and_labels[1] if labels is None else labels,
+            loc=loc,
+            bbox_to_anchor=bbox_to_anchor,
+            borderaxespad=borderaxespad,
+            frameon=frameon,
             # fontsize=10, # ! overrides entry from rcParams
         )
+        KWS.update(**kws)
+
+        # ... Set legend
+        self.fig.legend(**KWS)
         return self
 
     def edit_legend_SNIP(self, doclink=True) -> str:

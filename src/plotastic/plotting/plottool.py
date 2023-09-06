@@ -348,10 +348,11 @@ class PlotTool(DataFrameTool):
                 hue=self.dims.hue,
                 **kws,
             )
-            # * Remove legend per axes, since we want one legend for the whole figure
-            if self.dims.hue:
-                ax.legend_.remove()  # ! also: legend=False doesn't work with sns.barplot for some reason..
-
+        
+        ### Remove legend per axes, since we want one legend for the whole figure
+        if self.dims.hue: # ! also: legend=False doesn't work with sns.barplot for some reason..
+            self.remove_legend()
+                
         return self
 
     def fillaxes_SNIP(self, kind: str = "strip", doclink=True) -> str:
@@ -382,10 +383,15 @@ class PlotTool(DataFrameTool):
             ax.set_title(self._standard_axtitle(key))
         return self
 
-    def _edit_scale_base():
-        pass
+    def remove_legend(self):
+        for ax in self.axes_flat:
+            if ax.legend_:
+                ax.legend_.remove()
         
-
+        
+    
+    
+    
 # ! # end class
 # !
 # !
