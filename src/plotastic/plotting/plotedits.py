@@ -130,51 +130,53 @@ class PlotEdits(PlotTool):
     def edit_xy_axis_labels(
         self,
         x:str = None,
+        x_lowest_row: str = None,
+        x_notlowest_row: str = None,
         y:str = None,
-        leftmost_col: str = None,
-        notleftmost_col: str = None,
-        lowest_row: str = None,
-        notlowest_row: str = None,
+        y_leftmost_col: str = None,
+        y_notleftmost_col: str = None,
     ) -> "PlotEdits | DataAnalysis":
-        """_summary_
+        """Edits labels of x- & y-axis for all axes or for specific axes.
 
-        :param x: _description_, defaults to None
+        Selection of specific axes overwrites general selection
+
+        :param x: x-axis label for all axes :class:`df` , defaults to None 
         :type x: str, optional
+        :param x_lowest_row: _description_, defaults to None
+        :type x_lowest_row: str, optional
+        :param x_notlowest_row: _description_, defaults to None
+        :type x_notlowest_row: str, optional
         :param y: _description_, defaults to None
         :type y: str, optional
-        :param leftmost_col: _description_, defaults to None
-        :type leftmost_col: str, optional
-        :param notleftmost_col: _description_, defaults to None
-        :type notleftmost_col: str, optional
-        :param lowest_row: _description_, defaults to None
-        :type lowest_row: str, optional
-        :param notlowest_row: _description_, defaults to None
-        :type notlowest_row: str, optional
-        :return: _description_
+        :param y_leftmost_col: _description_, defaults to None
+        :type y_leftmost_col: str, optional
+        :param y_notleftmost_col: _description_, defaults to None
+        :type y_notleftmost_col: str, optional
+        :return: DataAnalysis object 
         :rtype: PlotEdits | DataAnalysis
         """
-        
+
         ### y-axis labels
         if not y is None:
             for ax in self.axes_flat:
                 ax.set_ylabel(y)
-        if not leftmost_col is None:
+        if not y_leftmost_col is None:
             for ax in self.axes_iter_leftmost_col:
-                ax.set_ylabel(leftmost_col)
-        if not notleftmost_col is None:
+                ax.set_ylabel(y_leftmost_col)
+        if not y_notleftmost_col is None:
             for ax in self.axes_iter_notleftmost_col:
-                ax.set_ylabel(notleftmost_col)
+                ax.set_ylabel(y_notleftmost_col)
 
         ### x-axis labels
         if not x is None:
             for ax in self.axes_flat:
                 ax.set_xlabel(x)
-        if not lowest_row is None:
+        if not x_lowest_row is None:
             for ax in self.axes_iter_lowest_row:
-                ax.set_xlabel(lowest_row)
-        if not notlowest_row is None:
+                ax.set_xlabel(x_lowest_row)
+        if not x_notlowest_row is None:
             for ax in self.axes_iter_notlowest_row:
-                ax.set_xlabel(notlowest_row)
+                ax.set_xlabel(x_notlowest_row)
         return self
 
     def edit_xy_axis_labels_SNIP(self) -> str:
