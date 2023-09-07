@@ -136,24 +136,24 @@ class PlotEdits(PlotTool):
         lowest_row: str = None,
         notlowest_row: str = None,
     ) -> "PlotEdits | DataAnalysis":
-        """Edits x- and y-axis labels of facets
+        """_summary_
 
-        Args:
-            leftmost (str): Y-axis label for leftmost axes. Defaults to None.
-            notleftmost (str): Y-axis label for not-leftmost axes. Defaults to "".
-            lowerrow (str): x-axis label for lower row of axes. Defaults to None.
-            notlowerrow (str): x-axis label for not-lower row of axes. Defaults to "".
+        :param x: _description_, defaults to None
+        :type x: str, optional
+        :param y: _description_, defaults to None
+        :type y: str, optional
+        :param leftmost_col: _description_, defaults to None
+        :type leftmost_col: str, optional
+        :param notleftmost_col: _description_, defaults to None
+        :type notleftmost_col: str, optional
+        :param lowest_row: _description_, defaults to None
+        :type lowest_row: str, optional
+        :param notlowest_row: _description_, defaults to None
+        :type notlowest_row: str, optional
+        :return: _description_
+        :rtype: PlotEdits | DataAnalysis
         """
-        # * Standard Args
-        # leftmost_col = self.dims.y if leftmost_col is None else leftmost_col
-        # lowest_row = self.dims.x if lowest_row is None else lowest_row
-
-        # leftmost = leftmost or self.dims.y
-        # notleftmost = notleftmost or ""
-        # lowerrow = lowerrow or self.dims.x
-        # notlowerrow = notlowerrow or ""
-
-
+        
         ### y-axis labels
         if not y is None:
             for ax in self.axes_flat:
@@ -390,17 +390,20 @@ class PlotEdits(PlotTool):
         rotation_mode: str = "anchor",
         **set_kws: dict,
     ) -> "PlotEdits | DataAnalysis":
-        """Rotates the x-ticklabels and changes other parameters accordingly
+        """_summary_
 
-        Args:
-            rotation (int, optional): _description_. Defaults to 0.
-            ha (str, optional): _description_. Defaults to None.
-            va (str, optional): _description_. Defaults to None.
-            pad (float, optional): Distance between tick and ticklabel. Defaults to None.
-            rotation_mode (str, optional): _description_. Defaults to "anchor".
-
-        Returns:
-            PlotTool | DataAnalysis: _description_
+        :param rotation: _description_, defaults to 0
+        :type rotation: int, optional
+        :param ha: _description_, defaults to None
+        :type ha: str, optional
+        :param va: _description_, defaults to None
+        :type va: str, optional
+        :param pad: _description_, defaults to None
+        :type pad: float, optional
+        :param rotation_mode: _description_, defaults to "anchor"
+        :type rotation_mode: str, optional
+        :return: _description_
+        :rtype: PlotEdits | DataAnalysis
         """
 
         # ... KWS
