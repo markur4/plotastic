@@ -295,16 +295,16 @@ class MultiPlot(PlotEdits):
 
 ## !__________________________________________________________________________
 
-# %% Matplotlib Runtime Config (RC)
+# # %% Matplotlib Runtime Config (RC)
 
-mpl.rc("figure", dpi=250)
+# mpl.rc("figure", dpi=250)
 
-# %% get data
+# # %% get data
 
-df, dims = ut.load_dataset("tips")  # * Tips
-# df, dims = ut.load_dataset("fmri") # * FMRI
+# df, dims = ut.load_dataset("tips")  # * Tips
+# # df, dims = ut.load_dataset("fmri") # * FMRI
 
-MP = MultiPlot(data=df, dims=dims)
+# MP = MultiPlot(data=df, dims=dims)
 
 
-# %%
+# # %%

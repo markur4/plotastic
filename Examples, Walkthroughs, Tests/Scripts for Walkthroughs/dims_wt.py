@@ -10,6 +10,7 @@ print(plst.__all__)
 # from plotastic import *
 # Dims
 from plotastic.dimensions.dims import Dims
+
 # from plotastic.dimsandlevels import DimsAndLevels
 
 
@@ -74,7 +75,7 @@ print("#\t 'dims.by' after switching: ", dims.col, "(inplace=False)")
 df, _ = ut.load_dataset(
     "fmri"
 )  # * _ stores a dictionary with dims. For clarity, we initialize analysis explicitly
-ana = ut.Analysis(
+ana = plst.DataAnalysis(
     dims=dict(y="signal", x="timepoint", hue="event", col="subject"),
     title="APROJECT",
     data=df,
@@ -91,25 +92,26 @@ print(
 df, _ = ut.load_dataset(
     "fmri"
 )  # _ stores a dictionary with dims. For clarity, we initialize analysis explicitly
-ana = ut.Analysis(
+ana = plst.DataAnalysis(
     dims=dict(y="signal", x="timepoint", hue="event", col="subject"),
     title="APROJECT",
     data=df,
 )
 
 print(
-    "#\t 'ana.dims.by' before switching:",
-    ana.dims.by,
+    "#\t 'ana.dims.col' before switching:",
+    ana.dims.col,
 )
 print(
-    "#\t 'ana.dims.by' in chain:        ",
-    ana.switch(col="event", inplace=False).dims.by,
+    "#\t 'ana.dims.col' in chain:        ",
+    ana.switch(col="event", inplace=False).dims.col,
 )
-print("#\t 'ana.dims.by' after switching: ", ana.dims.by, "(inplace=False)")
+print("#\t 'ana.dims.col' after switching: ", ana.dims.col, "(inplace=False)")
 print(
-    "#\t 'ana.dims.by'  in chain:       ", ana.switch(col="event", inplace=True).dims.by
+    "#\t 'ana.dims.col'  in chain:       ",
+    ana.switch(col="event", inplace=True).dims.col,
 )
-print("#\t 'ana.dims.by' after switching: ", ana.dims.by, "(inplace=True)")
+print("#\t 'ana.dims.col' after switching: ", ana.dims.col, "(inplace=True)")
 
 
 # In[6]:

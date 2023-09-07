@@ -58,7 +58,7 @@ if TYPE_CHECKING:
 
 
 class Dims:
-    # ... Init ....
+    # ... Init ................................................................
 
     def __init__(
         self,
@@ -86,7 +86,7 @@ class Dims:
     #
     #
     #
-    # ... Properties ....
+    # ... Properties ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     @property
     def has_hue(self) -> bool:
@@ -133,45 +133,60 @@ class Dims:
         return l
 
     def switch(
-        self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
+        self,
+        *keys_args: str,
+        inplace: bool = False,
+        verbose: bool = True,
+        **keys_kws: str | Dict[str, str],
     ) -> "Dims | DataAnalysis":
-        """
-        Set attributes. Detects Duplicates, switches automatically
-        :param keys: Two dimensions to switch. Only 2 Positional arguments allowed. Use e.g. dims.switch("x", "hue", **kwargs)
-        :param inplace: Decide if this switching should change the dims object permanently (analogously to pandas dataframe). If False, you should pass return value into a variable
-        :param verbose: Whether to print out switched values
-        :param kwarg: e.g. dict(row="smoker")
-        :return: dims object with switched parameters
+        """Switches two dimensions, e.g. x and hue, or x and row, etc. If you
+        want to switch more than two dimensions, use the switch method in
+        chain.
+
+        :param keys_args: Two dimensions to switch. Only 2 Positional arguments
+            allowed. Use e.g. dims.switch("x", "hue", **kwargs)
+        :type keys_args: str
+        :param inplace: Decide if this switching should change the dims object
+            permanently (analogously to pandas dataframe). If False, you should
+            pass return value into a variable, defaults to False
+        :type inplace: bool, optional
+        :param verbose: Whether to print out switched values, defaults to True
+        :type verbose: bool, optional
+        :param kwarg: Keyword arguments: row="smoker".
+        :type kwarg: str | Dict[str, str]
+        :raises AssertionError:
+        :return: DataAnalysis object with switched dimensions in dims
+        :rtype: Dims | DataAnalysis
         """
 
-        """HANDLE ARGUMENTS if keys are passed, e.g. dims.switch("x","row",**kwargs)"""
-        if len(keys) == 0:
+        ### Handle Arguments
+        # * If keys are passed, e.g. dims.switch("x","row",**kwargs)"""
+        if len(keys_args) == 0:
             pass
-        elif len(keys) == 2:
-            assert len(kwarg) == 0, "#! Can't switch when both keys and kwarg is passed"
-            values = self.getvalues(*keys)
-            kwarg[keys[0]] = values[1]
+        elif len(keys_args) == 2:
+            assert (
+                len(keys_kws) == 0
+            ), "#! Can't switch when both keys and kwarg is passed"
+            values = self.getvalues(*keys_args)
+            keys_kws[keys_args[0]] = values[1]
         else:
-            raise AssertionError(f"#! '{keys}' should have been of length 2")
-        assert len(kwarg) == 1, f"#! {kwarg} should be of length 1 "
+            raise AssertionError(f"#! '{keys_args}' should have been of length 2")
+        assert len(keys_kws) == 1, f"#! {keys_kws} should be of length 1 "
 
-        """PRINT FIRST LINE"""
+        ### Print first Line
         if verbose:
             todo = "RE-WRITING" if inplace else "TEMPORARY CHANGING:"
             print(
-                f"#! {todo} {self.__class__.__name__} with keys: '{keys}' and kwarg: {kwarg}:"
+                f"#! {todo} {self.__class__.__name__} with keys: '{keys_args}' and kwarg: {keys_kws}:"
             )
             print("   (dim =\t'old' -> 'new')")
 
         ### SWITCH IT
-        ### COPY OBJECT
-
-        original: dict = deepcopy(
-            self.asdict(incl_None=True),
-        )
+        # * Copy Object
+        original: dict = deepcopy(self.asdict(incl_None=True))
         newobj = self if inplace else deepcopy(self)
 
-        qK, qV = *kwarg.keys(), *kwarg.values()
+        qK, qV = *keys_kws.keys(), *keys_kws.values()
         replace_v = "none"
         for oK, oV in original.items():  # Original Object
             if qK == oK:
@@ -182,9 +197,9 @@ class Dims:
                 setattr(newobj, oK, replace_v)
         assert (
             replace_v != "none"
-        ), f"#! Did not find {list(kwarg.keys())} in dims {list(original.keys())}"
+        ), f"#! Did not find {list(keys_kws.keys())} in dims {list(original.keys())}"
 
-        ### PRINT THE OVERVIEW OF THE NEW MAPPING"""
+        ### PRINT THE OVERVIEW OF THE NEW MAPPING
         if verbose:
             for (oK, oV), nV in zip(original.items(), newobj.asdict().values()):
                 pre = "  "
@@ -203,7 +218,19 @@ class Dims:
 
                 print(f" {pre} {oK} =\t{printval}")
 
-        ### x AND y MUST NOT BE None"""
+        ### x AND y MUST NOT BE None
         assert not None in [self.y, self.x], "#! This switch causes x or y to be None"
 
         return newobj
+
+
+# !
+# !
+# ! end class
+
+# %% Test
+
+if __name__ == "__main__":
+    wt = "../../../Examples, Walkthroughs, Tests/Scripts for Walkthroughs/dims_wt.py"
+    with open(wt) as f:
+        exec(f.read())

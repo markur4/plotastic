@@ -10,8 +10,10 @@ from pathlib import Path
 
 
 import numpy as np
+import pandas as pd
 
 import matplotlib as mpl
+import matplotlib.axes
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -21,10 +23,11 @@ import markurutils as ut
 from plotastic.dimensions.dataframetool import DataFrameTool
 
 if TYPE_CHECKING:
-    from numpy import ndarray
+    # from numpy import ndarray
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
-    from matplotlib.axes import Axes
-    import pandas as pd
+
+    # from matplotlib.axes import Axes # ! Doesn't work
+    # import pandas as pd
 
     # import io
 
@@ -93,7 +96,7 @@ class PlotTool(DataFrameTool):
         "rel": "https://seaborn.pydata.org/generated/seaborn.relplot.html#seaborn.relplot",
     }
 
-    # ...__INIT__ ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # ...__INIT__ :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     def __init__(self, **dataframetool_kws):
         """
@@ -125,13 +128,13 @@ class PlotTool(DataFrameTool):
     #
     #
 
-    # ... ITERATORS #...........................................................................................
+    # ... ITERATORS #..........................................................
 
     #
     ### NESTED / FLAT....................................#
 
     @property  # * [[ax11, ax12], [ax21, ax22]]
-    def axes_nested(self) -> np.ndarray[np.ndarray[Axes]]:
+    def axes_nested(self) -> np.ndarray[np.ndarray[matplotlib.axes.Axes]]:
         """Always returns a 2D nested array of axes, even if there is only one row or column."""
         if bool(self.dims.row and self.dims.col):  # * both row and col
             return self.axes
@@ -141,7 +144,7 @@ class PlotTool(DataFrameTool):
             return np.array([self.axes]).reshape(1, 1)
 
     @property  # * [ax11, ax12, ax21, ax22]
-    def axes_flat(self) -> Sequence[Axes]:
+    def axes_flat(self) -> Sequence[matplotlib.axes.Axes]:
         """Always returns a 1D flattened array of axes, regardless of row, column, or single figure."""
         # ! We need self.axes_nested, since axes is not always an array
         return self.axes_nested.flatten()
@@ -150,7 +153,9 @@ class PlotTool(DataFrameTool):
     #### Associate with Keys ....................................#
 
     @property  # * >>> (R_lvl1, C_lvl1), ax11 >>> (R_lvl1, C_lv2), ax12 >>> (R_lvl2, C_lvl1), ax21 >> ...
-    def axes_iter__keys_ax(self) -> Generator[Tuple[tuple | str, Axes], None, None]:
+    def axes_iter__keys_ax(
+        self,
+    ) -> Generator[Tuple[tuple | str, matplotlib.axes.Axes], None, None]:
         """Returns: >> (R_lvl1, C_lvl1), ax11 >> (R_lvl1, C_lv2), ax12 >> (R_lvl2, C_lvl1), ax21 >> ..."""
         if self.factors_rowcol is None:
             # * If no row or col, return all axes and data
@@ -168,13 +173,17 @@ class PlotTool(DataFrameTool):
     #### Associate with Rowcol   ................................#
 
     @property  # * >>> row_lvl1, (ax11, ax21, ...) >>> row_lvl2, (ax12, ax22, ...) >>> ...
-    def axes_iter__row_axes(self) -> Generator[Tuple[str, "Axes"], None, None]:
+    def axes_iter__row_axes(
+        self,
+    ) -> Generator[Tuple[str, matplotlib.axes.Axes], None, None]:
         """Returns: row_lvl1, (ax11, ax21, ...) >> row_lvl2, (ax12, ax22, ...) >> ..."""
         for rowkey, axes in zip(self.levels_dict_dim["row"], self.axes_nested):
             yield rowkey, axes
 
     @property  # * >>> col_lvl1, (ax11, ax21, ...) >>> col_lvl2, (ax12, ax22, ...) >>> ...
-    def axes_iter__col_axes(self) -> Generator[Tuple[str, "Axes"], None, None]:
+    def axes_iter__col_axes(
+        self,
+    ) -> Generator[Tuple[str, matplotlib.axes.Axes], None, None]:
         """Returns: col_lvl1, (ax11, ax21, ...) >> col_lvl2, (ax12, ax22, ...) >> ..."""
         for colkey, axes in zip(self.levels_dict_dim["col"], self.axes_nested.T):
             yield colkey, axes
@@ -183,7 +192,9 @@ class PlotTool(DataFrameTool):
     ### Data  ..................................................#
 
     @property  # * >>> ax11, df11 >>> ax12, df12 >>> ax21, df21 >>> ...
-    def axes_iter__ax_df(self) -> Generator[Tuple[Axes, pd.DataFrame], None, None]:
+    def axes_iter__ax_df(
+        self,
+    ) -> Generator[Tuple[matplotlib.axes.Axes, pd.DataFrame], None, None]:
         """Returns: >> (ax11, df11) >> (ax12, df12) >> (ax21, df21) >> ..."""
         if self.factors_rowcol is None:
             yield self.axes, self.data  # * If no row or col, return all axes and data
@@ -204,20 +215,20 @@ class PlotTool(DataFrameTool):
     #### Selective   ............................................#
 
     @property  # * ax11 >>> ax12 >>> ax21 >>> ax22 >>> ...
-    def axes_iter_leftmost_col(self) -> Generator[Axes, None, None]:
+    def axes_iter_leftmost_col(self) -> Generator[matplotlib.axes.Axes, None, None]:
         """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
         for row in self.axes_nested:  # * Through rows
             yield row[0]  # * Leftmost ax
 
     @property  # * >> axes excluding leftmost column
-    def axes_iter_notleftmost_col(self) -> Generator[Axes, None, None]:
+    def axes_iter_notleftmost_col(self) -> Generator[matplotlib.axes.Axes, None, None]:
         """Returns: >> axes excluding leftmost column"""
         for row in self.axes_nested:  # * Through rows
             for ax in row[1:]:  # * Through all columns except leftmost
                 yield ax
 
     @property  # * ax31 >>> ax32 >>> ax33 >>> ax34 >>> ...
-    def axes_iter_lowest_row(self) -> Generator[Axes, None, None]:
+    def axes_iter_lowest_row(self) -> Generator[matplotlib.axes.Axes, None, None]:
         """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
         if not self.dims.col is None:
             for ax in self.axes_nested[-1]:  # * Pick Last row, iterate through columns
@@ -226,7 +237,7 @@ class PlotTool(DataFrameTool):
             yield self.axes_flat[-1]  # * If no col, return last
 
     @property  # * >> axes excluding lowest row
-    def axes_iter_notlowest_row(self) -> Generator[Axes, None, None]:
+    def axes_iter_notlowest_row(self) -> Generator[matplotlib.axes.Axes, None, None]:
         """Returns: >> axes excluding lowest row"""
         for row in self.axes_nested[:-1]:  # * All but last row
             for ax in row:  # * Through columns

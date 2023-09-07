@@ -176,8 +176,8 @@ class DataAnalysis(Annotator):
 
 # %%
 
-DF, DIMS = ut.load_dataset("fmri")
-DA = DataAnalysis(DF, DIMS)
+# DF, DIMS = ut.load_dataset("fmri")
+# DA = DataAnalysis(DF, DIMS)
 
 
 # %%
