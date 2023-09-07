@@ -129,10 +129,12 @@ class PlotEdits(PlotTool):
 
     def edit_xy_axis_labels(
         self,
+        x:str = None,
+        y:str = None,
         leftmost_col: str = None,
-        notleftmost_col: str = "",
+        notleftmost_col: str = None,
         lowest_row: str = None,
-        notlowest_row: str = "",
+        notlowest_row: str = None,
     ) -> "PlotEdits | DataAnalysis":
         """Edits x- and y-axis labels of facets
 
@@ -143,15 +145,19 @@ class PlotEdits(PlotTool):
             notlowerrow (str): x-axis label for not-lower row of axes. Defaults to "".
         """
         # * Standard Args
-        leftmost_col = self.dims.y if leftmost_col is None else leftmost_col
-        lowest_row = self.dims.x if lowest_row is None else lowest_row
+        # leftmost_col = self.dims.y if leftmost_col is None else leftmost_col
+        # lowest_row = self.dims.x if lowest_row is None else lowest_row
 
         # leftmost = leftmost or self.dims.y
         # notleftmost = notleftmost or ""
         # lowerrow = lowerrow or self.dims.x
         # notlowerrow = notlowerrow or ""
 
+
         ### y-axis labels
+        if not y is None:
+            for ax in self.axes_flat:
+                ax.set_ylabel(y)
         if not leftmost_col is None:
             for ax in self.axes_iter_leftmost_col:
                 ax.set_ylabel(leftmost_col)
@@ -160,6 +166,9 @@ class PlotEdits(PlotTool):
                 ax.set_ylabel(notleftmost_col)
 
         ### x-axis labels
+        if not x is None:
+            for ax in self.axes_flat:
+                ax.set_xlabel(x)
         if not lowest_row is None:
             for ax in self.axes_iter_lowest_row:
                 ax.set_xlabel(lowest_row)

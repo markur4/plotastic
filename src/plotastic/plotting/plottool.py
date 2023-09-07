@@ -131,17 +131,17 @@ class PlotTool(DataFrameTool):
     @property  # * [[ax11, ax12], [ax21, ax22]]
     def axes_nested(self) -> "np.ndarray":
         """Always returns a 2D nested array of axes, even if there is only one row or column."""
-        if self.dims.row and self.dims.col:  # * both row and col
+        if bool(self.dims.row and self.dims.col):  # * both row and col
             return self.axes
         elif self.factors_is_1_facet:  # * either or
-            return np.array([self.axes])
+            return np.array([self.axes]) # * add one more layer
         else:  # * Single figure
             return np.array([self.axes]).reshape(1, 1)
 
     @property  # * [ax11, ax12, ax21, ax22]
     def axes_flat(self) -> "np.ndarray":
         """Always returns a 1D flattened array of axes, regardless of row, column, or single figure."""
-        return self.axes_nested.flatten()
+        return self.axes_nested.flatten() # ! We need nested, since axes is not always an array
 
     #
     # * Associate with Keys ....................................#
@@ -229,8 +229,11 @@ class PlotTool(DataFrameTool):
     @property  # * ax31 >>> ax32 >>> ax33 >>> ax34 >>> ...
     def axes_iter_lowest_row(self):
         """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
-        for ax in self.axes_nested[-1]:  # * Pick Last row, iterate through columns
-            yield ax
+        if not self.dims.col is None:
+            for ax in self.axes_nested[-1]:  # * Pick Last row, iterate through columns
+                yield ax
+        else:
+            yield self.axes_flat[-1] # * If no col, return last
 
     @property  # * >> axes excluding lowest row
     def axes_iter_notlowest_row(self):

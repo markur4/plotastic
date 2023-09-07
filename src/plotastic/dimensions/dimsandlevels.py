@@ -187,15 +187,17 @@ class DimsAndLevels:
 
     # ... Properties of FACTORS  .......................
 
-    @property  # * True, False
+    @property  # * no hue, row or col
     def factors_is_just_x(self) -> bool:
         return not self.dims.row and not self.dims.col and not self.dims.hue
 
-    @property # * True, False
+    @property # * Either just row or col.
     def factors_is_1_facet(self) -> bool:
-        return (not self.dims.row is None) or (not self.dims.col is None)
+        only_row = (not self.dims.row is None) and (self.dims.col is None)
+        only_col = (self.dims.row is None) and (not self.dims.col is None)
+        return only_row or only_col
 
-    @property # * True, False
+    @property # * No col or row
     def factors_is_unfacetted(self) -> bool:
         return not self.dims.row and not self.dims.col
 
