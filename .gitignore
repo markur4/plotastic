@@ -1,3 +1,6 @@
+# paper, publish it only when publishing
+paper.md
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
