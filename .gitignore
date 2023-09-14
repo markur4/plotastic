@@ -1,5 +1,6 @@
 # paper, publish it only when publishing
 paper.md
+paper.bib
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
