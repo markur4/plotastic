@@ -19,13 +19,13 @@ if TYPE_CHECKING:
 
 class PlotEdits(PlotTool):
     #
-    # ... __init__ .......................................................................
+    # == __init__ .......................................................................
 
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
 
     #
-    # ... EDIT .........................................................................
+    # == EDIT .........................................................................
 
     #
     # * Shapes & Sizes ........................................#
@@ -129,10 +129,10 @@ class PlotEdits(PlotTool):
 
     def edit_xy_axis_labels(
         self,
-        x:str = None,
+        x: str = None,
         x_lowest_row: str = None,
         x_notlowest_row: str = None,
-        y:str = None,
+        y: str = None,
         y_leftmost_col: str = None,
         y_notleftmost_col: str = None,
     ) -> "PlotEdits | DataAnalysis":
@@ -140,7 +140,7 @@ class PlotEdits(PlotTool):
 
         Selection of specific axes overwrites general selection
 
-        :param x: x-axis label for all axes :class:`df` , defaults to None 
+        :param x: x-axis label for all axes :class:`df` , defaults to None
         :type x: str, optional
         :param x_lowest_row: _description_, defaults to None
         :type x_lowest_row: str, optional
@@ -152,7 +152,7 @@ class PlotEdits(PlotTool):
         :type y_leftmost_col: str, optional
         :param y_notleftmost_col: _description_, defaults to None
         :type y_notleftmost_col: str, optional
-        :return: DataAnalysis object 
+        :return: DataAnalysis object
         :rtype: PlotEdits | DataAnalysis
         """
 
@@ -329,7 +329,7 @@ class PlotEdits(PlotTool):
             old_labels[i] = labels[i]
             i += 1
 
-        # ... Set new labels
+        # == Set new labels
         ax.set_xticklabels(labels=old_labels)
 
     def edit_x_ticklabels_exchange(
@@ -349,7 +349,7 @@ class PlotEdits(PlotTool):
             PlotTool | DataAnalysis: _description_
         """
 
-        # ... EDIT
+        # == EDIT
         ### Labels for all axes:
         if not labels is None:
             for ax in self.axes_flat:
@@ -408,7 +408,7 @@ class PlotEdits(PlotTool):
         :rtype: PlotEdits | DataAnalysis
         """
 
-        # ... KWS
+        # == KWS
         ### Redirect kwargs, provide function defaults
 
         set_KWS = dict(
@@ -435,7 +435,7 @@ class PlotEdits(PlotTool):
         ticklabel_KWS = {k: v for k, v in set_KWS.items() if not k in ["pad"]}
         params_KWS = {k: v for k, v in set_KWS.items() if k in ["pad"]}
 
-        # ... Rotate
+        # == Rotate
         for ax in self.axes.flatten():
             obj = ax.get_xticklabels()  # * Retrieve ticks
             plt.setp(obj, **ticklabel_KWS)
@@ -514,7 +514,7 @@ class PlotEdits(PlotTool):
         )
         KWS.update(**kws)
 
-        # ... Set legend
+        # == Set legend
         self.fig.legend(**KWS)
         return self
 

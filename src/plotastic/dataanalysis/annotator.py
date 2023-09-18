@@ -30,7 +30,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
     ### Define types that are allowed as elements within exclude/include arguments
     _TYPES_SELECTION = tuple([str, bool] + ut.NUMERICAL_TYPES)
 
-    # ... ­­init__ .....................................................................
+    # == __­­init__ =============================================================
 
     def __init__(self, **dataframetool_kws):
         ### Inherit
@@ -39,14 +39,16 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
     #
     #
-    # ... GROUP SELECTION ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # == GROUP SELECTION ======================================================
 
-    # ... Check User Arguments of Datagroup Selection ..........................................
+    # == Check User Arguments of Datagroup Selection 
 
-    # * [x1, {hue4:(x3,x4)}, {x2:(hue1,hue2)}, hue3]  OR  [x_or_hue, {x_or_hue: xhuepair} ] ETC.
+    # * [x1, {hue4:(x3,x4)}, {x2:(hue1,hue2)}, hue3]
+    # * OR  [x_or_hue, {x_or_hue: xhuepair} ] ETC.
     def _check_selected_xhue(self, xhue_selected: list) -> None:
         """ENFORCES THIS STRUCTURE:
-        Dictionaries selects specific pairs. Everything else selects all pairs containing that element.
+        Dictionaries selects specific pairs. Everything else selects all pairs
+        containing that element.
         [x1, {hue4:(x3,x4)}, {x2:(hue1,hue2)}, hue3]
         [x_or_hue, {x_or_hue: xhuepair} ]
         [x_or_hue, {x_or_hue: (x_or_hue2, x_or_hue2) } ]
@@ -55,7 +57,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         """
 
         ### Define allowed types for elements of xhue
-        # * Dictionaries selects specific pairs, everything else selects all pairs containing that element.
+        # * Dictionaries selects specific pairs, everything else selects all
+        # * pairs containing that element.
         # * Levels of xhue levels can be specified as string, int bool and all numpy numerical types.
         types_allowed = self._TYPES_SELECTION + (dict,)
         types_specific = self._TYPES_SELECTION
@@ -67,7 +70,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         if self.dims.hue:
             LVLs_HUE = LVLdict[self.dims.hue]
 
-        ### If "__hue" or "__x" is specified, nothing must be checked as the complete x or hue will be included or excluded
+        # * If "__hue" or "__x" is specified, nothing must be checked as the
+        # * complete x or hue will be included or excluded
         if xhue_selected in ("__hue", "__x", "__HUE", "__X"):
             return None
 
@@ -109,7 +113,6 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                             assert (
                                 not x_or_hue_value in LVLs_X
                             ), f"#! When {x_or_hue_key} is from X, '{xhuepair}' should be made of {LVLs_HUE}"
-        """ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"""
 
     # * (row1, col2)  OR  row1  OR  col2
     def _check_selected_rowcol(self, rowcol_selected: tuple | str) -> None:
@@ -227,7 +230,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                 self._check_selected_xhue(xhue_excluded)
 
     #
-    # ... Match user Arguments with Data .......................................................
+    # == Match user Arguments with Data ......................................
 
     def _match_selected_xhue(
         self,
@@ -387,13 +390,16 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
     #
     #
-    # ... ANNOTATE POSTHOC  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # == ANNOTATE POSTHOC  :::::::::::::::::::::::::::::::::::::::::::::::::::
 
     #
-    # ... Conclude PH Selection and filter Significant Ones.......................................................
+    # == Conclude PH Selection and filter Significant Ones....................
 
     @staticmethod
-    def _conclude_include_exclude(S: pd.Series, exclude_over_include: bool) -> bool:
+    def _conclude_include_exclude(
+        S: pd.Series,
+        exclude_over_include: bool,
+    ) -> bool:
         """Concludes matches from selected exclusion/inclusion
         INCLUDE = NONE?
             >> INCLUDE EVERYTHING AND SPECIFY THINGS YOU WANT TO EXCLUDE (EXCLUDE OVER INCLUDE)
@@ -485,7 +491,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         return pairs, pvals, stars
 
     #
-    # ... Traverse through PH and annotate .................................................
+    # == Traverse through PH and annotate ....................................
 
     def iter__key_df_ax_ph(self, PH: "pd.DataFrame"):
         """Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
@@ -526,7 +532,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             only_sig (str, optional): _description_. Defaults to "strict".
         """
 
-        # ... KWS
+        # == KWS
         ### Required for initialization of statannotations.Annotator
         init_KWS = dict(y=self.dims.y, x=self.dims.x, hue=self.dims.hue)
 
@@ -541,7 +547,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         )
         config_KWS.update(annot_KWS)
 
-        # ... Annootate
+        # == Annootate
         ### Iterate through facets, axes and posthoc tables
         for key, df, ax, ph in self.iter__key_df_ax_ph(PH):
             ### Get pairs, pvals, stars and stardict
@@ -554,7 +560,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                 continue
             assert pairs, f"#! Pairs are empty {pairs} for facet {key}"
 
-            ### ... ANNOTATE
+            ### == ANNOTATE
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 (
@@ -633,7 +639,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             axis=1,
         )
 
-        ### ... ANNOTATE
+        ### == ANNOTATE
         self._annotate_pairwise_base(PH, only_sig=only_sig, **annot_KWS)
 
         ## Save PH

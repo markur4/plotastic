@@ -60,22 +60,22 @@ def set_palette(palette: str | list = "Paired", verbose=True):
 FONTSIZE = 10
 
 STYLE_PAPER = {
-    # ... Figure
+    # == Figure
     "figure.dpi": 200,  # * Displaying figures doesn't need as much dpi as saving them
     "figure.figsize": (3, 3),  # * default is way too big
     "figure.facecolor": "grey",  # * it's easier on the eyes
-    # ... Savefig
+    # == Savefig
     "savefig.dpi": 300,
     "savefig.format": "pdf",
     "savefig.transparent": True,
-    # ... Font
+    # == Font
     "font.family": "sans-serif",
     "font.sans-serif": "Arial Narrow",
     "font.size": FONTSIZE,
     "font.weight": "bold",
-    # ... Lines
+    # == Lines
     "lines.linewidth": 0.75,
-    # ... Axes
+    # == Axes
     "axes.spines.right": True,  # * requires argument despine=False
     "axes.spines.top": True,
     "axes.linewidth": 0.75,
@@ -83,11 +83,11 @@ STYLE_PAPER = {
     "axes.titleweight": "bold",
     "axes.titlepad": 5,
     "axes.labelsize": FONTSIZE,  # * fontsize of the x any y labels
-    # ... Grid
+    # == Grid
     "axes.grid": True,
     "grid.linestyle": "-",
     "grid.linewidth": 0.5,
-    # ... Ticks
+    # == Ticks
     "ytick.left": True,
     "xtick.labelsize": FONTSIZE - 1,
     "ytick.labelsize": FONTSIZE - 1,
@@ -99,7 +99,7 @@ STYLE_PAPER = {
     "ytick.minor.size": 2,
     "xtick.major.size": 2.5,
     "xtick.minor.size": 2,
-    # ... Legend
+    # == Legend
     "legend.fancybox": False,  # * use rounded box for legend
     "legend.title_fontsize": FONTSIZE,
     "legend.fontsize": FONTSIZE,

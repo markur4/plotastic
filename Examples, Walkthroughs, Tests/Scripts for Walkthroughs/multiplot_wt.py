@@ -30,7 +30,7 @@ s = MP.plot_box_strip_SNIP()
 # # Docs Boxplot:        https://seaborn.pydata.org/generated/seaborn.boxplot.html#seaborn.boxplot
 # # Docs Stripplot:      https://seaborn.pydata.org/generated/seaborn.stripplot.html#seaborn.stripplot
 
-# ### ... PARAMETERS
+# ### == PARAMETERS
 # ### Linewidths
 # thin, thick = 0.3, 1.0
 # ### Alpha
@@ -38,7 +38,7 @@ s = MP.plot_box_strip_SNIP()
 # ### z-order
 # front, mid, background, hidden = 100, 50, 1, -1
 
-# ### ... KEYWORD ARGUMENTS
+# ### == KEYWORD ARGUMENTS
 # ### Boxplot kws
 # box_KWS = dict(
 #     showfliers=False,

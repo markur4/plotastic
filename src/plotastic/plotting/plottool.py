@@ -96,7 +96,7 @@ class PlotTool(DataFrameTool):
         "rel": "https://seaborn.pydata.org/generated/seaborn.relplot.html#seaborn.relplot",
     }
 
-    # ...__INIT__ :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # ==__INIT__ :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     def __init__(self, **dataframetool_kws):
         """
@@ -128,7 +128,7 @@ class PlotTool(DataFrameTool):
     #
     #
 
-    # ... ITERATORS #..........................................................
+    # == ITERATORS #..........................................................
 
     #
     ### NESTED / FLAT....................................#
@@ -265,7 +265,7 @@ class PlotTool(DataFrameTool):
             tuple["mpl.figure.Figure", "mpl.axes.Axes"]: matplotlib figure and axes objects
         """
 
-        # ... Handle kwargs
+        # == Handle kwargs
         ### Adds extra kwargs depending on kwargs already present
         wspace = 0.05 if sharey and (wspace is None) else wspace
 
@@ -286,10 +286,10 @@ class PlotTool(DataFrameTool):
         # * User args override defaults
         KWS = ut.update_dict_recursive(KWS, subplot_kws)
 
-        # ... SUBPLOTS
+        # == SUBPLOTS
         self.fig, self.axes = plt.subplots(**KWS)
 
-        # ... Edits
+        # == Edits
         ### Add titles to axes to provide basic orientation
         self.edit_axtitles_reset()
         ### Scale
@@ -374,14 +374,14 @@ class PlotTool(DataFrameTool):
 
     #
     #
-    # ... Fig properties ............................................................................
+    # == Fig properties ............................................................................
     @property
     def figsize(self) -> tuple[int]:
         return self.fig.get_size_inches()
 
     #
     #
-    # ... Small EDITS and those required to be set BEFORE seaborn plots......................................................
+    # == Small EDITS and those required to be set BEFORE seaborn plots......................................................
     def edit_axtitles_reset(self) -> "PlotTool | DataAnalysis":
         for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))

@@ -74,7 +74,7 @@ class DimsAndLevels:
 
         return ut.printable_dict(D=D, start_message=f"{type(self)}: ")
 
-    # ... INIT ......................
+    # == INIT ......................
 
     def __init__(
         self,
@@ -99,7 +99,7 @@ class DimsAndLevels:
 
     #
     #
-    # ... List FACTORS .....................................................................................................'''
+    # == List FACTORS .....................................................................................................'''
 
     @property  # * [row, hue, x] (dims may be missing)
     def factors_all(self) -> list[str]:
@@ -161,7 +161,7 @@ class DimsAndLevels:
     #         xhue = [self.dims.x]
     #     return xhue
 
-    @property # * [row, col]; row; col; None
+    @property  # * [row, col]; row; col; None
     def factors_rowcol(self) -> str | list[str] | None:
         if self.dims.row and self.dims.col:
             rowcol = [self.dims.row, self.dims.col]
@@ -173,7 +173,7 @@ class DimsAndLevels:
             rowcol = None
         return rowcol
 
-    @property # * [row, col]; [row]; [col]; [""]
+    @property  # * [row, col]; [row]; [col]; [""]
     def factors_rowcol_list(self) -> list[str]:
         if self.dims.row and self.dims.col:
             rowcol = [self.dims.row, self.dims.col]
@@ -185,19 +185,19 @@ class DimsAndLevels:
             rowcol = [""]
         return rowcol
 
-    # ... Properties of FACTORS  .......................
+    # == Properties of FACTORS  .......................
 
     @property  # * no hue, row or col
     def factors_is_just_x(self) -> bool:
         return not self.dims.row and not self.dims.col and not self.dims.hue
 
-    @property # * Either just row or col.
+    @property  # * Either just row or col.
     def factors_is_1_facet(self) -> bool:
         only_row = (not self.dims.row is None) and (self.dims.col is None)
         only_col = (self.dims.row is None) and (not self.dims.col is None)
         return only_row or only_col
 
-    @property # * No col or row
+    @property  # * No col or row
     def factors_is_unfacetted(self) -> bool:
         return not self.dims.row and not self.dims.col
 
@@ -227,7 +227,7 @@ class DimsAndLevels:
         raise NotImplementedError
 
     #
-    # ... Retrieve FACTORS .................................
+    # == Retrieve FACTORS .................................
 
     # * input: Hue -> "smoke"
     def getfactors_from_dim(
@@ -274,7 +274,7 @@ class DimsAndLevels:
     #             return rank
 
     #
-    # ... LEVELS ......................................................................................................'''
+    # == LEVELS ......................................................................................................'''
 
     def get_levels_from_column(self, colname: str) -> list[str]:
         """Returns: [lvl1, lvl2]"""
@@ -364,7 +364,7 @@ class DimsAndLevels:
         return tuple(l)
 
     #
-    # ... Properties of Levels .......................................................
+    # == Properties of Levels .......................................................
 
     @property
     def len_rowlevels(self) -> int:
@@ -383,7 +383,7 @@ class DimsAndLevels:
     #
 
     #
-    # ... SETTERS ..................................................................................................."""
+    # == SETTERS ..................................................................................................."""
 
     # !
     def switch(

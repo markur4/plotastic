@@ -4,6 +4,7 @@ import markurutils as ut
 
 import numpy as np
 import pandas as pd
+
 # print(pd.__version__)
 import pingouin as pg
 
@@ -21,11 +22,11 @@ class PostHoc(Assumptions):
         correction="auto",  # * Use welch correction if variances unequal?
     )
 
-    # ... __INIT__ .......................................................#
+    # == __INIT__ .......................................................#
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
 
-    # ... Base function ..................................................#
+    # == Base function ..................................................#
 
     @ut.ignore_warnings
     def _base_pairwise_tests(self, **kwargs) -> pd.DataFrame:
@@ -64,7 +65,7 @@ class PostHoc(Assumptions):
 
         return pd.concat(PH_dict, keys=PH_dict.keys(), names=self.factors_rowcol_list)
 
-    # ... Pairwise TESTs ..................................................#
+    # == Pairwise TESTs ..................................................#
 
     def test_pairwise(
         self,
@@ -180,7 +181,7 @@ class PostHoc(Assumptions):
 
         return PH
 
-    # ... Pairing functions ..................................................#
+    # == Pairing functions ..................................................#
 
     def _level_to_pair(self, row: "pd.Series") -> tuple:
         """converts the factor-columns of a posthoc table into a column of pairs"""
@@ -236,9 +237,9 @@ class PostHoc(Assumptions):
 # PH = PostHoc(data=DF, dims=dims, verbose=False, subject="subject")
 
 
-#%% Check functionality of pingouin
+# %% Check functionality of pingouin
 
-# # ! Raises TypeError: Could not convert value 'cuestim' to numeric. This didn't happen before changing to new environment. 
+# # ! Raises TypeError: Could not convert value 'cuestim' to numeric. This didn't happen before changing to new environment.
 # # ! Downgraded pandas from 2.0.3 (released april 2023) to 1.5.3 -> FIXED IT
 # ph = pg.pairwise_tests(data=DF, dv="signal", within=["timepoint", "event"], subject="subject", parametric=True, padjust="bonf", nan_policy="pairwise")
 

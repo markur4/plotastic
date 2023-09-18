@@ -29,7 +29,7 @@ class StatResults:
 
         self._parametric: bool = self.DEFAULT_UNASSESSED
 
-    # ... GETTERS AND SETTERS
+    # == GETTERS AND SETTERS
 
     @property
     def normal(self):
@@ -53,7 +53,7 @@ class StatResults:
         print(f"#! Defining parametric as {value}!")
         self._parametric = value
 
-    # ... ASSESS ASSUMPTIONS
+    # == ASSESS ASSUMPTIONS
 
     def assess_normality(self, data) -> bool:
         """Uses result from normality test for each group and decides if data should be considered normal or not"""

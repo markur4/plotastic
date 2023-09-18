@@ -25,10 +25,10 @@ if TYPE_CHECKING:
 
 class MultiPlot(PlotEdits):
     #
-    # ... Favorite kwargs ..........................................................................
+    # == Favorite kwargs ..........................................................................
 
     #
-    # ... __init__ .................................................................................
+    # == __init__ .................................................................................
 
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
@@ -62,7 +62,7 @@ class MultiPlot(PlotEdits):
         return self
 
     #
-    # ... Boxplots .................................................................................
+    # == Boxplots .................................................................................
 
     def plot_box_strip(
         self,
@@ -81,7 +81,7 @@ class MultiPlot(PlotEdits):
             box_kws (dict, optional): _description_. Defaults to dict().
             strip_kws (dict, optional): _description_. Defaults to dict().
         """
-        # ... PARAMETERS
+        # == PARAMETERS
         ### Linewidths
         thin, thick = 0.3, 1.0
         ### Alpha
@@ -89,7 +89,7 @@ class MultiPlot(PlotEdits):
         ### z-order
         front, mid, background, hidden = 100, 50, 1, -1
 
-        ### ... KEYWORD ARGUMENTS
+        ### == KEYWORD ARGUMENTS
         ### Boxplot kws
         box_KWS = dict(
             showfliers=False,
@@ -149,7 +149,7 @@ class MultiPlot(PlotEdits):
             s += f"# {'Docs Boxplot:'.ljust(20)} {self._DOCS['box']}\n"
             s += f"# {'Docs Stripplot:'.ljust(20)} {self._DOCS['strip']}\n"
         s += "\n"
-        s += "### ... PARAMETERS\n"
+        s += "### == PARAMETERS\n"
         s += "### Linewidths\n"
         s += "thin, thick = 0.3, 1.0\n"
         s += "### Alpha\n"
@@ -157,7 +157,7 @@ class MultiPlot(PlotEdits):
         s += "### z-order\n"
         s += "front, mid, background, hidden = 100, 50, 1, -1\n"
         s += "\n"
-        s += "### ... KEYWORD ARGUMENTS\n"
+        s += "### == KEYWORD ARGUMENTS\n"
         s += "### Boxplot kws\n"
         s += "box_KWS = dict(\n"
         s += "    showfliers=False,\n"
@@ -226,7 +226,7 @@ class MultiPlot(PlotEdits):
             box_kws (dict, optional): _description_. Defaults to dict().
             strip_kws (dict, optional): _description_. Defaults to dict().
         """
-        # ... PARAMETERS
+        # == PARAMETERS
         ### Linewidths
         thin, thick = 0.2, 1.0
         ### Alpha
@@ -234,13 +234,13 @@ class MultiPlot(PlotEdits):
         ### z-order
         front, mid, background, hidden = 100, 50, 1, -1
 
-        ### ... KEYWORD ARGUMENTS
+        ### == KEYWORD ARGUMENTS
         ### Boxplot kws
         box_KWS = dict(
             showfliers=False,
             # * Widths of boxes
             # ! Throws TypeError: matplotlib.axes._axes.Axes.boxplot() got multiple values for keyword argument 'widths'
-            # widths=0.9,  
+            # widths=0.9,
             boxprops=dict(  # * Box line and surface
                 alpha=translucent,
                 linewidth=thin,
