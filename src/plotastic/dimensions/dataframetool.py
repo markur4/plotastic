@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 class DataFrameTool(DimsAndLevels):
-    # == __init__ ...............................................................
+    # == __init__ ======================================================================
 
     def __init__(
         self,
@@ -81,7 +81,7 @@ class DataFrameTool(DimsAndLevels):
         #     self.check_inputlevels_with_data(input_lvls=levels_ignore, verbose=verbose)
 
     #
-    # ==  Make Levels Categorical...............................................................................
+    # ==  Make Levels Categorical ======================================================
 
     def _make_catdict_from_input(
         self, input_lvls: list[list[str]], skip_notfound=True
@@ -271,7 +271,7 @@ class DataFrameTool(DimsAndLevels):
         return self
 
     #
-    # == DESCRIBE DATA ...............................................................................................'''
+    # == DESCRIBE DATA =================================================================
 
     def catplot(self, kind="strip", **catplot_kws) -> sns.FacetGrid:
         """
@@ -421,7 +421,8 @@ class DataFrameTool(DimsAndLevels):
         else:
             print("✅ Subjects complete: No subjects with missing data")
 
-    # # == Iterate through Data SKIPPING OF EMPTY GROUPS .................
+    # 
+    # == Iterate through Data SKIPPING OF EMPTY GROUPS =================================
 
     # def data_iterate_by_rowcol(
     #     self,
@@ -434,7 +435,7 @@ class DataFrameTool(DimsAndLevels):
     #         yield self.data_get_rowcol(key)
 
     #
-    # == Iterate through DATA  .......................................................................................................'''
+    # == Iterate through DATA ==========================================================
 
     def data_ensure_allgroups(self, factors=None) -> pd.DataFrame:
         """df.groupby() skips empty groups, so we need to ensure that all groups are present in the data.
@@ -530,7 +531,7 @@ class DataFrameTool(DimsAndLevels):
             yield key, df
 
     #
-    # == TRANSFORM  ..................................................................................................'''
+    # == TRANSFORM =====================================================================
 
     @staticmethod
     def _rename_y(y: str, func: str) -> str:

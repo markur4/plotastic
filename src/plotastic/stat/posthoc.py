@@ -16,17 +16,19 @@ from plotastic.stat.assumptions import Assumptions
 
 
 class PostHoc(Assumptions):
-    STANDARD_KWS = dict(
+    DEFAULT_KWS_PAIRWISETESTS = dict(
         nan_policy="pairwise",  # * Delete only pairs or complete subjects ("listwise") if sasmples are missing?
         return_desc=True,  # * Return descriptive statistics?
         correction="auto",  # * Use welch correction if variances unequal?
     )
 
-    # == __INIT__ .......................................................#
+    # == __init__ ======================================================================
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
 
-    # == Base function ..................................................#
+    #
+    #
+    # == Base function =================================================================
 
     @ut.ignore_warnings
     def _base_pairwise_tests(self, **kwargs) -> pd.DataFrame:
@@ -43,12 +45,9 @@ class PostHoc(Assumptions):
         ### Perform Test
         # * Iterate over rows and columns
         PH_dict = {}
-        for (
-            key,
-            df,
-        ) in (
-            self.data_iter__key_facet_skip_empty
-        ):  # * Skip empty means that no empty groups of level combinations are artificially added
+        
+        # * Skip empty so that no empty groups of level combinations are artificially added
+        for key, df in self.data_iter__key_facet_skip_empty:
             # print(key)
             # ut.pp(df)
 
@@ -63,9 +62,12 @@ class PostHoc(Assumptions):
                 ph_x = pg.pairwise_tests(data=df, **kwargs)
                 PH_dict[key] = ph_x
 
-        return pd.concat(PH_dict, keys=PH_dict.keys(), names=self.factors_rowcol_list)
+        PH = pd.concat(PH_dict, keys=PH_dict.keys(), names=self.factors_rowcol_list)
 
-    # == Pairwise TESTs ..................................................#
+        return PH
+
+    #
+    # == Pairwise TESTs ================================================================
 
     def test_pairwise(
         self,
@@ -96,7 +98,7 @@ class PostHoc(Assumptions):
             kwargs["between"] = self.factors_xhue
 
         # * Add user kwargs
-        kwargs.update(self.STANDARD_KWS)
+        kwargs.update(self.DEFAULT_KWS_PAIRWISETESTS)
         kwargs.update(user_kwargs)
 
         # * Make sure the specified factors are present
@@ -181,7 +183,7 @@ class PostHoc(Assumptions):
 
         return PH
 
-    # == Pairing functions ..................................................#
+    # == Pairing functions =============================================================
 
     def _level_to_pair(self, row: "pd.Series") -> tuple:
         """converts the factor-columns of a posthoc table into a column of pairs"""

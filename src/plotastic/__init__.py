@@ -8,12 +8,12 @@ from pathlib import Path
 
 # from markurutils.enviroments import check_dependencies
 
-# == Metadata ........................................................................................
+# == Metadata ==========================================================================
 __name__ = "plotastic"
 __version__ = metadata.version(__name__)
 __author__ = "markur4"
 
-# == Automated imports ......................................................
+# == Automated imports =================================================================
 # https://stackoverflow.com/questions/1057431/how-to-load-all-modules-in-a-folder
 ### Get subdirectories that store all .py Files. Exclude hidden folders
 # cwd = Path(__file__).parent
@@ -38,11 +38,11 @@ __author__ = "markur4"
 # del cwd, module_paths
 
 #
-# == Check Dependencies ..............................................................................
+# == Check Dependencies ================================================================
 # missing_hard = check_dependencies(deps=requirements, hard=True)
 
 #
-# == Flatten module access and import everything .....................................................
+# == Flatten module access and import everything =======================================
 # * take care to include parent folders of modules
 
 # ! This works, but vscode won't recognize and highlight functions and classes

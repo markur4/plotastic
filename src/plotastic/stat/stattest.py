@@ -5,7 +5,7 @@ from plotastic.stat.statresults import StatResults
 
 
 class StatTest(DataFrameTool):
-    # == Class Attribute ............................................................
+    # == Class Attribute ===============================================================
 
     # * Alpha
     ALPHA = 0.05
@@ -21,15 +21,18 @@ class StatTest(DataFrameTool):
     def set_alpha_tolerance(cls, value: float) -> None:
         cls.ALPHA_TOLERANCE = value
 
-    # == __init__.....................................................................
-
+    #
+    #
+    # == __init__=======================================================================
     def __init__(self, **dataframetool_kwargs):
         super().__init__(**dataframetool_kwargs)
 
         ### Composition
         self.results = StatResults()
 
-    # == Helper functions ..................................................
+    #
+    #
+    # == Helper functions ==============================================================
 
     @staticmethod
     def _p_to_stars(fl: float, alpha=0.05):

@@ -1,7 +1,7 @@
 #
 # %% imports
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 import warnings
 
 
@@ -30,7 +30,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
     ### Define types that are allowed as elements within exclude/include arguments
     _TYPES_SELECTION = tuple([str, bool] + ut.NUMERICAL_TYPES)
 
-    # == __­­init__ =============================================================
+    # == __­­init__ ======================================================================
 
     def __init__(self, **dataframetool_kws):
         ### Inherit
@@ -39,27 +39,34 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
     #
     #
-    # == GROUP SELECTION ======================================================
+    # == GROUP SELECTION ===============================================================
 
-    # == Check User Arguments of Datagroup Selection 
+    # == Check User Arguments of Datagroup Selection
 
     # * [x1, {hue4:(x3,x4)}, {x2:(hue1,hue2)}, hue3]
     # * OR  [x_or_hue, {x_or_hue: xhuepair} ] ETC.
-    def _check_selected_xhue(self, xhue_selected: list) -> None:
-        """ENFORCES THIS STRUCTURE:
-        Dictionaries selects specific pairs. Everything else selects all pairs
-        containing that element.
+    def _check_selected_xhue(self, xhue_selected: list[dict | str]) -> None:
+        """Raises Error if user xhue selection does not match required
+        patterns.
+
+        :param xhue_selected: List of dictionaries and strings. Strings select all pairs
+        of x and hue containing that level. Dictioniaries select pairs within a specific
+        x or hue level spcified by the dictionary's key. containing that element. Examples:
         [x1, {hue4:(x3,x4)}, {x2:(hue1,hue2)}, hue3]
         [x_or_hue, {x_or_hue: xhuepair} ]
         [x_or_hue, {x_or_hue: (x_or_hue2, x_or_hue2) } ]
-        :param xhue_selected:
-        :return:
+        :type xhue_selected: list[dict | str]
+        :raises AssertionError: Explains what was wrong with the passed
+        argument
+        :return: None
+        :rtype: None
         """
 
         ### Define allowed types for elements of xhue
         # * Dictionaries selects specific pairs, everything else selects all
         # * pairs containing that element.
-        # * Levels of xhue levels can be specified as string, int bool and all numpy numerical types.
+        # * Levels of xhue levels can be specified as string, int bool and all
+        # * all numerical types.
         types_allowed = self._TYPES_SELECTION + (dict,)
         types_specific = self._TYPES_SELECTION
 
@@ -116,13 +123,15 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
     # * (row1, col2)  OR  row1  OR  col2
     def _check_selected_rowcol(self, rowcol_selected: tuple | str) -> None:
+        """Raises Error if user rowcol selection does not match required
+        patterns.
+
+        :param rowcol_selected: Tuples are used to select facet if both row
+        and col are specified. row and col levels are specified as the same type as used
+        in the DataFrame (strings, numericals, bools, etc.)
+        :type rowcol_selected: tuple | str
         """
-        ENFORCES THIS STRUCTURE:
-        Tuples are used to select facet if both row and col are specified. If not facetted, row and col levels may be specified as strings, numericals, bools, etc.
-        (row1, col2) or row1
-        :param rowcol_selected:
-        :return:
-        """
+
         ### Define expected types for elements of rowcol
         # * Tuples are used if both row and col are specified.
         # * Row and col levels may be specified as strings, numericals, bools, etc.
@@ -182,7 +191,6 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                 assert (
                     not row_or_col2 in LVLs_COL
                 ), f"#! When {row_or_col1} is from COL, {row_or_col2} should be one of {LVLs_ROW}"
-        """ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^"""
 
     def _check_include_exclude(
         self,
@@ -230,7 +238,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                 self._check_selected_xhue(xhue_excluded)
 
     #
-    # == Match user Arguments with Data ......................................
+    # == Match user Arguments with Data ================================================
 
     def _match_selected_xhue(
         self,
@@ -390,10 +398,10 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
     #
     #
-    # == ANNOTATE POSTHOC  :::::::::::::::::::::::::::::::::::::::::::::::::::
+    # == ANNOTATE POSTHOC  =============================================================
 
     #
-    # == Conclude PH Selection and filter Significant Ones....................
+    # == Conclude PH Selection and filter Significant Ones
 
     @staticmethod
     def _conclude_include_exclude(
@@ -428,24 +436,27 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         return SHOW
 
     def _get_filtered_pairs_from_ph(
-        self,
-        ph: "pd.DataFrame",
-        only_sig="strict",
-    ) -> (list[tuple], list[float], list[str], dict[tuple:tuple]):
-        """Makes an ultimate list of pairs that are passed to statannot from column in Posthoc Table to pick out certain pairs
+        self, ph: "pd.DataFrame", only_sig="strict"
+    ) -> (list[tuple], list[float], list[str]):
+        """Makes an ultimate list of pairs that are passed to statannot from column in
+        Posthoc Table to pick out certain pairs
         Selection Strategy:
-            (1.: Pick out only those passing include/exclude)
-            2.: If we want only significant values, Pick out significant values. Keep in mind that p-values barely reaching significance values are also considered, if only_sig = "tolerant" (set to "strict" to remove).
+            (1.: Pick out only those passing include/exclude) 2.: If we want only
+            significant values, Pick out significant values. Keep in mind that p-values
+            barely reaching significance values are also considered, if only_sig =
+            "tolerant" (set to "strict" to remove).
 
-
-        Args:
-            ph (pd.DataFrame): _description_
-            only_sig, (optional): _description_. Defaults to "tolerant"
-
-        Returns:
-            _type_: _description_
-        """ """"""
-
+        :param ph: Post-hoc table generated by pg.pairwise_tests()
+        :type ph: pd.DataFrame
+        :param only_sig: If "strict", only p-values smaller than alpha are displayed, If
+           "tolerant", p-values smaller than alpha specified in ALPHA_TOLERANCE. If
+           "all", all p-values are displayed. Defaults to "strict"
+        :type only_sig: str, optional
+        :return: List of pairs, p-values and stars
+        :rtype: (list[tuple], list[float], list[str], dict[tuple:tuple])
+        """         
+ 
+        
         ### Define column of p-values to use
         pcol = "p-corr" if "p-corr" in ph.columns else "p-unc"
 
@@ -491,7 +502,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         return pairs, pvals, stars
 
     #
-    # == Traverse through PH and annotate ....................................
+    # == Traverse through PH and annotate ==============================================
 
     def iter__key_df_ax_ph(self, PH: "pd.DataFrame"):
         """Iterate through facet keys (row, col) and retrieve pieces of data, axes and posthoc
@@ -699,3 +710,5 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 # )
 
 # ut.pp(PH2[PH2["p-corr"] < 0.00001])
+
+# %%
