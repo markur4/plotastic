@@ -94,16 +94,22 @@ class DimsAndLevels:
         Returns:
             Analysis: _description_
         """
-        self.data = data
-        self.dims = dims if type(dims) is Dims else Dims(**dims)
+        self.data: pd.DataFrame = data
+        self.dims: Dims = dims if type(dims) is Dims else Dims(**dims)
 
     #
     #
-    # == List FACTORS .....................................................................................................'''
+    # == List FACTORS ==================================================================
 
-    @property  # * [row, hue, x] (dims may be missing)
+    @property  # * [row, col, hue, x] (dims may be missing)
     def factors_all(self) -> list[str]:
         F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
+        return [e for e in F if (not e is None)]
+
+    @property  # * [row, col, hue]
+    def factors_all_without_x(self) -> list[str]:
+        """Used for iterating through dataframe yielding lists of groups"""
+        F = (self.dims.row, self.dims.col, self.dims.hue)
         return [e for e in F if (not e is None)]
 
     # @property
@@ -185,7 +191,7 @@ class DimsAndLevels:
             rowcol = [""]
         return rowcol
 
-    # == Properties of FACTORS  .......................
+    # == Properties of FACTORS  ========================================================
 
     @property  # * no hue, row or col
     def factors_is_just_x(self) -> bool:
@@ -227,7 +233,7 @@ class DimsAndLevels:
         raise NotImplementedError
 
     #
-    # == Retrieve FACTORS .................................
+    # == Retrieve FACTORS ==============================================================
 
     # * input: Hue -> "smoke"
     def getfactors_from_dim(
@@ -274,7 +280,7 @@ class DimsAndLevels:
     #             return rank
 
     #
-    # == LEVELS ......................................................................................................'''
+    # == LEVELS ========================================================================
 
     def get_levels_from_column(self, colname: str) -> list[str]:
         """Returns: [lvl1, lvl2]"""

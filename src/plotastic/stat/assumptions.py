@@ -33,28 +33,74 @@ class Assumptions(StatTest):
         ### Gather Arguments
         kwargs = dict(
             dv=self.dims.y,
-            group=self.dims.x,
+            group=self.dims.x,  # ! pingouin crashes without group, so we iterate without x
+            method=method,
         )
-        # * Add user kwargs
-        kwargs.update(user_kwargs)
+        kwargs.update(user_kwargs)  # * Add user kwargs
 
         ### Perform Test
-        # * Iterate over rows and cols
+        # * Iterate over rows, cols, hue
         normDF_dict = {}
 
         # * Skip empty groups
-        for key, df in self.data_iter__key_facet_skip_empty:
-            normdf =  pg.normality(df, **kwargs)
-            normdf["n"] = df.count()[self.dims.y] #* Add n to seehow big group is 
-            
-            normDF_dict[key] = normdf
-            
+        for key, df in self.data_iter__key_groups_skip_empty:
+            # * key = (row, col, hue)
+            normdf = pg.normality(df, **kwargs)
+            # * Add n to seehow big group is
+            normdf["n"] = df.groupby(self.dims.x).count()[self.dims.y]
 
-        normDF = pd.concat(
-            normDF_dict, keys=normDF_dict.keys(), names=self.factors_rowcol_list
-        )
+            normDF_dict[key] = normdf
+        normDF = pd.concat(normDF_dict, keys=normDF_dict.keys(), names=self.factors_all)
+
+        ### Save Results
+        self.results.DF_normality = normDF
 
         return normDF
+
+    #
+    # == Homoscedasticity ==============================================================
+
+    def check_homoscedasticity(
+        self, method: str = "levene", **user_kwargs
+    ) -> pd.DataFrame:
+        """_summary_
+
+        :param method: 'levene' or 'bartlett', defaults to "levene"
+        :type method: str, optional
+        :return: _description_
+        :rtype: pd.DataFrame
+        """
+
+        ### Gather Arguments
+        kwargs = dict(
+            dv=self.dims.y,
+            group=self.dims.x,  # ! required, homoscedasticity is measured over a list of groups
+            method=method,
+        )
+        kwargs.update(user_kwargs)  # * Add user kwargs
+
+        ### Perform Test
+        # * Iterate over rows, cols, and hue
+        homoscedDF_dict = {}
+
+        # * Skip empty groups
+        for key, df in self.data_iter__key_groups_skip_empty:
+            # * key = (row, col, hue)
+            homosceddf = pg.homoscedasticity(df, **kwargs)
+            # * Add number of groups
+            homosceddf["group count"] = df.groupby(self.dims.x).count().shape[0]
+            # * Add n to seehow big groups are
+            homosceddf["n per group"] = [df.groupby(self.dims.x).count()[self.dims.y].to_list()]
+
+            homoscedDF_dict[key] = homosceddf
+        homoscedDF = pd.concat(
+            homoscedDF_dict, keys=homoscedDF_dict.keys(), names=self.factors_all
+        )
+
+        ### Save Results
+        self.results.DF_homoscedasticity = homoscedDF
+
+        return homoscedDF
 
 
 # ! end class
@@ -62,7 +108,7 @@ class Assumptions(StatTest):
 # !
 
 
-# %% Import Data 
+# %% Import Data
 
 import markurutils as ut
 
@@ -76,7 +122,8 @@ sns.catplot(data=DF, **dims, kind="box")
 
 # %% Check functionality with pingouin
 
-pg.normality(DF, dv=dims["y"], group= dims["x"])
+pg.normality(DF, dv=dims["y"], group=dims["x"])
+pg.homoscedasticity(DF, dv=dims["y"], group=dims["x"])
 
 # %% create Assumptions object
 
@@ -86,3 +133,6 @@ DA = Assumptions(data=DF, dims=dims)
 
 DA.check_normality()
 
+# %% Check homoscedasticity
+
+DA.check_homoscedasticity()

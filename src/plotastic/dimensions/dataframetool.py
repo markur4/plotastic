@@ -437,6 +437,8 @@ class DataFrameTool(DimsAndLevels):
     #
     # == Iterate through DATA ==========================================================
 
+    ### Iterate through FACETS =========================================================
+
     def data_ensure_allgroups(self, factors=None) -> pd.DataFrame:
         """df.groupby() skips empty groups, so we need to ensure that all groups are present in the data.
         Takes Levels of factors. Returns a DataFrame with all possible combinations of levels as index.
@@ -517,14 +519,42 @@ class DataFrameTool(DimsAndLevels):
     def data_dict_skip_empty(self) -> dict:
         return dict(self.data_iter__key_facet_skip_empty)
 
+    #
+    ### Iterate through LISTS of groups ================================================
+
+    @property  # * >>> (R_l1, C_l1, Hue_l1), df >>> (R_l1, C_l2, Hue_l1), df2 >>> ...
+    def data_iter__key_groups(self):
+        """Returns: >> (R_l1, C_l1,  Hue_l1), df >> (R_l1, C_l2, Hue_l1), df2 >> ...
+        Yields Dataframes that lists groups
+        """
+        if not self.factors_is_just_x:
+            for key, df in self.data_ensure_allgroups().groupby(self.factors_all_without_x):
+                yield key, df
+        else:
+            yield None, self.data_ensure_allgroups()
+
+    @property  # * >>> (R_l1, C_l1, Hue_l1), df >>> (R_l1, C_l2, Hue_l1), df2 >>> ...
+    def data_iter__key_groups_skip_empty(self):
+        """Returns: >> (R_l1, C_l1,  Hue_l1), df >> (R_l1, C_l2, Hue_l1), df2 >> ...
+        Yields Dataframes that lists groups
+        """
+        if not self.factors_is_just_x:
+            for key, df in self.data.groupby(self.factors_all_without_x):
+                yield key, df
+        else:
+            yield None, self.data
+
+    #
+    ### Iterate through GROUPS =========================================================
+
     @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
-    def data_iter__allkeys_groups(self) -> Generator:
+    def data_iter__allkeys_group(self) -> Generator:
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ..."""
         for key, df in self.data_ensure_allgroups().groupby(self.factors_all):
             yield key, df
 
     @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
-    def data_iter__allkeys_groups_skip_empty(self) -> Generator:
+    def data_iter__allkeys_group_skip_empty(self) -> Generator:
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ...
         SKIPS EMPTY GROUPS!"""
         for key, df in self.data.groupby(self.factors_all):
