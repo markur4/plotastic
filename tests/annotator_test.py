@@ -2,13 +2,15 @@
 # %% Imports
 
 import matplotlib.pyplot as plt
+import pytest
+import ipytest
 
 import plotastic as plst
 from plotastic import Annotator
 
 import markurutils as ut
 
-import tests.conftest as ct
+import conftest as ct
 
 
 # %% Automatic testing for dataset TIPS
@@ -50,27 +52,25 @@ TIPS_annot_pairwise_kwargs = [
     ),
 ]
 
+### Add a column of args: (DF, dims) -> (DF, dims, kwargs)
+zipped_tips: list[tuple] = ct.add_zip_column(
+    ct.zipped_noempty_tips, TIPS_annot_pairwise_kwargs
+)
 
-def tips(DF, dims, annot_pairwise_kwargs):
+
+@pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_tips)
+def test_pairwiseannotations_tips(DF, dims, annot_kwargs):
     AN = Annotator(data=DF, dims=dims, verbose=True)
     _ph = AN.test_pairwise(paired=False, padjust="none")
     AN = (
         AN.subplots()
         .fillaxes(kind="box")
         .annotate_pairwise(
-            **annot_pairwise_kwargs,
+            **annot_kwargs,
             show_ph=False,
             only_sig="all",
         )
     )
-
-
-def test_annotator_tips():
-    DF, dims = ut.load_dataset("tips")
-    for dim, kwargs in zip(ct.dims_noempty_tips, TIPS_annot_pairwise_kwargs):
-        # print("\n !!!", dim)
-        # print(" !!!", kwargs)
-        tips(DF, dim, kwargs)
 
 
 # %% Automatic Testing for dataset FMRI
@@ -110,30 +110,32 @@ FMRI_annot_pairwise_kwargs = [
     ),
     dict(
         include=[0, 2],
-        exclude=[
-            1,
-        ],
+        exclude=[1],
     ),
 ]
 
+### Add a column of args: (DF, dims) -> (DF, dims, kwargs)
+zipped_fmri: list[tuple] = ct.add_zip_column(
+    ct.zipped_noempty_fmri, FMRI_annot_pairwise_kwargs
+)
 
-def FMRI(DF, dims, annot_pairwise_kwargs):
+
+@pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_fmri)
+def test_pairwiseannotations_fmri(DF, dims, annot_kwargs):
     AN = Annotator(data=DF, dims=dims, verbose=True, subject="subject")
-    ph = AN.test_pairwise(paired=True, padjust="bonf")
+    _ph = AN.test_pairwise(paired=True, padjust="bonf")
     AN = (
         AN.subplots()
         .fillaxes(kind="box")
         .annotate_pairwise(
-            **annot_pairwise_kwargs,
+            **annot_kwargs,
             show_ph=False,
             only_sig="strict",
         )
     )
 
 
-def test_annotator_fmri():
-    DF, dims = ut.load_dataset("fmri")
-    for dim, kwargs in zip(ct.dims_noempty_fmri, FMRI_annot_pairwise_kwargs):
-        # print("\n !!!", dim)
-        # print(" !!!", kwargs)
-        FMRI(DF, dim, kwargs)
+# %% interactive testing to display Plots
+
+if __name__ == "__main__":
+    ipytest.run()

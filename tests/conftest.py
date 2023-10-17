@@ -59,7 +59,27 @@ zipped_noempty_tips =  [(DF_tips, dim) for dim in dims_noempty_tips]
 zipped_noempty_fmri =  [(DF_fmri, dim) for dim in dims_noempty_fmri]
 zipped_noempty_all = zipped_noempty_tips + zipped_noempty_fmri
 
+def add_zip_column(zipped:list[tuple], column:list) -> list[tuple]:
+    """Adds a column to a list of tuples. Useful for adding a list of arguments to a list of dataframes and dimensions.
 
+    :param zipped: A set of dataframes and dimensions in this shape [(df, dim), (df,
+        dim), ...] ready to be used in pytest.parametrize
+    :type zipped: list[tuple]
+    :param column: A list of ne arguments to be added to each tuple in zipped. Must be same length as zipped
+    :type column: list
+    :return: _description_
+    :rtype: list[tuple]
+    """
+    
+    assert len(zipped) == len(column), "zipped and column must be same length"
+    
+    zipped_with_column = []
+    for tup, e in zip(zipped, column):
+        zipped_with_column.append(tup + (e,))
+    return zipped_with_column
+
+# add_zip_column(zipped_noempty_all, [i for i in range(len(zipped_noempty_all))])
+    
 
 # %%
 
