@@ -499,8 +499,8 @@ class DimsAndLevels:
 # %% automatic testing
 
 
-def tester(DF, dims):
-    A = DimsAndLevels(data=DF, dims=dims, verbose=True)  # .switch("x", "col")
+# def tester(DF, dims):
+#     A = DimsAndLevels(data=DF, dims=dims, verbose=True)  # .switch("x", "col")
 
 
 dimses = [
