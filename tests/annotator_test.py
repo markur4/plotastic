@@ -8,7 +8,7 @@ from plotastic import Annotator
 
 import markurutils as ut
 
-import test_utils as tut
+import tests.conftest as ct
 
 
 # %% Automatic testing for dataset TIPS
@@ -51,7 +51,7 @@ TIPS_annot_pairwise_kwargs = [
 ]
 
 
-def TIPS(DF, dims, annot_pairwise_kwargs):
+def tips(DF, dims, annot_pairwise_kwargs):
     AN = Annotator(data=DF, dims=dims, verbose=True)
     _ph = AN.test_pairwise(paired=False, padjust="none")
     AN = (
@@ -64,12 +64,14 @@ def TIPS(DF, dims, annot_pairwise_kwargs):
         )
     )
 
+
 def test_annotator_tips():
     DF, dims = ut.load_dataset("tips")
-    for dim, kwargs in zip(tut.DIMS_TIPS, TIPS_annot_pairwise_kwargs):
+    for dim, kwargs in zip(ct.dims_noempty_tips, TIPS_annot_pairwise_kwargs):
         # print("\n !!!", dim)
         # print(" !!!", kwargs)
-        TIPS(DF, dim, kwargs)
+        tips(DF, dim, kwargs)
+
 
 # %% Automatic Testing for dataset FMRI
 
@@ -131,7 +133,7 @@ def FMRI(DF, dims, annot_pairwise_kwargs):
 
 def test_annotator_fmri():
     DF, dims = ut.load_dataset("fmri")
-    for dim, kwargs in zip(tut.DIMS_FMRI, FMRI_annot_pairwise_kwargs):
+    for dim, kwargs in zip(ct.dims_noempty_fmri, FMRI_annot_pairwise_kwargs):
         # print("\n !!!", dim)
         # print(" !!!", kwargs)
         FMRI(DF, dim, kwargs)
