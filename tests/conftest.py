@@ -59,15 +59,17 @@ zipped_noempty_tips =  [(DF_tips, dim) for dim in dims_noempty_tips]
 zipped_noempty_fmri =  [(DF_fmri, dim) for dim in dims_noempty_fmri]
 zipped_noempty_all = zipped_noempty_tips + zipped_noempty_fmri
 
+###  (DF, dims) -> (DF, dims, kwargs)
 def add_zip_column(zipped:list[tuple], column:list) -> list[tuple]:
-    """Adds a column to a list of tuples. Useful for adding a list of arguments to a list of dataframes and dimensions.
+    """Adds a column to a list of tuples. Useful for adding a list of arguments to a
+    list of dataframes and dimensions. E.g.: (DF, dims) -> (DF, dims, kwargs)
 
     :param zipped: A set of dataframes and dimensions in this shape [(df, dim), (df,
         dim), ...] ready to be used in pytest.parametrize
     :type zipped: list[tuple]
     :param column: A list of ne arguments to be added to each tuple in zipped. Must be same length as zipped
     :type column: list
-    :return: _description_
+    :return: (DF, dims) -> (DF, dims, kwargs)
     :rtype: list[tuple]
     """
     
