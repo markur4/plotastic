@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from plotastic.dimensions.dataframetool import DataFrameTool
 from plotastic.stat.statresults import StatResults
@@ -82,3 +83,4 @@ class StatTest(DataFrameTool):
         else:
             effectSize = float("NaN")
         return effectSize
+

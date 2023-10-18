@@ -46,8 +46,8 @@ class Assumptions(StatTest):
         for key, df in self.data_iter__key_groups_skip_empty:
             # * key = (row, col, hue)
             normdf = pg.normality(df, **kwargs)
-            # * Add n to seehow big group is
-            normdf["n"] = df.groupby(self.dims.x).count()[self.dims.y]
+            # * Add n to seehow big group is. 
+            normdf["n"] = self.count_n_per_x(df) # * -> Series with same length as normdf
 
             normDF_dict[key] = normdf
         normDF = pd.concat(normDF_dict, keys=normDF_dict.keys(), names=self.factors_all)
@@ -88,19 +88,57 @@ class Assumptions(StatTest):
             # * key = (row, col, hue)
             homosceddf = pg.homoscedasticity(df, **kwargs)
             # * Add number of groups
-            homosceddf["group count"] = df.groupby(self.dims.x).count().shape[0]
-            # * Add n to seehow big groups are
-            homosceddf["n per group"] = [df.groupby(self.dims.x).count()[self.dims.y].to_list()]
+            homosceddf["group count"] = self.count_groups_in_x(df)
+            # * Add n to see how big groups are, make nested list to fit into single cell
+            homosceddf["n per group"] = [self.count_n_per_x(df).to_list()] 
 
             homoscedDF_dict[key] = homosceddf
         homoscedDF = pd.concat(
             homoscedDF_dict, keys=homoscedDF_dict.keys(), names=self.factors_all
         )
 
+        #
         ### Save Results
         self.results.DF_homoscedasticity = homoscedDF
 
         return homoscedDF
+
+    # == Spherecity ====================================================================
+
+    def check_sphericity(self, method: str = "mauchly", **user_kwargs) -> pd.DataFrame:
+        """_summary_
+
+        :param method: _description_, defaults to "mauchly"
+        :type method: str, optional
+        :return: _description_
+        :rtype: pd.DataFrame
+        """
+
+        ### Gather Arguments
+        kwargs = dict(
+            dv=self.dims.y,
+            subject=self.subject,
+            within=self.dims.x,
+            method=method,
+        )
+        kwargs.update(user_kwargs)  # * Add user kwargs
+
+        ### Perform Test
+        # * Iterate over rows, cols, and hue
+        sphereDF_dict = {}
+
+        # * Skip empty groups
+        for df, key in self.data_iter__key_groups_skip_empty:
+            # * key = (row, col, hue)
+            spheredf = pg.sphericity(df, **kwargs)
+            # * Add number of groups
+            spheredf["group count"] = df.groupby(self.dims.x).count().shape[0]
+            # * Add n to seehow big groups are
+            spheredf["n per group"] = [
+                df.groupby(self.dims.x).count()[self.dims.y].to_list()
+            ]
+
+            sphereDF_dict[key] = spheredf
 
 
 # ! end class
@@ -119,20 +157,20 @@ import seaborn as sns
 
 sns.catplot(data=DF, **dims, kind="box")
 
-
 # %% Check functionality with pingouin
 
 pg.normality(DF, dv=dims["y"], group=dims["x"])
 pg.homoscedasticity(DF, dv=dims["y"], group=dims["x"])
 
+pg.sphericity(DF, dv=dims["y"], subject="subject", within=dims["x"])
+
 # %% create Assumptions object
 
-DA = Assumptions(data=DF, dims=dims)
+DA = Assumptions(data=DF, dims=dims, subject="subject")
 
 # %% Check normality
 
 DA.check_normality()
+DA.check_homoscedasticity()
 
 # %% Check homoscedasticity
-
-DA.check_homoscedasticity()

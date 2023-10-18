@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
 
 class DataFrameTool(DimsAndLevels):
+    # ==
     # == __init__ ======================================================================
 
     def __init__(
@@ -80,7 +81,7 @@ class DataFrameTool(DimsAndLevels):
         # if levels_ignore:
         #     self.check_inputlevels_with_data(input_lvls=levels_ignore, verbose=verbose)
 
-    #
+    # ==
     # ==  Make Levels Categorical ======================================================
 
     def _make_catdict_from_input(
@@ -270,7 +271,7 @@ class DataFrameTool(DimsAndLevels):
             )
         return self
 
-    #
+    # ==
     # == DESCRIBE DATA =================================================================
 
     def catplot(self, kind="strip", **catplot_kws) -> sns.FacetGrid:
@@ -421,10 +422,54 @@ class DataFrameTool(DimsAndLevels):
         else:
             print("✅ Subjects complete: No subjects with missing data")
 
-    # 
+    def count_n_per_x(self, df: pd.DataFrame) -> pd.Series:
+        """Counts the number of non NaN entries within y columns in a dataframe,
+        grouping only by the x variable (not hue!).
+
+        :param df: Dataframe within a for loop, where df is a facetted dataframe and
+            grouped by hue.
+        :type df: pd.DataFrame
+        :return: Samplesize, or count of non-NaN rows within y-column
+        :rtype: pd.Series with x as index and n as values
+        """
+        # fmt: off
+        count = (
+            df # * Full or partial facetted DataFrame 
+            .groupby(self.dims.x)  # * Iterate through groups
+            .count() # * Counts values within each group, will ignore NaNs -> pd.Series
+            [self.dims.y]  # * Use y to count n. -> Series with x as index and n as values
+            ) 
+        # fmt: on
+        return count
+
+    def count_groups_in_x(self, df: pd.DataFrame) -> int:
+        """Counts the number of groups within x variable (Not considering grouping by
+        hue). 
+
+        :param df: Dataframe. Preferrably within a for loop, where df is a facetted
+            dataframe and grouped by hue.
+        :type df: pd.DataFrame
+        :return: Number of groups
+        :rtype: int
+        """
+        count = len(df[self.dims.x].unique())
+
+        # * This is the same, should also count uniques.
+        # # fmt: off
+        # count = (
+        #     df # * Full or partial facetted DataFrame 
+        #     .groupby(self.dims.x)  # * Iterate through groups
+        #     .count() # * Count values within each group, will ignore NaNs -> pd.Series
+        #     .shape[0]  # * gives the length of the series, which is the number of groups
+        #     ) 
+        # # fmt: on
+
+        return count
+
+    # ==
     # == Iterate through Data SKIPPING OF EMPTY GROUPS =================================
 
-    # def data_iterate_by_rowcol(
+    # *def data_iterate_by_rowcol(
     #     self,
     # ) -> Generator[pd.DataFrame, None, None]:
     #     """Iterates through the data, yielding a DataFrame for each row/col combination.
@@ -434,7 +479,7 @@ class DataFrameTool(DimsAndLevels):
     #     for key in self.levelkeys_rowcol:
     #         yield self.data_get_rowcol(key)
 
-    #
+    # ==
     # == Iterate through DATA ==========================================================
 
     ### Iterate through FACETS =========================================================
@@ -528,7 +573,9 @@ class DataFrameTool(DimsAndLevels):
         Yields Dataframes that lists groups
         """
         if not self.factors_is_just_x:
-            for key, df in self.data_ensure_allgroups().groupby(self.factors_all_without_x):
+            for key, df in self.data_ensure_allgroups().groupby(
+                self.factors_all_without_x
+            ):
                 yield key, df
         else:
             yield None, self.data_ensure_allgroups()
