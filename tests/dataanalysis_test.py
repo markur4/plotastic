@@ -1,12 +1,12 @@
 #
-#%% imports
+# %% imports
 import markurutils as ut
 import plotastic as plst
 import unittest
 
 
 # %% Import Test Data
-DF, dims = ut.load_dataset("tips")  # * Import Data
+DF, dims = plst.load_dataset("tips")  # * Import Data
 DA = plst.DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
 
 # %% Catplot
@@ -37,5 +37,4 @@ class TestDataAnalysis(unittest.TestCase):
 # %% __name__ == "__main__"
 
 if __name__ == "__main__":
-
     unittest.main()

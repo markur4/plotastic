@@ -194,9 +194,6 @@ class Assumptions(StatTest):
 from plotastic.example_data.load_dataset import load_dataset
 DF, dims = load_dataset("fmri")
 
-#%%
-# import markurutils as ut
-# DF, dims = ut.load_dataset("fmri")
 
 # %% plot
 import seaborn as sns

@@ -89,18 +89,17 @@ class DimsAndLevels:
         :param dims: Dims object storing x, y, hue, col, row.
         :type dims: dict | Dims
         :raises AssertionError: If dims contains entries that are not in columns
-        """        
-        
-        
+        """
+
         ### Save data and dims
         self.data: pd.DataFrame = data
         self.dims: Dims = dims if type(dims) is Dims else Dims(**dims)
-        
+
         ### Make sure dims are present in data
         self._assert_dims_with_data(df=data, dims=self.dims)
-        
+
     @staticmethod
-    def _assert_dims_with_data(df:pd.DataFrame, dims:Dims) -> None:
+    def _assert_dims_with_data(df: pd.DataFrame, dims: Dims) -> None:
         """Asserts that all entries in dims are present in data
 
         :param df: DataFrame to be checked
@@ -109,10 +108,12 @@ class DimsAndLevels:
         :type dims: Dims
         :raises AssertionError: If dims contains entries that are not in columns
         :return: None
-        """        
-        
+        """
+
         for dim in dims.asdict(incl_None=False).values():
-            assert dim in df.columns, f"#! '{dim}' not in columns, expected one of {df.columns.to_list()}"
+            assert (
+                dim in df.columns
+            ), f"#! '{dim}' not in columns, expected one of {df.columns.to_list()}"
 
     # ==
     # ==
@@ -502,7 +503,7 @@ class DimsAndLevels:
 
 # %%
 
-# DF, dims = ut.load_dataset("tips")
+# DF, dims = plst.load_dataset("tips")
 # dims = dict(y="tip", x="sex", hue="day", col="smoker", row="time")
 
 # DA = Analysis(
@@ -532,7 +533,7 @@ dimses = [
     dict(y="tip", x="size-cut"),
 ]
 
-# DF, dims = ut.load_dataset("tips")
+# DF, dims = plst.load_dataset("tips")
 # for dim in dimses:
 #     print("\n !!!", dim)
 #     tester(DF, dim)

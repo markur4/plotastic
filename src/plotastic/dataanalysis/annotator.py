@@ -454,9 +454,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         :type only_sig: str, optional
         :return: List of pairs, p-values and stars
         :rtype: (list[tuple], list[float], list[str], dict[tuple:tuple])
-        """         
- 
-        
+        """
+
         ### Define column of p-values to use
         pcol = "p-corr" if "p-corr" in ph.columns else "p-unc"
 
@@ -671,7 +670,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
 # # %% test for FMRI
 
-# DF, dims = ut.load_dataset("fmri")
+# DF, dims = plst.load_dataset("fmri")
 # AN = Annotator(
 #     data=DF,
 #     dims=dims,

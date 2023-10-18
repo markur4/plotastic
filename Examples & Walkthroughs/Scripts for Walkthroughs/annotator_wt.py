@@ -6,7 +6,7 @@ from plotastic import Annotator
 
 # %% test for FMRI
 
-DF, dims = ut.load_dataset("fmri")
+DF, dims = plst.load_dataset("fmri")
 AN = Annotator(
     data=DF,
     dims=dims,
@@ -48,7 +48,7 @@ ut.pp(PH2[PH2["p-corr"] < 0.00001])
 
 # %% Test for tips
 
-DF, dims = ut.load_dataset("tips")
+DF, dims = plst.load_dataset("tips")
 AN2 = Annotator(
     data=DF,
     dims=dims,
@@ -75,4 +75,3 @@ AN2 = (
         # show_ph=True,
     )
 )
-

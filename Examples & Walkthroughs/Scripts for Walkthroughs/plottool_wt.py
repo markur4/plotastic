@@ -10,7 +10,7 @@ from plotastic.plotting.plottool import PlotTool
 
 # %% Quick testing . . . . . . . . . . . . . . . . . . . . . . .
 
-DF, dims = ut.load_dataset("tips")
+DF, dims = plst.load_dataset("tips")
 DF2, dims2 = ut.load_dataset("fmri")
 DIMS = dict(y="tip", x="day", hue="sex", col="smoker", row="time")
 PT = PlotTool(data=DF, dims=DIMS).switch("x", "col")
@@ -22,7 +22,7 @@ PT.plot()
 
 # %% Detailed Testing
 
-DF, dims = ut.load_dataset("tips")  # * Load Data. Dims
+DF, dims = plst.load_dataset("tips")  # * Load Data. Dims
 DIMS = dict(y="tip", x="day", hue="sex", col="smoker", row="time")
 PT = PlotTool(
     data=DF, dims=DIMS
@@ -104,7 +104,7 @@ PT.edit_legend_SNIP()
 # ! Use them at the end of a layer chain!
 
 ### Try Different Dataset
-DF, dims = ut.load_dataset("fmri")
+DF, dims = plst.load_dataset("fmri")
 PT = PlotTool(data=DF, dims=dims)
 
 PT.plot()
@@ -293,7 +293,7 @@ dimses = [
     dict(y="tip", x="size-cut"),
 ]
 
-DF, dims = ut.load_dataset("tips")
+DF, dims = plst.load_dataset("tips")
 for dim in dimses:
     print("\n !!!", dim)
     tester(DF, dim)

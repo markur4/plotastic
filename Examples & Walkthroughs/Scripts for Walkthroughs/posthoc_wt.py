@@ -1,19 +1,13 @@
 #
-#%% Imports
+# %% Imports
 import markurutils as ut
 import plotastic as plst
 from plotastic.stat.posthoc import PostHoc
 
 
-
-
-
-
-
-
 # %% test for dataset fmri
 
-DF, dims = ut.load_dataset("fmri")
+DF, dims = plst.load_dataset("fmri")
 PH = PostHoc(
     data=DF,
     dims=dims,
@@ -45,7 +39,7 @@ PH.test_pairwise(
 
 # %%  test for dataset tips
 
-DF, dims = ut.load_dataset("tips")
+DF, dims = plst.load_dataset("tips")
 PH = PostHoc(
     data=DF,
     dims=dims,
@@ -61,8 +55,6 @@ PH.test_pairwise(
     # subject="subject",
     return_desc=False,
 )
-
-
 
 
 # %%Automatic testing
@@ -99,12 +91,12 @@ def tester_fmri(DF, dims):
     DA.test_pairwise(paired=True)
 
 
-DF, dims = ut.load_dataset("tips")
+DF, dims = plst.load_dataset("tips")
 for dim in dimses_tips:
     print("\n !!!", dim)
     tester_tips(DF, dim)
 
-DF, dims = ut.load_dataset("fmri")
+DF, dims = plst.load_dataset("fmri")
 for dim in dimses_fmri:
     print("\n !!!", dim)
     tester_tips(DF, dim)

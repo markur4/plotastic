@@ -45,7 +45,7 @@ class PostHoc(Assumptions):
         ### Perform Test
         # * Iterate over rows and columns
         PH_dict = {}
-        
+
         # * Skip empty so that no empty groups of level combinations are artificially added
         for key, df in self.data_iter__key_facet_skip_empty:
             # print(key)
@@ -234,7 +234,7 @@ class PostHoc(Assumptions):
 # %% Import data and make PostHoc object
 
 
-# DF, dims = ut.load_dataset("fmri")
+# DF, dims = plst.load_dataset("fmri")
 
 # PH = PostHoc(data=DF, dims=dims, verbose=False, subject="subject")
 

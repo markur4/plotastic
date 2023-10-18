@@ -1,9 +1,10 @@
 
 
 # %% Import Data
-import seaborn as sns
-DF = sns.load_dataset("fmri")
-dims = {'y': 'signal', 'x': 'timepoint', 'hue': 'event', 'col': 'region'}
+import plotastic as plst
+DF, dims= plst.load_dataset("fmri")
+
+dims
 
 # %% plot
 import seaborn as sns
