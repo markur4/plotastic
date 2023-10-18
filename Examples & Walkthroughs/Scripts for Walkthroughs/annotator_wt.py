@@ -1,6 +1,7 @@
 # %% Import packages
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic as plst
 from plotastic import Annotator
 
 
@@ -43,7 +44,7 @@ AN, PH2 = (
     )
 )
 
-ut.pp(PH2[PH2["p-corr"] < 0.00001])
+PH2[PH2["p-corr"] < 0.00001]
 
 
 # %% Test for tips

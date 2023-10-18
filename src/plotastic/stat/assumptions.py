@@ -174,14 +174,14 @@ class Assumptions(StatTest):
 
             spherDF_dict[key] = spherdf
 
-        sphereDF = pd.concat(
+        spherDF = pd.concat(
             spherDF_dict, keys=spherDF_dict.keys(), names=self.factors_all
         )
         
         ### Save Results
-        self.results.DF_sphericity = sphereDF
+        self.results.DF_sphericity = spherDF
         
-        return sphereDF
+        return spherDF
 
 
 # ! end class
@@ -190,45 +190,45 @@ class Assumptions(StatTest):
 
 
 
-#%%
-from plotastic.example_data.load_dataset import load_dataset
-DF, dims = load_dataset("fmri")
+# #%%
+# from plotastic.example_data.load_dataset import load_dataset
+# DF, dims = load_dataset("fmri")
 
 
-# %% plot
-import seaborn as sns
+# # %% plot
+# import seaborn as sns
 
-sns.catplot(data=DF, **dims, kind="box")
+# sns.catplot(data=DF, **dims, kind="box")
 
-# %% Check functionality with pingouin
+# # %% Check functionality with pingouin
 
-pg.normality(DF, dv=dims["y"], group=dims["x"])
-pg.homoscedasticity(DF, dv=dims["y"], group=dims["x"])
+# pg.normality(DF, dv=dims["y"], group=dims["x"])
+# pg.homoscedasticity(DF, dv=dims["y"], group=dims["x"])
 
-spher = pg.sphericity(DF, dv=dims["y"], subject="subject", within=dims["x"])
-type(spher)
+# spher = pg.sphericity(DF, dv=dims["y"], subject="subject", within=dims["x"])
+# type(spher)
 
-# %% create Assumptions object
+# # %% create Assumptions object
 
-DA = Assumptions(data=DF, dims=dims, subject="subject", verbose=True)
+# DA = Assumptions(data=DF, dims=dims, subject="subject", verbose=True)
 
-DA.check_normality()
-DA.check_homoscedasticity()
-DA.check_sphericity()
+# DA.check_normality()
+# DA.check_homoscedasticity()
+# DA.check_sphericity()
 
-#%% Plot roughest facetting
+# #%% Plot roughest facetting
 
-sns.catplot(data=DF, x="timepoint")
+# sns.catplot(data=DF, x="timepoint")
 
-# %% Use different set
+# # %% Use different set
 
 
-DA2 = Assumptions(data=DF, dims=dict(x="timepoint", y="signal"), 
-                  subject="subject", verbose=True)
-# DA2.catplot()
+# DA2 = Assumptions(data=DF, dims=dict(x="timepoint", y="signal"), 
+#                   subject="subject", verbose=True)
+# # DA2.catplot()
 
-DA2.check_normality()
-DA2.check_homoscedasticity()
-DA2.check_sphericity()
+# DA2.check_normality()
+# DA2.check_homoscedasticity()
+# DA2.check_sphericity()
 
-# %% Check homoscedasticity
+

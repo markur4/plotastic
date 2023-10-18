@@ -1,3 +1,6 @@
+# Unprocessed Datasets should not be published
+"Process Datasets/*"
+
 # paper, publish it only when publishing
 paper.md
 paper.bib
