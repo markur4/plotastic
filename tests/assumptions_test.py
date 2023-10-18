@@ -18,18 +18,25 @@ import conftest as ct
 # %% Test per config
 
 
-@pytest.mark.parametrize("DF, dims", ct.zipped_noempty_all)
+@pytest.mark.parametrize("DF, dims", ct.zipped_noempty_ALL)
 def test_normality(DF: pd.DataFrame, dims):
-    AS = Assumptions(data=DF, dims=dims, verbose=False)
+    AS = Assumptions(data=DF, dims=dims, verbose=True)
     AS.check_normality()
 
 
-@pytest.mark.parametrize("DF, dims", ct.zipped_noempty_all)
+@pytest.mark.parametrize("DF, dims", ct.zipped_noempty_ALL)
 def test_homoscedasticity(DF, dims):
-    AS = Assumptions(data=DF, dims=dims, verbose=False)
+    AS = Assumptions(data=DF, dims=dims, verbose=True)
     AS.check_homoscedasticity()
 
-#%% interactive testing to display Plots
+
+@pytest.mark.parametrize("DF, dims", ct.zipped_noempty_FMRI)
+def test_sphericity(DF, dims):
+    AS = Assumptions(data=DF, dims=dims, verbose=True, subject="subject")
+    AS.check_sphericity()
+
+
+# %% interactive testing to display Plots
 
 if __name__ == "__main__":
     ipytest.run()

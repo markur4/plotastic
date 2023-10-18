@@ -74,31 +74,48 @@ class DimsAndLevels:
 
         return ut.printable_dict(D=D, start_message=f"{type(self)}: ")
 
-    # == INIT ......................
+    # ==
+    # == INIT ==========================================================================
 
     def __init__(
         self,
         data: pd.DataFrame,
         dims: dict | Dims,
     ):
-        """_summary_
+        """Handles dimensions and levels within dataframe
 
-        Args:
-            data (pd.DataFrame): Pandas dataframe, long-format!
-            dims (dict | Dims): Dims object storing x, y, hue, col, row.
-            verbose (bool, optional): Warns User of empty groups. Defaults to False.
-            levels (list[tuple[str]], optional): If levels are specified, they will be compared \
-                with the dataframe and columns will be set to ordered categorical type automatically. Defaults to None.
-            som (dict[str, str], optional): Scales of measurements. NOT IMPLEMENTED YET. Defaults to None.
-
-        Returns:
-            Analysis: _description_
-        """
+        :param data: Pandas dataframe, long-format!
+        :type data: pd.DataFrame
+        :param dims: Dims object storing x, y, hue, col, row.
+        :type dims: dict | Dims
+        :raises AssertionError: If dims contains entries that are not in columns
+        """        
+        
+        
+        ### Save data and dims
         self.data: pd.DataFrame = data
         self.dims: Dims = dims if type(dims) is Dims else Dims(**dims)
+        
+        ### Make sure dims are present in data
+        self._assert_dims_with_data(df=data, dims=self.dims)
+        
+    @staticmethod
+    def _assert_dims_with_data(df:pd.DataFrame, dims:Dims) -> None:
+        """Asserts that all entries in dims are present in data
 
-    #
-    #
+        :param df: DataFrame to be checked
+        :type df: pd.DataFrame
+        :param dims: Dims object storing x, y, hue, col, row.
+        :type dims: Dims
+        :raises AssertionError: If dims contains entries that are not in columns
+        :return: None
+        """        
+        
+        for dim in dims.asdict(incl_None=False).values():
+            assert dim in df.columns, f"#! '{dim}' not in columns, expected one of {df.columns.to_list()}"
+
+    # ==
+    # ==
     # == List FACTORS ==================================================================
 
     @property  # * [row, col, hue, x] (dims may be missing)

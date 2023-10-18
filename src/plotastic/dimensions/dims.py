@@ -62,8 +62,8 @@ class Dims:
 
     def __init__(
         self,
-        y: str = None,
-        x: str = None,
+        y: str,
+        x: str,
         hue: str = None,
         row: str = None,
         col: str = None,
@@ -88,9 +88,9 @@ class Dims:
     #
     # == Properties ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    @property
-    def has_hue(self) -> bool:
-        return not self.hue is None
+    # @property
+    # def has_hue(self) -> bool:
+    #     return not self.hue is None
 
     # @property
     # def by(self) -> list[str] | None:

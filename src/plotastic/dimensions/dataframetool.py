@@ -36,18 +36,20 @@ class DataFrameTool(DimsAndLevels):
         verbose=False,
         **dims_data_kws,
     ):
-        """_summary_
+        """Adds pandas DataFrame related tools.
 
-        Args:
-            data (pd.DataFrame): _description_
-            dims (dict): _description_
-            verbose (bool, optional): _description_. Defaults to False.
-            fig (mpl.figure.Figure, optional): _description_. Defaults to None.
-            axes (mpl.axes.Axes, optional): _description_. Defaults to None.
-
-        Returns:
-            PlotTool: _description_
+        :param levels:  If levels are specified, they will be compared \
+                with the dataframe and columns will be set to ordered categorical type
+                automatically, Defaults to None.
+        :type levels: list[tuple[str]], optional
+        :param subject: Column defining the subject, which connects samples as dependent
+            (patient, donor, date etc.). If specified, paired tests will be prioritized,
+            defaults to None.
+        :type subject: str, optional
+        :param verbose: Warns User of empty groups, defaults to False
+        :type verbose: bool, optional
         """
+        
         ### Inherit from DimsAndLevels
         super().__init__(**dims_data_kws)
 
@@ -56,6 +58,10 @@ class DataFrameTool(DimsAndLevels):
         self.user_levels = levels
         # * for paired analysis
         self.subject = subject
+        if not subject is None:
+            assert (
+                subject in self.data.columns
+            ), f"#! Subject '{subject}' not in columns, expected one of {self.data.columns.to_list()}"
 
         # ### Initialize a dataframe that contains  groups for every combination of factor levels (with dv = N)
         # self.data_allgroups = self.data_ensure_allgroups()
@@ -422,7 +428,7 @@ class DataFrameTool(DimsAndLevels):
         else:
             print("✅ Subjects complete: No subjects with missing data")
 
-    def count_n_per_x(self, df: pd.DataFrame) -> pd.Series:
+    def data_count_n_per_x(self, df: pd.DataFrame) -> pd.Series:
         """Counts the number of non NaN entries within y columns in a dataframe,
         grouping only by the x variable (not hue!).
 
@@ -442,9 +448,9 @@ class DataFrameTool(DimsAndLevels):
         # fmt: on
         return count
 
-    def count_groups_in_x(self, df: pd.DataFrame) -> int:
+    def data_count_groups_in_x(self, df: pd.DataFrame) -> int:
         """Counts the number of groups within x variable (Not considering grouping by
-        hue). 
+        hue).
 
         :param df: Dataframe. Preferrably within a for loop, where df is a facetted
             dataframe and grouped by hue.
@@ -457,11 +463,11 @@ class DataFrameTool(DimsAndLevels):
         # * This is the same, should also count uniques.
         # # fmt: off
         # count = (
-        #     df # * Full or partial facetted DataFrame 
+        #     df # * Full or partial facetted DataFrame
         #     .groupby(self.dims.x)  # * Iterate through groups
         #     .count() # * Count values within each group, will ignore NaNs -> pd.Series
         #     .shape[0]  # * gives the length of the series, which is the number of groups
-        #     ) 
+        #     )
         # # fmt: on
 
         return count

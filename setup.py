@@ -54,8 +54,9 @@ setup(
     },
     # * Non- .py files (e.g. py.typed, documentation...) required by package
     package_data={
-        NAME: [f"src/{NAME}/py.typed"],
-        "dataanalysis": [f"src/plotastic/dataanalysis/py.typed"],
+        "example_data": ["data/*.xlsx"]
+        # NAME: [f"src/{NAME}/py.typed"],
+        # "dataanalysis": [f"src/plotastic/dataanalysis/py.typed"],
     },
     # * Non- .py files (e.g. .gif .txt, ...) that should be installed with the package
     data_files={},

@@ -1,13 +1,18 @@
 #
 # %%
 
+from typing import TYPE_CHECKING, NamedTuple  # * SpherResults is a NamedTuple
+
 import pandas as pd
 import pingouin as pg
 
-from plotastic.dimensions.dataframetool import DataFrameTool
-from plotastic.stat.statresults import StatResults
+# from plotastic.dimensions.dataframetool import DataFrameTool
+# from plotastic.stat.statresults import StatResults
 from plotastic.stat.stattest import StatTest
 
+# if TYPE_CHECKING:
+#     from collections import namedtuple # * SpherResults is a NamedTuple
+#     # from pingouin.distribution import SpherResults
 
 # %% Class Assumptions
 
@@ -17,12 +22,15 @@ class Assumptions(StatTest):
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
 
-    #
-    #
+    # ==
+    # ==
     # == Normality =====================================================================
 
     def check_normality(self, method: str = "shapiro", **user_kwargs) -> pd.DataFrame:
-        """_summary_
+        """Check assumption of normality. If the assumption is violated, you should use
+        non-parametric tests (e.g. Kruskal-Wallis, Mann-Whitney, Wilcoxon, etc.) instead
+        of parametric tests (ANOVA, t-test, etc.).
+
 
         :param method: 'shapiro', 'jarque-bera' or 'normaltest', defaults to 'shapiro'
         :type method: str, optional
@@ -46,10 +54,13 @@ class Assumptions(StatTest):
         for key, df in self.data_iter__key_groups_skip_empty:
             # * key = (row, col, hue)
             normdf = pg.normality(df, **kwargs)
-            # * Add n to seehow big group is. 
-            normdf["n"] = self.count_n_per_x(df) # * -> Series with same length as normdf
+            # * Add n to seehow big group is.
+            normdf["n"] = self.data_count_n_per_x(
+                df
+            )  # * -> Series with same length as normdf
 
             normDF_dict[key] = normdf
+            
         normDF = pd.concat(normDF_dict, keys=normDF_dict.keys(), names=self.factors_all)
 
         ### Save Results
@@ -57,13 +68,14 @@ class Assumptions(StatTest):
 
         return normDF
 
-    #
+    # ==
     # == Homoscedasticity ==============================================================
 
     def check_homoscedasticity(
         self, method: str = "levene", **user_kwargs
     ) -> pd.DataFrame:
-        """_summary_
+        """Checks assumption of homoscedasticity. If the assumption is violated, the
+        p-values from a t-test should be corrected with Welch's correction.
 
         :param method: 'levene' or 'bartlett', defaults to "levene"
         :type method: str, optional
@@ -88,11 +100,12 @@ class Assumptions(StatTest):
             # * key = (row, col, hue)
             homosceddf = pg.homoscedasticity(df, **kwargs)
             # * Add number of groups
-            homosceddf["group count"] = self.count_groups_in_x(df)
+            homosceddf["group count"] = self.data_count_groups_in_x(df)
             # * Add n to see how big groups are, make nested list to fit into single cell
-            homosceddf["n per group"] = [self.count_n_per_x(df).to_list()] 
+            homosceddf["n per group"] = [self.data_count_n_per_x(df).to_list()]
 
             homoscedDF_dict[key] = homosceddf
+            
         homoscedDF = pd.concat(
             homoscedDF_dict, keys=homoscedDF_dict.keys(), names=self.factors_all
         )
@@ -103,12 +116,33 @@ class Assumptions(StatTest):
 
         return homoscedDF
 
+    # ==
     # == Spherecity ====================================================================
 
-    def check_sphericity(self, method: str = "mauchly", **user_kwargs) -> pd.DataFrame:
-        """_summary_
+    @staticmethod
+    def _spher_to_df(spher: NamedTuple) -> pd.DataFrame:
+        """pingouin returns a strange SpherResults object (namedtuple?), we need to
+        convert it to a dataframe.
 
-        :param method: _description_, defaults to "mauchly"
+        :param spher: Output of pg.sphericity()
+        :type spher: pingouin.distribution.SpherResults, NamedTuple
+        :return: Sphericity Result as DataFrame
+        :rtype: pd.DataFrame
+        """
+
+        if isinstance(spher, tuple):
+            spher_dict = dict(zip(["spher", "W", "chi2", "dof", "pval"], spher))
+            spher_DF = pd.DataFrame(data=spher_dict, index=[0])
+        else:
+            spher_DF = pd.DataFrame(data=spher._asdict(), index=[0])
+
+        return spher_DF
+
+    def check_sphericity(self, method: str = "mauchly", **user_kwargs) -> pd.DataFrame:
+        """Checks assumption of sphericity. If the assumption is violated, the p-values
+        of an RM-ANOVA should be corrected with Greenhouse-Geisser or Huynh-Feldt method
+
+        :param method: 'mauchly' or 'jns', defaults to "mauchly"
         :type method: str, optional
         :return: _description_
         :rtype: pd.DataFrame
@@ -125,20 +159,29 @@ class Assumptions(StatTest):
 
         ### Perform Test
         # * Iterate over rows, cols, and hue
-        sphereDF_dict = {}
+        spherDF_dict = {}
 
         # * Skip empty groups
-        for df, key in self.data_iter__key_groups_skip_empty:
+        for key, df in self.data_iter__key_groups_skip_empty:
             # * key = (row, col, hue)
-            spheredf = pg.sphericity(df, **kwargs)
+            spher = pg.sphericity(df, **kwargs)
+            # * Convert NamedTuple to DataFrame
+            spherdf = self._spher_to_df(spher)
             # * Add number of groups
-            spheredf["group count"] = df.groupby(self.dims.x).count().shape[0]
+            spherdf["group count"] = self.data_count_groups_in_x(df)
             # * Add n to seehow big groups are
-            spheredf["n per group"] = [
-                df.groupby(self.dims.x).count()[self.dims.y].to_list()
-            ]
+            spherdf["n per group"] = [self.data_count_n_per_x(df).to_list()]
 
-            sphereDF_dict[key] = spheredf
+            spherDF_dict[key] = spherdf
+
+        sphereDF = pd.concat(
+            spherDF_dict, keys=spherDF_dict.keys(), names=self.factors_all
+        )
+        
+        ### Save Results
+        self.results.DF_sphericity = sphereDF
+        
+        return sphereDF
 
 
 # ! end class
@@ -146,11 +189,14 @@ class Assumptions(StatTest):
 # !
 
 
-# %% Import Data
 
-import markurutils as ut
+#%%
+from plotastic.example_data.load_dataset import load_dataset
+DF, dims = load_dataset("fmri")
 
-DF, dims = ut.load_dataset("fmri")
+#%%
+# import markurutils as ut
+# DF, dims = ut.load_dataset("fmri")
 
 # %% plot
 import seaborn as sns
@@ -162,15 +208,30 @@ sns.catplot(data=DF, **dims, kind="box")
 pg.normality(DF, dv=dims["y"], group=dims["x"])
 pg.homoscedasticity(DF, dv=dims["y"], group=dims["x"])
 
-pg.sphericity(DF, dv=dims["y"], subject="subject", within=dims["x"])
+spher = pg.sphericity(DF, dv=dims["y"], subject="subject", within=dims["x"])
+type(spher)
 
 # %% create Assumptions object
 
-DA = Assumptions(data=DF, dims=dims, subject="subject")
-
-# %% Check normality
+DA = Assumptions(data=DF, dims=dims, subject="subject", verbose=True)
 
 DA.check_normality()
 DA.check_homoscedasticity()
+DA.check_sphericity()
+
+#%% Plot roughest facetting
+
+sns.catplot(data=DF, x="timepoint")
+
+# %% Use different set
+
+
+DA2 = Assumptions(data=DF, dims=dict(x="timepoint", y="signal"), 
+                  subject="subject", verbose=True)
+# DA2.catplot()
+
+DA2.check_normality()
+DA2.check_homoscedasticity()
+DA2.check_sphericity()
 
 # %% Check homoscedasticity

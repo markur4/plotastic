@@ -6,19 +6,25 @@ import pandas as pd
 
 import markurutils as ut
 
+import plotastic as plst
+
 
 # %% Datasets
 
 ### Source of files is seaborn, markurutils just adds cut column
 # DF_fmri, dims_fmri = ut.load_dataset("fmri")
-# DF_fmri.to_excel("dataframes/fmri.xlsx")  
+# DF_fmri.to_excel("dataframes/fmri.xlsx")
 
 # DF_tips, dims_tips = ut.load_dataset("tips")
-# DF_tips.to_excel("dataframes/tips.xlsx")  
+# DF_tips.to_excel("dataframes/tips.xlsx")
 
 ### Load from files
-DF_fmri = pd.read_excel("dataframes/fmri.xlsx")
-DF_tips = pd.read_excel("dataframes/tips.xlsx")  
+# DF_fmri = pd.read_excel("dataframes/fmri.xlsx")
+# DF_tips = pd.read_excel("dataframes/tips.xlsx")
+
+### Load example data
+DF_tips, dims_tips = plst.load_dataset("tips", verbose=False)
+DF_fmri, dims_fmri = plst.load_dataset("fmri", verbose=False)
 
 
 # %% Arguments
@@ -53,14 +59,15 @@ dims_noempty_fmri = [
     dict(y="signal", x="timepoint"),
 ]
 
-#%%  Combine for pytest.parametrize
+# %%  Combine for pytest.parametrize
 
-zipped_noempty_tips =  [(DF_tips, dim) for dim in dims_noempty_tips]
-zipped_noempty_fmri =  [(DF_fmri, dim) for dim in dims_noempty_fmri]
-zipped_noempty_all = zipped_noempty_tips + zipped_noempty_fmri
+zipped_noempty_TIPS = [(DF_tips, dim) for dim in dims_noempty_tips]
+zipped_noempty_FMRI = [(DF_fmri, dim) for dim in dims_noempty_fmri]
+zipped_noempty_ALL = zipped_noempty_TIPS + zipped_noempty_FMRI
+
 
 ###  (DF, dims) -> (DF, dims, kwargs)
-def add_zip_column(zipped:list[tuple], column:list) -> list[tuple]:
+def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
     """Adds a column to a list of tuples. Useful for adding a list of arguments to a
     list of dataframes and dimensions. E.g.: (DF, dims) -> (DF, dims, kwargs)
 
@@ -72,16 +79,17 @@ def add_zip_column(zipped:list[tuple], column:list) -> list[tuple]:
     :return: (DF, dims) -> (DF, dims, kwargs)
     :rtype: list[tuple]
     """
-    
+
     assert len(zipped) == len(column), "zipped and column must be same length"
-    
+
     zipped_with_column = []
     for tup, e in zip(zipped, column):
         zipped_with_column.append(tup + (e,))
     return zipped_with_column
 
+
 # add_zip_column(zipped_noempty_all, [i for i in range(len(zipped_noempty_all))])
-    
+
 
 # %%
 

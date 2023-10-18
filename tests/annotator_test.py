@@ -54,7 +54,7 @@ TIPS_annot_pairwise_kwargs = [
 
 ### Add a column of args: (DF, dims) -> (DF, dims, kwargs)
 zipped_tips: list[tuple] = ct.add_zip_column(
-    ct.zipped_noempty_tips, TIPS_annot_pairwise_kwargs
+    ct.zipped_noempty_TIPS, TIPS_annot_pairwise_kwargs
 )
 
 
@@ -116,7 +116,7 @@ FMRI_annot_pairwise_kwargs = [
 
 ### Add a column of args: (DF, dims) -> (DF, dims, kwargs)
 zipped_fmri: list[tuple] = ct.add_zip_column(
-    ct.zipped_noempty_fmri, FMRI_annot_pairwise_kwargs
+    ct.zipped_noempty_FMRI, FMRI_annot_pairwise_kwargs
 )
 
 

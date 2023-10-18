@@ -71,11 +71,14 @@ from .stat.omnibus import Omnibus
 from .dataanalysis.annotator import Annotator
 from .dataanalysis.dataanalysis import DataAnalysis
 
+from .example_data.load_dataset import load_dataset
+
 ### Use __all__ to let type checkers know what's available
 __all__ = [
     DataAnalysis,
     set_style,
     set_palette,
+    load_dataset,
     DataFrameTool,
     Dims,
     DimsAndLevels,
