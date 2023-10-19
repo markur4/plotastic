@@ -1,5 +1,5 @@
 # Unprocessed Datasets should not be published
-"Process Datasets/*"
+"Process Datasets"
 
 # paper, publish it only when publishing
 paper.md
