@@ -15,6 +15,7 @@ import time
 
 import pickle
 import io
+import shutil
 
 import gc
 import sys
@@ -51,169 +52,6 @@ import matplotlib.font_manager as font_manager
 if TYPE_CHECKING:
     import pyensembl
 
-
-""" TREES >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"""
-# from ndicts import NestedDict
-# from anytree.search import find_by_attr, findall
-# from anytree import Node, RenderTree, PreOrderIter, PostOrderIter, LevelOrderGroupIter, ZigZagGroupIter
-#
-# class Tree(Node):
-#     def __init__(self,
-#                  # lists: tuple|list, value:Any = None, verbose=False, **node_kws
-#                  ):
-#         self.tree = None
-#         # self.tree = self.fromtuples(lists, value=value, verbose=verbose)
-#         # super.__init__(self.tree)
-#         # super().__init__(**vars(self.tree))
-#         super().__init__(vars(Node(name="initroot")))
-#
-#     @staticmethod
-#     def from_dict(self):
-#         pass
-#
-#     # @staticmethod
-#     def from_unique_tuples(self, lists:tuple|list, value:Any =None, verbose=False) -> 'Node':
-#         """
-#         Makes an anytree from list of tuples, each tuple has a unique level
-#         :param lists: [('Lunch', 'Dinner'), ('Male', 'Female'), ('Yes', 'No'), ('Thur', 'Fri', 'Sat', 'Sun')]
-#         :param value:
-#         :param verbose:
-#         :return:
-#         """
-#
-#         assert len(lists) >= 2, "#! Maketree needs at least two iterable arguments"
-#         if value is None:
-#             value = None
-#         elif value == "lastlevels":  ## LAST ELEMENT I NOT THE LAST LIST BY DEFAULT, BUT value
-#             value = lists[-1]  ## value = last element
-#             lists = lists[:-1]
-#         values = ("lastlevels", "enumerate", None)
-#         assert value in values, f"#! Value should have been one of {values}"
-#
-#         '''MAKE NESTED DICTIONARY'''
-#         nd = NestedDict.from_product(*lists, value=value)
-#
-#         '''EDIT VALUE OF EACH BRANCH'''
-#         if value == "enumerate":
-#             for i, keylist in enumerate(nd):
-#                 nd[keylist] = i
-#         # print(nd)
-#
-#         '''NON-RECURSIVE EXAMPLE OF TREE MAKING'''
-#         # root = Node("root")
-#         # for k,v in ndict.items():
-#         #     N = Node(k, parent=root)
-#         #     for k2, v2, in v.items():
-#         #         print(k, k2)
-#         #         Node(k2, parent=N)
-#         # for pre, fill, node in RenderTree(root):
-#         #     print("%s%s" % (pre, node.name))
-#
-#         '''INITIALIZE KEYDICT AS THE LEFTMOST TREE-BRANCH'''
-#         keylists = []
-#         for kl in nd:
-#             keylists.append(kl)
-#             break  ## JUST GET THE FIRST ELEMENT
-#         keydict = {}
-#         for i, k in enumerate(keylists[0]):
-#             keydict[i] = Node(name=k, parent=Node(
-#                 name="root"))  ## -> {0: Node('/root/ROW1'), 1: Node('/root/ROW1/Col1'),
-#             # 2: Node('/root/ROW1/Col1/hue1'), ...}
-#
-#         ''' !!! MAKE TREE !!!'''
-#         def key_level(k):
-#             for i, arg in enumerate(lists):
-#                 if k in lists[i]:
-#                     return i
-#                 else:
-#                     continue
-#
-#         def maketree(D, root, keydict):
-#             for k, v in D.items():
-#                 klvl = key_level(k)
-#                 if isinstance(v, dict):
-#                     if klvl == 0:
-#                         N = Node(name=k, parent=root)
-#                         keydict[0] = N
-#                     else:
-#                         N = Node(name=k, parent=keydict[klvl - 1])
-#                         keydict[klvl] = N
-#                     maketree(D=v, root=root, keydict=keydict)  ## <<< RECURSION
-#                 else:
-#                     Node(name=k, parent=keydict[klvl - 1], value=v)  # print(n)
-#             return root
-#
-#
-#         '''EXECUTE'''
-#         root = maketree(D=nd.to_dict(), root=Node("#!root"), keydict=keydict)
-#
-#         if verbose:
-#             print(RenderTree(root)# .by_attr()
-#                   )
-#
-#         self.tree = root
-#         return self
-#
-#
-#     def iterate_grouped(self, unique=True, order="level", maxlevel=None, flatten=False):
-#         """
-#
-#         :param tree:
-#         :param unique:
-#         :param order:
-#         :param maxlevel:
-#         :param flatten:
-#         :return:
-#         """
-#         tree = self.tree
-#
-#         iterators = { "level": LevelOrderGroupIter, "zigzag": ZigZagGroupIter, }
-#         assert order in iterators, f"#! Order should have been one of {iterators.keys()}"
-#         iterator = iterators[order]
-#         print(iterator)
-#
-#         childrenlist = []
-#         for children in iterator(tree, maxlevel=maxlevel):
-#
-#             if children[0].name == "#!root":
-#                 continue
-#
-#             nodes = set() if unique else []
-#             for n in children:
-#                 if unique:
-#                     nodes.add(n.name)
-#                 else:
-#                     nodes.append(n.name)
-#             nodes = tuple(nodes)
-#             childrenlist.append(nodes)
-#
-#         if flatten:
-#             childrenlist = [item for sublist in childrenlist for item in sublist]
-#
-#         return childrenlist
-#
-#     def iterate_flat(self, unique=False, order="preorder"):
-#         tree =  self.tree
-#
-#         iterators = { "preorder": PreOrderIter,
-#                       "postorder": PostOrderIter, }
-#         assert order in iterators, f"#! iterator should have been one of {iterators.keys()}"
-#         iterator = iterators[order]
-#
-#         nodes = []
-#         for n in iterator(tree):
-#             if n.name == "#!root":
-#                 continue
-#             nodes.append(n.name)
-#         if unique:
-#             nodes = list(set(nodes))
-#         return nodes
-#
-#     def __str__(self):
-#         return RenderTree(self.tree).by_attr()
-#
-#     def print(self):
-#         print(self.__str__())
 
 
 """ 3 Time >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"""
@@ -267,6 +105,24 @@ def timeit(func):
 """ I/O Paths & Files >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"""
 # <editor-fold desc="''' I/O Paths & File  ">
 
+def get_terminal_width():
+    try:
+        # Get the terminal width
+        columns, _ = shutil.get_terminal_size(fallback=(80, 24))
+        return columns
+    except Exception:
+        # Handle exceptions if the terminal size cannot be determined
+        return 80  # Default value
+    
+def print_separator(char='='):
+    # Get the terminal width
+    terminal_width = get_terminal_width()
+    
+    # Calculate the number of characters required
+    num_chars = terminal_width // len(char)
+    
+    # Print the separator line
+    print(char * num_chars)
 
 def glob_searchfilename(path: "Path", filename: str, rettype="list"):
     rettypes = ["list", "str"]

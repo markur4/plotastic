@@ -30,7 +30,7 @@ def test_homoscedasticity(DF, dims):
     AS.check_homoscedasticity()
 
 
-@pytest.mark.parametrize("DF, dims", ct.zipped_noempty_FMRI)
+@pytest.mark.parametrize("DF, dims", ct.zipped_noempty_fmri)
 def test_sphericity(DF, dims):
     AS = Assumptions(data=DF, dims=dims, verbose=True, subject="subject")
     AS.check_sphericity()

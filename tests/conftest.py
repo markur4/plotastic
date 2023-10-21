@@ -12,20 +12,12 @@ import plotastic as plst
 # %% Datasets
 
 ### Source of files is seaborn, markurutils just adds cut column
-# DF_fmri, dims_fmri = ut.load_dataset("fmri")
-# DF_fmri.to_excel("dataframes/fmri.xlsx")
 
-# DF_tips, dims_tips = ut.load_dataset("tips")
-# DF_tips.to_excel("dataframes/tips.xlsx")
-
-### Load from files
-# DF_fmri = pd.read_excel("dataframes/fmri.xlsx")
-# DF_tips = pd.read_excel("dataframes/tips.xlsx")
 
 ### Load example data
 DF_tips, dims_tips = plst.load_dataset("tips", verbose=False)
 DF_fmri, dims_fmri = plst.load_dataset("fmri", verbose=False)
-
+DF_qpcr, dims_qpcr = plst.load_dataset("qpcr", verbose=False)
 
 
 # %% Arguments
@@ -41,6 +33,10 @@ dims_withempty_tips = [
     dict(y="tip", x="sex", hue="day"),
     dict(y="tip", x="sex"),
     dict(y="tip", x="size-cut"),
+]
+
+dims_withempty_qpcr = [
+    dict(y="FC", x="Gene", hue="Fraction", col="Class", row="Method"),
 ]
 
 ### Args making sure they don't make empty groups
@@ -62,9 +58,11 @@ dims_noempty_fmri = [
 
 # %%  Combine for pytest.parametrize
 
-zipped_noempty_TIPS = [(DF_tips, dim) for dim in dims_noempty_tips]
-zipped_noempty_FMRI = [(DF_fmri, dim) for dim in dims_noempty_fmri]
-zipped_noempty_ALL = zipped_noempty_TIPS + zipped_noempty_FMRI
+zipped_withempty_qpcr = [(DF_fmri, dim) for dim in dims_withempty_qpcr]
+
+zipped_noempty_tips = [(DF_tips, dim) for dim in dims_noempty_tips]
+zipped_noempty_fmri = [(DF_fmri, dim) for dim in dims_noempty_fmri]
+zipped_noempty_ALL = zipped_noempty_tips + zipped_noempty_fmri
 
 
 ###  (DF, dims) -> (DF, dims, kwargs)
@@ -87,25 +85,3 @@ def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
     for tup, e in zip(zipped, column):
         zipped_with_column.append(tup + (e,))
     return zipped_with_column
-
-
-# add_zip_column(zipped_noempty_all, [i for i in range(len(zipped_noempty_all))])
-
-
-# %%
-
-
-# def noempty(func: Callable, **kwargs):
-#     """Repeatedly calls function with different arguments. Arguments don't split data
-#     into empty groups.
-
-
-#     :param func: Function that takes a DataFrame and a dict of dimensions as arguments
-#     :type func: Callable
-#     """
-
-#     for dim in dims_noempty_tips:
-#         func(DF_tips, dim, **kwargs)
-
-#     for dim in dims_noempty_fmri:
-#         func(DF_fmri, dim, **kwargs)

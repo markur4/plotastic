@@ -13,7 +13,7 @@ import markurutils as ut
 import conftest as ct
 
 
-# %% Automatic testing for dataset TIPS
+# %% testing for dataset TIPS
 
 # ! Don't use with empty groups
 # ! We chose exclusions that won't show in the plot, but we need those arguments to test it
@@ -54,7 +54,7 @@ TIPS_annot_pairwise_kwargs = [
 
 ### Add a column of args: (DF, dims) -> (DF, dims, kwargs)
 zipped_tips: list[tuple] = ct.add_zip_column(
-    ct.zipped_noempty_TIPS, TIPS_annot_pairwise_kwargs
+    ct.zipped_noempty_tips, TIPS_annot_pairwise_kwargs
 )
 
 
@@ -73,7 +73,7 @@ def test_pairwiseannotations_tips(DF, dims, annot_kwargs):
     )
 
 
-# %% Automatic Testing for dataset FMRI
+# %% Testing for dataset FMRI
 
 FMRI_annot_pairwise_kwargs = [
     dict(
@@ -116,13 +116,13 @@ FMRI_annot_pairwise_kwargs = [
 
 ### Add a column of args: (DF, dims) -> (DF, dims, kwargs)
 zipped_fmri: list[tuple] = ct.add_zip_column(
-    ct.zipped_noempty_FMRI, FMRI_annot_pairwise_kwargs
+    ct.zipped_noempty_fmri, FMRI_annot_pairwise_kwargs
 )
 
 
 @pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_fmri)
 def test_pairwiseannotations_fmri(DF, dims, annot_kwargs):
-    AN = Annotator(data=DF, dims=dims, verbose=True, subject="subject")
+    AN = Annotator(data=DF, dims=dims, verbose=True, subject="subject") # ! subject
     _ph = AN.test_pairwise(paired=True, padjust="bonf")
     AN = (
         AN.subplots()
@@ -134,8 +134,35 @@ def test_pairwiseannotations_fmri(DF, dims, annot_kwargs):
         )
     )
 
+#%% For dataset qPCR
 
-# %% interactive testing to display Plots
+
+# @pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_qpcr)
+def test_pairwiseannotation_qpcr(DF, dims, **annot_kwargs):
+    AN = Annotator(data=DF, dims=dims, verbose=True)
+    _ph = AN.test_pairwise(paired=False, padjust="none", subject="subject")
+    AN = (
+        AN.subplots(sharey=False, figsize=(10, 10))
+        .fillaxes(kind="box")
+        .transform_y("log10") # ! log transform
+        .edit_y_scale_log(10) # ! MUST be called before annotation!
+        .annotate_pairwise(
+            **annot_kwargs,
+            include="__HUE",
+            show_ph=False,
+            only_sig="tolerant",
+        )
+        # .edit_tight_layout() # ! just uglier
+    )
+
+### Run without pytest
+if __name__ == "__main__":
+    DF, dims= plst.load_dataset("qpcr")
+    # AN = Annotator(data=DF, dims=dims, verbose=True)
+    test_pairwiseannotation_qpcr(DF, dims)
+
+# %% Interactive testing to display Plots
 
 if __name__ == "__main__":
-    ipytest.run()
+    pass
+    # ipytest.run()

@@ -36,6 +36,9 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         ### Inherit
         # * verbosity false, since each subclass can test its own DataFrame
         super().__init__(**dataframetool_kws)
+        
+        ### Make an annotated flag to mark plot as annotated
+        self._annotated = False
 
     #
     #
@@ -79,11 +82,14 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         # * If "__hue" or "__x" is specified, nothing must be checked as the
         # * complete x or hue will be included or excluded
-        if xhue_selected in ("__hue", "__x", "__HUE", "__X"):
+        special_selectors = ("__hue", "__x", "__HUE", "__X")
+        if xhue_selected in special_selectors:
             return None
 
         ### CHECK IF SELECTION IS CORRECT
-        assert isinstance(xhue_selected, list), f"#! '{xhue_selected}' should be a list"
+        assert isinstance(
+            xhue_selected, list
+        ), f"#! '{xhue_selected}' should be a  or one of {special_selectors}"
         for xhue in xhue_selected:
             assert isinstance(
                 xhue, types_allowed
@@ -599,7 +605,28 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         return_ph=False,
         **annot_KWS,
     ) -> "Annotator | DataAnalysis":
-        """Annotate pairs of groups with pairwise tests."""
+        """Annotate pairs of groups with pairwise tests. Remember to call annotations
+        AFTER you changed the y-scale, not before!
+
+        :param include: _description_, defaults to None
+        :type include: dict | list, optional
+        :param exclude: _description_, defaults to None
+        :type exclude: dict | list, optional
+        :param include_in_facet: _description_, defaults to None
+        :type include_in_facet: dict, optional
+        :param exclude_in_facet: _description_, defaults to None
+        :type exclude_in_facet: dict, optional
+        :param exclude_over_include: _description_, defaults to True
+        :type exclude_over_include: bool, optional
+        :param only_sig: _description_, defaults to "strict"
+        :type only_sig: str, optional
+        :param show_ph: _description_, defaults to False
+        :type show_ph: bool, optional
+        :param return_ph: _description_, defaults to False
+        :type return_ph: bool, optional
+        :return: _description_
+        :rtype: Annotator | DataAnalysis
+        """        
 
         ### Assert presence of a posthoc table and plot
         # * Assert presence of Posthoc
@@ -651,6 +678,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         ### == ANNOTATE
         self._annotate_pairwise_base(PH, only_sig=only_sig, **annot_KWS)
+        self._annotated = True
 
         ## Save PH
         # self.results.DF_posthoc = PH

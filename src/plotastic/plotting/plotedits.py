@@ -23,6 +23,8 @@ class PlotEdits(PlotTool):
 
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
+        
+        self._edit_y_scalechanged = False
 
     #
     # == EDIT .........................................................................
@@ -201,6 +203,7 @@ class PlotEdits(PlotTool):
     def edit_y_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
     ) -> "PlotEdits | DataAnalysis":
+        
         for ax in self.axes_flat:
             ax.set_yscale(
                 value="log",  # * "symlog", "linear", "logit", ...
@@ -210,6 +213,10 @@ class PlotEdits(PlotTool):
             )
 
             # ax.yaxis.sety_ticks()
+        
+        ### Set the scaled flag to True, to warn user that annotations should be called after NOT before
+        self._edit_y_scalechanged = True
+        
         return self
 
     def edit_x_scale_log(
@@ -582,4 +589,8 @@ class PlotEdits(PlotTool):
         print("#! Code copied to clipboard, press Ctrl+V to paste:")
         return s
 
+    def edit_tight_layout(self) -> "PlotEdits | DataAnalysis":
+        plt.tight_layout()
+        return self
+        
     #

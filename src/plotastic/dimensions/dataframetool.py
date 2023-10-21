@@ -49,7 +49,7 @@ class DataFrameTool(DimsAndLevels):
         :param verbose: Warns User of empty groups, defaults to False
         :type verbose: bool, optional
         """
-        
+
         ### Inherit from DimsAndLevels
         super().__init__(**dims_data_kws)
 
@@ -74,9 +74,12 @@ class DataFrameTool(DimsAndLevels):
 
         ### Check for empties or missing group combinations
         if verbose:
-            self._data_check_empties_and_NaNs()
+            ut.print_separator("=")
+            print("#!cking data integrity...")
+            self.data_check_integrity()
             if subject:
                 self._data_check_subjects_with_missing_data()
+            ut.print_separator("=")  # * fresh new line
 
         ### Make Categorical
         if levels:
@@ -368,65 +371,20 @@ class DataFrameTool(DimsAndLevels):
             ut.pp(df)
         return df
 
-    def data_get_rows_with_NaN(self) -> pd.DataFrame:
-        ### Make complete df with all possible groups/facets and with factors as index
-        df = self.data_ensure_allgroups().set_index(self.factors_all)
-        # * Pick only rows where some datapoints are missing, not all
-        hasNaN_df: "pd.DataFrame" = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
-        return hasNaN_df
+    # ==
+    # == COUNT STUFF ===================================================================
 
-    def data_get_empty_groupkeys(self) -> list[str | tuple[str]]:
-        ### Make complete df with all possible groups/facets and with factors as index
-        df = self.data_ensure_allgroups().set_index(self.factors_all)
-        # * Rows with only NaNs (these are completely missing in self.data)
-        allNaN_df = df[df.isna().all(axis=1)]
-        return allNaN_df.index.to_list()
-
-    def _data_check_empties_and_NaNs(self) -> None:
-        allNaN_list = self.data_get_empty_groupkeys()
-        hasNaN_df = self.data_get_rows_with_NaN()
-
-        if len(allNaN_list) > 0:
-            print(
-                "❗️ Data incomplete: Among all combinations of levels from selected factors, these groups/facets are missing in the Dataframe:"
-            )
-            # * Print all empty groups
-            for key in allNaN_list:
-                print(key)
-        else:
-            print(
-                "✅ Data complete: All combinations of levels from selected factors are present in the Dataframe"
-            )
-
-        if len(hasNaN_df) > 0:
-            print(
-                "❗️ Groups incomplete: These groups/facets contain single NaNs: (Use .get_rows_with_NaN() to see them all):"
-            )
-            hasNaN_df.head(10)  # * Show df
-            # ut.pp(hasNaN_df)
-        else:
-            print("✅ Groups complete: No groups with NaNs")
-
-    def _data_check_subjects_with_missing_data(self) -> None:
-        """Prints a warning if there are subjects with missing data"""
-
-        ### Get numbers of samples for each subject
-        counts_persubj = (
-            self.data.groupby(self.subject)
-            .count()[self.dims.y]
-            .sort_values(ascending=False)
+    def data_get_samplesizes(self) -> pd.Series:
+        """Returns a DataFrame with samplesizes per group/facet"""
+        # * Get samplesize per group
+        samplesize_df = (
+            self.data.groupby(self.factors_all)
+            .count()[  # * Counts values within each group, will ignore NaNs -> pd.Series
+                self.dims.y
+            ]  # * Use y to count n. -> Series with x as index and n as values
+            .sort_values(ascending=False)  # * Sort by samplesize
         )
-        ### Retrieve subjects with missing data
-
-        ### check if all subjects have the same number of samples
-        if counts_persubj.nunique() > 1:
-            print(
-                f"❗️ Subjects incomplete: The largest subject contains {counts_persubj.max()} datapoints, but these subjects contain less:"
-            )
-            missing_data_df = counts_persubj[counts_persubj != counts_persubj.max()]
-            print(missing_data_df)
-        else:
-            print("✅ Subjects complete: No subjects with missing data")
+        return samplesize_df
 
     def data_count_n_per_x(self, df: pd.DataFrame) -> pd.Series:
         """Counts the number of non NaN entries within y columns in a dataframe,
@@ -446,6 +404,15 @@ class DataFrameTool(DimsAndLevels):
             [self.dims.y]  # * Use y to count n. -> Series with x as index and n as values
             ) 
         # fmt: on
+        return count
+
+    def data_count_groups(self) -> int:
+        """groups through all factors and counts the number of groups"""
+        count = (
+            self.data.groupby(self.factors_all)
+            .count()  # * Counts values within each group, will ignore NaNs -> pd.Series
+            .shape[0]  # * gives the length of the series, which is the number of groups
+        )
         return count
 
     def data_count_groups_in_x(self, df: pd.DataFrame) -> int:
@@ -471,6 +438,104 @@ class DataFrameTool(DimsAndLevels):
         # # fmt: on
 
         return count
+
+    # ==
+    # == INTEGRITY CHECKS ==============================================================
+    def data_get_rows_with_NaN(self) -> pd.DataFrame:
+        ### Make complete df with all possible groups/facets and with factors as index
+        df = self.data_ensure_allgroups().set_index(self.factors_all)
+        # * Pick only rows where some datapoints are missing, not all
+        hasNaN_df: "pd.DataFrame" = df[df.isna().any(axis=1) & ~df.isna().all(axis=1)]
+        return hasNaN_df
+
+    def data_get_empty_groupkeys(self) -> list[str | tuple[str]]:
+        ### Make complete df with all possible groups/facets and with factors as index
+        df = self.data_ensure_allgroups().set_index(self.factors_all)
+        # * Rows with only NaNs (these are completely missing in self.data)
+        allNaN_df = df[df.isna().all(axis=1)]
+        empty_group_keys = allNaN_df.index.to_list()
+        
+        ### Is only X not fully represented in each group?
+        # * Every x has data from each other factor, but not every other Factor has data from each x
+        # * e.g. with the qPCR data
+        # * Make a Tree ..?
+        
+        return empty_group_keys
+
+    def _data_check_empty_groups(self) -> None:
+        ### Check for empty groups
+        allNaN_list = self.data_get_empty_groupkeys()
+        different_x_per_facet = 0
+        if len(allNaN_list) > 0:
+            print(
+                f"❗️ DATA INCOMPLETE: Among all combinations of levels from selected factors {self.factors_all}, groups/facets are missing in the Dataframe. 👉 Call .data_get_empty_groupkeys() to see them all."
+            )
+
+        elif different_x_per_facet:
+            print(
+                f"👌 DATA COMPLETE: Although each facet has different x-levels, all combinations of levels from selected factors {self.factors_all} are present in the Dataframe."
+            )
+        else:
+            print(
+                "✅ DATA COMPLETE: All combinations of levels from selected factors are present in the Dataframe, including x."
+            )
+
+    def _data_check_rows_with_NaN(self) -> None:
+        ### Detect rows with NaN
+        hasNaN_df = self.data_get_rows_with_NaN()
+        if len(hasNaN_df) > 0:
+            print(
+                "❗️ GROUPS INCOMPLETE: Groups/facets contain single NaNs. 👉 Call .get_rows_with_NaN() to see them all."
+            )
+            print("These are the first 5 rows with NaNs:")
+            print(hasNaN_df.head(5))  # * Show df
+        else:
+            print("✅ GROUPS COMPLETE: No groups with NaNs.")
+
+    def _data_check_equal_samplesizes(self) -> None:
+        ### Detect equal samplesize among groups:
+        # * This is not a problem, but it's good to know
+        samplesize_df = self.data_get_samplesizes()
+        groupcount = self.data_count_groups()
+        ss_avg = round(samplesize_df.mean(), 1)
+        ss_std = round(samplesize_df.std(), 2)
+
+        if samplesize_df.nunique() > 1:
+            print(
+                f"🫠 GROUPS UNEQUAL: Groups ({groupcount} total) have different samplesizes (n = {ss_avg} ±{ss_std}). 👉 Call .data_get_samplesizes() to see them."
+            )
+            print("These are the 5 groups with the smallest samplesizes:")
+            print(samplesize_df.tail(5))
+        else:
+            print(
+                f"✅ GROUPS EQUAL: All groups ({groupcount} total) have the same samplesize n = {ss_avg}."
+            )
+
+    def data_check_integrity(self) -> None:
+        self._data_check_empty_groups()
+        self._data_check_rows_with_NaN()
+        self._data_check_equal_samplesizes()
+
+    def _data_check_subjects_with_missing_data(self) -> None:
+        """Prints a warning if there are subjects with missing data"""
+
+        ### Get numbers of samples for each subject
+        counts_persubj = (
+            self.data.groupby(self.subject)
+            .count()[self.dims.y]
+            .sort_values(ascending=False)
+        )
+        ### Retrieve subjects with missing data
+
+        ### check if all subjects have the same number of samples
+        if counts_persubj.nunique() > 1:
+            print(
+                f"❗️ Subjects incomplete: The largest subject contains {counts_persubj.max()} datapoints, but these subjects contain less:"
+            )
+            missing_data_df = counts_persubj[counts_persubj != counts_persubj.max()]
+            print(missing_data_df)
+        else:
+            print("✅ Subjects complete: No subjects with missing data")
 
     # ==
     # == Iterate through Data SKIPPING OF EMPTY GROUPS =================================

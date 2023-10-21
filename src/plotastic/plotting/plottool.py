@@ -253,7 +253,7 @@ class PlotTool(DataFrameTool):
         y_scale: str = None,
         y_scale_kws: dict = dict(),
         wspace=None,
-        hspace=None,
+        hspace=0.4,
         width_ratios: list[int] = None,
         height_ratios: list[int] = None,
         figsize: tuple[int] = None,
@@ -267,7 +267,10 @@ class PlotTool(DataFrameTool):
 
         # == Handle kwargs
         ### Adds extra kwargs depending on kwargs already present
-        wspace = 0.05 if sharey and (wspace is None) else wspace
+        if sharey and (wspace is None):
+            wspace = 0.05 
+        elif not sharey and (wspace is None):
+            wspace = 0.5
 
         ### Redirect kwargs, provide function defaults, flatten access
         KWS = dict(
@@ -286,17 +289,18 @@ class PlotTool(DataFrameTool):
         # * User args override defaults
         KWS = ut.update_dict_recursive(KWS, subplot_kws)
 
-        # == SUBPLOTS
+        # == SUBPLOTS ==
         self.fig, self.axes = plt.subplots(**KWS)
 
-        # == Edits
+        # == EDITS ==
         ### Add titles to axes to provide basic orientation
         self.edit_axtitles_reset()
+        
         ### Scale
         # ! Must sometimes be done BEFORE seaborn functions, otherwise they might look weird
         if not y_scale is None:
             plt.yscale(y_scale, **y_scale_kws)
-
+            
         return self
 
     def subplots_SNIP(self, doclink=True) -> str:
@@ -330,7 +334,8 @@ class PlotTool(DataFrameTool):
         :return: _description_
         :rtype: PlotTool | DataAnalysis
         """
-        # * If row or col, assure that axes_count == facet_count
+        
+        ### If row or col, assure that axes_count == facet_count
         if self.factors_rowcol:
             assert (
                 self.axes.flatten().size == self.len_rowlevels * self.len_collevels
@@ -340,6 +345,7 @@ class PlotTool(DataFrameTool):
         kws = dict()
         kws.update(sns_kws)
 
+        # == PLOT ==
         ### Iterate through data and axes
         for ax, df in self.axes_iter__ax_df:
             self._SNS_FUNCS[kind](
@@ -351,6 +357,12 @@ class PlotTool(DataFrameTool):
                 **kws,
             )
 
+        # == EDITS ==
+        ### Remove y-labels from all but leftmost column
+        if not self.dims.col is None:
+            for ax in self.axes_iter_notleftmost_col:
+                ax.set_ylabel("")
+        
         ### Remove legend per axes, since we want one legend for the whole figure
         if (
             self.dims.hue

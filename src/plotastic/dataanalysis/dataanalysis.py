@@ -42,7 +42,7 @@ class DataAnalysis(Annotator):
         self.filer = ut.Filer(title=title)
 
         if verbose:
-            self._data_check_empties_and_NaNs()
+            self.data_check_integrity()
             if subject:
                 self._data_check_subjects_with_missing_data()
 
