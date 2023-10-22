@@ -30,7 +30,7 @@ DF = DF.set_index(DA.factors_all)
 # %%
 
 
-DA.levels_combocount()
+DA.levels_combocounts()
 
 
 # %%
@@ -190,13 +190,14 @@ dict(tree.__dict__)
 tree.get_count()
 
 
-#%% Traverse the tree
+# %% Traverse the tree
 for leaf in tree.get_leaves():
-    print("Leaf Node:", leaf.id, "Data Point:", leaf.pre_order(), "Cluster ID:", leaf.dist)
+    print(
+        "Leaf Node:", leaf.id, "Data Point:", leaf.pre_order(), "Cluster ID:", leaf.dist
+    )
 
 
 # %% Create a dendrogram
-
 
 
 # %% make the dendrogram simpler

@@ -338,6 +338,18 @@ class DimsAndLevels:
         """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]"""
         return [tuple(l) for l in self.levels_dict_factor.values() if not l is None]
 
+    @property  # * [(row, R_lvl1), (row, R_lvl2), (col, C_lvl1), (col, C_lvl2), ...]
+    def levels_factortuples(self) -> list[tuple]:
+        """Make a list of tuples with first element being factor and second element
+        being level
+        :return: [(row, R_lvl1), (row, R_lvl2), (col, C_lvl1), (col, C_lvl2), ...]
+        """
+        return [
+            (factor, level)
+            for factor, levels in self.levels_dict_factor.items()
+            for level in levels
+        ]
+
     @property  # * [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2) ]
     def levels_tuples_rowcol(self):
         """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2) ]"""
@@ -359,7 +371,8 @@ class DimsAndLevels:
 
     @property  # * [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
     def levelkeys(self) -> list[tuple]:
-        """Contains unique combinations of levels that exist in the data. Returns: 
+        """Contains unique combinations of levels that exist in the data. Should be
+        sorted (?)
 
         :return: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ].
         :rtype: _type_
@@ -442,12 +455,14 @@ class DimsAndLevels:
             for i in range(len(level_key)):
                 for j in range(i + 1, len(level_key)):
                     ### Sort the levels in alphabetical order to count combinations regardless of order
-                    combination = tuple(sorted((level_key[i], level_key[j])))
+                    # ! can't sort tuples with different types
+                    # combination = tuple(sorted((level_key[i], level_key[j]))) 
+                    combination = tuple(set((level_key[i], level_key[j]))) # * WORKING
                     level_combocount[combination] += 1
 
         return level_combocount
 
-    def levels_combocount(self, normalize=False, heatmap=True) -> pd.DataFrame:
+    def levels_combocounts(self, normalize=False, heatmap=True) -> pd.DataFrame:
         """Makes a DataFrame or its heatmap comparing every level with each other, counting how often they
         appear together in the data. This is useful to see how well the factors structure
         the data. If a factor has levels that are always found together, the levels have the
@@ -468,17 +483,17 @@ class DimsAndLevels:
         # * count as values
         levelcombo_count: dict = self._count_levelcombos()
 
-        ### Flatten the levels
-        leveldict = self.levels_dict_factor
-        flattened_levels = [level for levels in leveldict.values() for level in levels]
 
-        ### Initialize the DataFrame using the flattened levels to preserve level order
-        df = pd.DataFrame(0, columns=flattened_levels, index=flattened_levels)
+        ### Initialize the DataFrame with multiindexes
+        index = pd.MultiIndex.from_tuples(self.levels_factortuples, names=["factor", "level"])
+        df = pd.DataFrame(0, columns=index, index=index)
 
         ### Update the DataFrame with the counts from level_combinations
         for levelkey, count in levelcombo_count.items():
-            df.loc[levelkey[0], levelkey[1]] = count
-            df.loc[levelkey[1], levelkey[0]] = count  # * Ensure symmetry
+            f0 = self.get_factor_from_level(level=levelkey[0])
+            f1 = self.get_factor_from_level(level=levelkey[1])
+            df.loc[(f0, levelkey[0]), (f1, levelkey[1])] = count
+            df.loc[(f1, levelkey[1]), (f0, levelkey[0])] = count  # * Ensure symmetry
 
         ### Normalize the DataFrame by dividing by the maximum value
         # * make percent format, round to 0 decimals
@@ -575,7 +590,9 @@ class DimsAndLevels:
 
         return Z
 
-    def levels_dendrogram(self, clustering_method="ward", ret= False, **dendrogramm_kws) -> dict:
+    def levels_dendrogram(
+        self, clustering_method="ward", ret=False, **dendrogramm_kws
+    ) -> dict:
         """Plots a dendrogramm that shows the hierarchical clustering of each levelkeys.
         It helps determining how the data is organized by each factor's levels.
 
@@ -584,11 +601,16 @@ class DimsAndLevels:
         :type clustering_method: str, optional
         :return: A dictionary with dendrogramm info and a matplotlib plot
         """
+        
+        assert not self.factors_is_just_x, "#! Can't plot dendrogramm for X only, need at least one facet (hue, row, col)."
 
         Z = self._link_levelkeys(method=clustering_method)
 
         ### Initialize figure
-        plt.figure(figsize=(3, len(Z) / 10))
+        plt.figure(
+            figsize=(3, (len(Z) / 10) + 2),
+        )
+        # plt.autoscale()
 
         ### Plot Dendrogramm
         dendro: dict = sch.dendrogram(
@@ -604,8 +626,8 @@ class DimsAndLevels:
 
         plt.title("Combination Hierarchy")
         plt.xlabel("Linkage Distance")
-        plt.show()
-        
+        # plt.show()
+
         if ret:
             return dendro
 

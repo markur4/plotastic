@@ -510,14 +510,16 @@ class DataFrameTool(DimsAndLevels):
     def data_check_integrity(self) -> None:
         """Prints information about Integrity of the data, including empty groups, rows
         with NaN, equal samplesizes and factors that are suitable for faceting.
-        
-        """        
+
+        """
         ut.print_separator("=")
         print("#! checking data integrity...")
         self._data_check_empty_groups()
         self._data_check_rows_with_NaN()
         self._data_check_equal_samplesizes()
-        self._levels_combocount_eval()  # * Identify factors that are always together
+        ### No need to evaluate level combos if ther is just one factor
+        if not self.factors_is_just_x:
+            self._levels_combocounts_eval()  # * Identify factors that are always together
         if self.subject:
             self._data_check_subjects_with_missing_data()
         ut.print_separator("=")  # * fresh new line
@@ -560,13 +562,16 @@ class DataFrameTool(DimsAndLevels):
         """
 
         ### Count how often each level appears with another leve
-        df = self.levels_combocount(normalize=False, heatmap=False)  # * Get combocount
+        df = self.levels_combocounts(normalize=False, heatmap=False)  # * Get combocount
 
         ### Max value of combocountdf should be the number of levelkeys found in Data
         len_levelcombos = df.max().max()
-        assert len_levelcombos == len(
-            self.levelkeys
-        ), "Max value of combocount_df should be the number of levelkeys"
+        
+        # ! Not True if every level of all factors is found in every group
+        # ! See plst.load_data("tips") for example
+        # assert len_levelcombos == len( 
+        #     self.levelkeys
+        # ), "Max value of combocount_df should be the number of levelkeys"
 
         ### Get every levelkey that has the max value from combocount
         # * These levels are guaranteed to be found together at leat once!
@@ -599,7 +604,7 @@ class DataFrameTool(DimsAndLevels):
 
         return AT_levels, AT_factors
 
-    def _levels_combocount_eval(self):
+    def _levels_combocounts_eval(self):
         """Evaluates counts of how often each level appears with another level to describe
         the structure of the data
         :return: _description_

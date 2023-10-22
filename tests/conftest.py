@@ -35,9 +35,6 @@ dims_withempty_tips = [
     dict(y="tip", x="size-cut"),
 ]
 
-dims_withempty_qpcr = [
-    dict(y="FC", x="Gene", hue="Fraction", col="Class", row="Method"),
-]
 
 ### Args making sure they don't make empty groups
 # ! Don't add more, other tests assume 4 entries
@@ -56,13 +53,20 @@ dims_noempty_fmri = [
     dict(y="signal", x="timepoint"),
 ]
 
+dims_noempty_qpcr = [
+    dict(y="FC", x="Gene", hue="Fraction", col="Class", row="Method"),
+    dict(y="FC", x="Gene", hue="Fraction", col="Class"),
+    dict(y="FC", x="Gene", hue="Fraction"),
+    dict(y="FC", x="Gene"),
+]
+
 # %%  Combine for pytest.parametrize
 
-zipped_withempty_qpcr = [(DF_fmri, dim) for dim in dims_withempty_qpcr]
 
 zipped_noempty_tips = [(DF_tips, dim) for dim in dims_noempty_tips]
 zipped_noempty_fmri = [(DF_fmri, dim) for dim in dims_noempty_fmri]
-zipped_noempty_ALL = zipped_noempty_tips + zipped_noempty_fmri
+zipped_nompty_qpcr = [(DF_qpcr, dim) for dim in dims_noempty_qpcr]
+zipped_noempty_ALL = zipped_noempty_tips + zipped_noempty_fmri + zipped_nompty_qpcr
 
 
 ###  (DF, dims) -> (DF, dims, kwargs)
