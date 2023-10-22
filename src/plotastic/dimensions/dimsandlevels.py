@@ -7,13 +7,15 @@ from collections import defaultdict
 # %% Imports
 # from operator import index, le
 from re import L  # for type hinting my Class type for return values
-from typing import Dict, Generator, List, Callable, TYPE_CHECKING
+from typing import Dict, Callable, TYPE_CHECKING
 
 from copy import copy
 from itertools import product
 
 import numpy as np
 import pandas as pd
+
+import scipy.cluster.hierarchy as sch
 
 # from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
@@ -357,9 +359,9 @@ class DimsAndLevels:
 
     @property  # * [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
     def levelkeys(self) -> list[tuple]:
-        """Contains only combinations of levels that exist in the data. Returns: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ].
+        """Contains unique combinations of levels that exist in the data. Returns: 
 
-        :return: _description_
+        :return: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ].
         :rtype: _type_
         """
 
@@ -445,9 +447,7 @@ class DimsAndLevels:
 
         return level_combocount
 
-    def levels_combocount(
-        self, normalize=False, heatmap=True
-    ) -> pd.DataFrame | plt.Figure:
+    def levels_combocount(self, normalize=False, heatmap=True) -> pd.DataFrame:
         """Makes a DataFrame or its heatmap comparing every level with each other, counting how often they
         appear together in the data. This is useful to see how well the factors structure
         the data. If a factor has levels that are always found together, the levels have the
@@ -458,8 +458,9 @@ class DimsAndLevels:
         :type normalize: bool
         :param heatmap: If True, returns a heatmap, otherwise a DataFrame, defaults to True
         :type heatmap: bool
-        :return: _description_
-        :rtype: pd.DataFrame | plt.Figure
+        :return: DatFrame with all levels as columns and rows, and the count of how
+            often they appear together as values
+        :rtype: pd.DataFrame
         """
 
         ### Get level_combocount
@@ -493,7 +494,7 @@ class DimsAndLevels:
                 custom_cmap = ut.make_cmap_saturation(
                     undersat=(0.5, 0.0, 0.0),  # * dark red
                     oversat=(0.0, 0.7, 0.0),  # * darker green
-                    n = depth
+                    n=depth,
                 )
 
                 ### Create a heatmap of the inconsistency matrix
@@ -508,12 +509,105 @@ class DimsAndLevels:
                 plt.ylabel("Levels")
                 return fig
 
-            fig = heatmap_combocount(matrix=df, depth = df.max().max())
-            return fig
-        else:
-            return df
+            fig = heatmap_combocount(matrix=df, depth=df.max().max())
+
+        return df
 
     # ==
+    # == Dendrogramm ===================================================================
+
+    ### Calculate the Jaccard similarity between combinations
+    def _jaccard_similarity(
+        self,
+        combination1: list | tuple,
+        combination2: list | tuple,
+    ) -> float:
+        """Calculates the Jaccard similarity:
+        - We take two combinations:
+        - e.g. ("A", 2, "C", "D")
+        - and  ("A", 1, "C", "D"),
+        - Measure the length of the intersection (=1)
+        - Measure the length of the union (=7)
+        - Divide the intersection by the union (1/7 = 0.14)
+
+        :param combination1: _description_
+        :type combination1: list | tuple
+        :param combination2: _description_
+        :type combination2: list | tuple
+        :return: Similarity between two lists
+        :rtype: float
+        """
+        ### Take unique values,
+        # * Yes the Score might change, but relations between scores won't change
+        set1 = set(combination1)
+        set2 = set(combination2)
+
+        ### Calculate Jaccard similarity
+        len_intersection = len(set1.intersection(set2))
+        len_union = len(set1) + len(set2) - len_intersection
+        return len_intersection / len_union
+
+    def _link_levelkeys(self, method="ward") -> np.array:
+        """_summary_
+        :method: How to link distance matrix by sch.linkage.
+            ["ward","single","complete","average"], defaults to "ward"
+        :return: _description_
+        :rtype: _type_
+        """
+        ### Take Unique values from the index
+        # * The number of occurences of each index is not important
+        # * They often represent technical replicates
+        # * It's more important how often the levels occur together within one element
+        ### levelkeys are the same as index after setting DF.index to all factors
+        levelkeys = self.levelkeys
+
+        ### Create a square distance matrix based on Jaccard similarity
+        n = len(levelkeys)
+        dist_matrix = np.zeros((n, n))
+        for i in range(n):
+            for j in range(n):
+                dist_matrix[i, j] = 1 - self._jaccard_similarity(
+                    levelkeys[i], levelkeys[j]
+                )
+
+        ### Find links for hierarchical clustering
+        Z = sch.linkage(dist_matrix, method=method)
+
+        return Z
+
+    def levels_dendrogram(self, clustering_method="ward", ret= False, **dendrogramm_kws) -> dict:
+        """Plots a dendrogramm that shows the hierarchical clustering of each levelkeys.
+        It helps determining how the data is organized by each factor's levels.
+
+        :param clustering_method: How to link distance matrix by sch.linkage.
+            ["ward","single","complete","average"], defaults to "ward"
+        :type clustering_method: str, optional
+        :return: A dictionary with dendrogramm info and a matplotlib plot
+        """
+
+        Z = self._link_levelkeys(method=clustering_method)
+
+        ### Initialize figure
+        plt.figure(figsize=(3, len(Z) / 10))
+
+        ### Plot Dendrogramm
+        dendro: dict = sch.dendrogram(
+            Z,
+            labels=self.levelkeys,
+            # labels=self.levelkeys_all, #* Same as DF.index.unique() if factors are set as index
+            orientation="right",
+            **dendrogramm_kws,
+        )
+
+        ### Plot edits
+        # plt.legend() # ? not working
+
+        plt.title("Combination Hierarchy")
+        plt.xlabel("Linkage Distance")
+        plt.show()
+        
+        if ret:
+            return dendro
 
     # ==
     # == SETTERS =======================================================================

@@ -34,98 +34,17 @@ DA.levels_combocount()
 
 
 # %%
-"""
-each factor has multiple levels
-these levels are combined with each other, I can represent that as a tree
-A tree is too big, however and a pain to traverse
-I could just calculate which factor has the biggest 'coverage' through their levels
-Or maybe simply start with levelcounts..?
-"""
+
+Z = DA._link_levelkeys()
+dendro = DA.levels_dendrogram()
 
 
-# %% Calculate cluster hierarchy from dataframe index
-import pandas as pd
-from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
-import matplotlib.pyplot as plt
-
-
-### Calculate the Jaccard similarity between combinations
-def _jaccard_similarity(
-    combination1: list | tuple, combination2: list | tuple
-) -> float:
-    """Calculates the Jaccard similarity:
-    - We take two combinations:
-    - e.g. ("A", 2, "C", "D")
-    - and  ("A", 1, "C", "D"),
-    - Measure the length of the intersection (=1)
-    - Measure the length of the union (=7)
-    - Divide the intersection by the union (1/7 = 0.14)
-
-    :param combination1: _description_
-    :type combination1: list | tuple
-    :param combination2: _description_
-    :type combination2: list | tuple
-    :return: Similarity between two lists
-    :rtype: float
-    """
-    ### Take unique values,
-    # * Yes the Score might change, but relations between scores won't change
-    set1 = set(combination1)
-    set2 = set(combination2)
-
-    ### Calculate Jaccard similarity
-    len_intersection = len(set1.intersection(set2))
-    len_union = len(set1) + len(set2) - len_intersection
-    return len_intersection / len_union
-
-
-print(_jaccard_similarity(("A", 2, "C", "D"), ("A", 2, "C", "D")))
-print(_jaccard_similarity(("A", 2, "C", "D"), ("A", 1, "C", "D")))
-print(_jaccard_similarity(("A", 2, "C", "D"), ("A", 1, "C", "DDD")))
-print(_jaccard_similarity(("A", 2, "C", "D"), (9, 4, 3, 4)))
-
-# %% Get Cluster hierarchy
-
-
-def _link_levelkeys(method="ward") -> np.array:
-    """_summary_
-    :method: How to link distance matrix by sch.linkage.
-        ["ward","single","complete","average"], defaults to "ward"
-    :return: _description_
-    :rtype: _type_
-    """
-    ### Take Unique values from the index
-    # * The number of occurences of each index is not important
-    # * They often represent technical replicates
-    # * It's more important how often the levels occur together within one element
-    ### levelkeys are the same as index after setting DF.index to all factors
-    # levelkeys = DF.index
-    levelkeys = (
-        DF.index.unique()
-    )  # todo, don't use levelkeys_all, they contain all possible combis, but we need only the ones that are actually present in the data
-    # levelkeys = self.levelkeys
-
-    ### Create a square distance matrix based on Jaccard similarity
-    n = len(levelkeys)
-    dist_matrix = np.zeros((n, n))
-    for i in range(n):
-        for j in range(n):
-            dist_matrix[i, j] = 1 - _jaccard_similarity(levelkeys[i], levelkeys[j])
-
-    ### Find links for hierarchical clustering
-    Z = sch.linkage(dist_matrix, method=method)
-
-    return Z
-
-
-Z = _link_levelkeys()
-print(Z.shape)
-print(DF.index.unique().shape)
-
-# %% Use inconsistency matrix to help find clusters
+# %% Calculate the inconsistency matrix
 
 R = sch.inconsistent(Z)
 R.shape
+
+# %% Plot the inconsistency matrix
 import scipy.cluster.hierarchy as sch
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -161,158 +80,124 @@ I see that the inconsistency takes values between 0-8. But it seems that even a 
 decide to use only 2 clusters, my overall inconsistency or 'error' of that clustering will be smaller than 3?
 """
 
-# # %% Determine at which depth the inconsistency is below 30% of the maximum
+# %% Determine at which depth the inconsistency is below 30% of the maximum
 
 
-# def _calc_best_clusternumber(Z: np.array, threshold: float = 0.1) -> int:
-#     """Determines the best number of clusters based on the inconsistency matrix.
+def _calc_best_clusternumber(Z: np.array, threshold: float = 0.1) -> int:
+    """Determines the best number of clusters based on the inconsistency matrix.
 
-#     :param Z: Linkage matrix from scipy.cluster.hierarchy.linkage()
-#     :type Z: np.array
-#     :param threshold: percentage of the maximum inconsistency we want to tolerate,
-#         defaults to .3
-#     :type threshold: float
-#     :return: Number of clusters sacrificing at most a percentage of the maximum
-#         inconsistency
-#     :rtype: int
-#     """
+    :param Z: Linkage matrix from scipy.cluster.hierarchy.linkage()
+    :type Z: np.array
+    :param threshold: percentage of the maximum inconsistency we want to tolerate,
+        defaults to .3
+    :type threshold: float
+    :return: Number of clusters sacrificing at most a percentage of the maximum
+        inconsistency
+    :rtype: int
+    """
 
-#     ### Calculate inconsistencxy
-#     R = sch.inconsistent(Z)
+    ### Calculate inconsistencxy
+    R = sch.inconsistent(Z)
 
-#     ### Calculate the maximum inconsistency
-#     max_inconsistency = threshold * np.max(R)
+    ### Calculate the maximum inconsistency
+    max_inconsistency = threshold * np.max(R)
 
-#     ### Transpose the inconsistency matrix
-#     # * So that the first iteration level goes through hierarchy depth
-#     # R_t= R.T # ! not needed, just use correct slicing
+    ### Transpose the inconsistency matrix
+    # * So that the first iteration level goes through hierarchy depth
+    # R_t= R.T # ! not needed, just use correct slicing
 
-#     ### Calculate the depth at which the inconsistency is below a percentage of the maximum
-#     # * return the first found index where the max value is below a percentage of the maximum of
-#     # * the whole array. That depth is the best number of clusters where inconsistency
-#     # * is guaranteed to be below a percentage of the maximum inconsistency
-#     depth_return = 0
-#     for depth in range(R.shape[1]):
-#         if np.max(R[:, depth]) < max_inconsistency:
-#             depth_return = depth
-#             break
+    ### Calculate the depth at which the inconsistency is below a percentage of the maximum
+    # * return the first found index where the max value is below a percentage of the maximum of
+    # * the whole array. That depth is the best number of clusters where inconsistency
+    # * is guaranteed to be below a percentage of the maximum inconsistency
+    depth_return = 0
+    for depth in range(R.shape[1]):
+        if np.max(R[:, depth]) < max_inconsistency:
+            depth_return = depth
+            break
 
-#     if depth_return == 0:
-#         return R.shape[1]
-#     else:
-#         return depth_return
+    if depth_return == 0:
+        return R.shape[1]
+    else:
+        return depth_return
 
 
-# best = _calc_best_clusternumber(Z)
+best = _calc_best_clusternumber(Z)
 
 # %% Retrieve what levelkeys are int he same clusters.
 
 
-# def _get_clusterdict(Z, consistency_threshold: float = 0.5):
-#     """_summary_
+def _get_clusterdict(Z, consistency_threshold: float = 0.5):
+    """_summary_
 
-#     :param Z: _description_
-#     :type Z: _type_
-#     :param consistency_threshold: Max clusters is the original depth of Z, you can
-#         further reduce depth/numbers of clusters by defining a threshold percentage of maximum
-#         inconsistency you're willing to tolerate to reduce clusters, defaults to .1
-#     :type consistency_threshold: float, optional
-#     :return: _description_
-#     :rtype: _type_
-#     """
+    :param Z: _description_
+    :type Z: _type_
+    :param consistency_threshold: Max clusters is the original depth of Z, you can
+        further reduce depth/numbers of clusters by defining a threshold percentage of maximum
+        inconsistency you're willing to tolerate to reduce clusters, defaults to .1
+    :type consistency_threshold: float, optional
+    :return: _description_
+    :rtype: _type_
+    """
 
-#     ### retrieve cluster by cutoff height
-#     # cutoff_height = 0.5
-#     # clusters:np.array = sch.fcluster(Z, t=cutoff_height, criterion="distance")
+    ### retrieve cluster by cutoff height
+    # cutoff_height = 0.5
+    # clusters:np.array = sch.fcluster(Z, t=cutoff_height, criterion="distance")
 
-#     ### Make an Array that assigns a cluster-id to each distance
-#     # * At max we want 4 clusters, since we only have 4 dimensions for plotting
-#     # * (x,hue,row,col)
-#     # *
-#     maxclust = _calc_best_clusternumber(Z, threshold=consistency_threshold)
-#     # maxclust = len(self.factors_all)
-#     cluster_ids: np.array = sch.fcluster(
-#         Z,
-#         t=maxclust,
-#         criterion="maxclust",
-#         # criterion="maxclust_monocrit", # ! That returns a flat cluster
-#     )
+    ### Make an Array that assigns a cluster-id to each distance
+    # * At max we want 4 clusters, since we only have 4 dimensions for plotting
+    # * (x,hue,row,col)
+    # *
+    maxclust = _calc_best_clusternumber(Z, threshold=consistency_threshold)
+    # maxclust = len(self.factors_all)
+    cluster_ids: np.array = sch.fcluster(
+        Z,
+        t=maxclust,
+        criterion="maxclust",
+        # criterion="maxclust_monocrit", # ! That returns a flat cluster
+    )
 
-#     ### Cluster_ids are indexed by the order of the data points or levelkeys
-#     assert len(DF.index.unique()) == len(
-#         cluster_ids
-#     ), "Number of levels and cluster-assignments must match"
+    ### Cluster_ids are indexed by the order of the data points or levelkeys
+    assert len(DF.index.unique()) == len(
+        cluster_ids
+    ), "Number of levels and cluster-assignments must match"
 
-#     # ==
-#     # == Iterate through levelkeys and cluster_ids and assign each levelkey to a cluster ==
+    # ==
+    # == Iterate through levelkeys and cluster_ids and assign each levelkey to a cluster ==
 
-#     ### Initialize a dictionary for cluster_id as keys and list of levelkeys as values
-#     clusterdict = {id: [] for id in cluster_ids}
-#     for levelkey, cluster_id in zip(DF.index.unique(), cluster_ids):
-#         clusterdict[cluster_id].append(levelkey)
+    ### Initialize a dictionary for cluster_id as keys and list of levelkeys as values
+    clusterdict = {id: [] for id in cluster_ids}
+    for levelkey, cluster_id in zip(DF.index.unique(), cluster_ids):
+        clusterdict[cluster_id].append(levelkey)
 
-#     return clusterdict
-
-
-# clusterdict = _get_clusterdict(Z)
-# clusterdict
+    return clusterdict
 
 
-# # %% evaluate clusterdict
-
-# for cluster_id, levelkeys in clusterdict.items():
-#     pass
-
-# # %% test to_tree function
-
-# tree = sch.to_tree(Z)
-# dir(tree)
-# dict(tree.__dict__)
-# tree.get_count()
+clusterdict = _get_clusterdict(Z)
+clusterdict
 
 
-# %% Traverse the tree
-# for leaf in tree.get_leaves():
-#     print("Leaf Node:", leaf.id, "Data Point:", leaf.pre_order(), "Cluster ID:", leaf.dist)
+# %% evaluate clusterdict
+
+for cluster_id, levelkeys in clusterdict.items():
+    pass
+
+# %% test to_tree function
+
+tree = sch.to_tree(Z)
+dir(tree)
+dict(tree.__dict__)
+tree.get_count()
+
+
+#%% Traverse the tree
+for leaf in tree.get_leaves():
+    print("Leaf Node:", leaf.id, "Data Point:", leaf.pre_order(), "Cluster ID:", leaf.dist)
 
 
 # %% Create a dendrogram
 
 
-def levels_dendrogram(clustering_method="ward", **dendrogramm_kws) -> dict:
-    """Plots a dendrogramm that shows the hierarchical clustering of each levelkeys.
-    It helps determining how the data is organized by each factor's levels.
-
-    :param clustering_method: How to link distance matrix by sch.linkage.
-        ["ward","single","complete","average"], defaults to "ward"
-    :type clustering_method: str, optional
-    :return: A dictionary with dendrogramm info and a matplotlib plot
-    """
-
-    Z = _link_levelkeys(method=clustering_method)
-
-    # Create a dendrogram
-    plt.figure(figsize=(3, len(Z) / 10))
-    dendro: dict = sch.dendrogram(
-        Z,
-        labels=DF.index.unique(),
-        # labels=self.levelkeys_all, #* Same as DF.index.unique() if factors are set as index
-        orientation="right",
-        **dendrogramm_kws,
-    )
-
-    plt.legend()
-
-    plt.title("Combination Hierarchy")
-    plt.xlabel("Linkage Distance")
-
-    plt.show()
-
-    return dendro
-
-
-dendro = levels_dendrogram()
-type(dendro)
 
 # %% make the dendrogram simpler
 ### Not what I'm looking for
