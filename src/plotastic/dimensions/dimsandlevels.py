@@ -2,7 +2,7 @@
 # %% Imports
 
 
-# from nis import cat
+from collections import defaultdict
 
 # %% Imports
 # from operator import index, le
@@ -12,11 +12,12 @@ from typing import Dict, Generator, List, Callable, TYPE_CHECKING
 from copy import copy
 from itertools import product
 
-
+import numpy as np
 import pandas as pd
 
-from scipy.stats import skew as skewness
+# from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 import markurutils as ut
@@ -48,6 +49,8 @@ def catchstate(df, var_name: str = "df"):
 
 
 class DimsAndLevels:
+    """Handles dimensions and levels within imported dataframe"""
+
     def __str__(self):
         # d = self.__dict__
         D = {
@@ -346,8 +349,21 @@ class DimsAndLevels:
     def levelkeys_all(
         self,
     ) -> list[tuple]:  # ! refactored from 'levelkeys' -> 'levelkeys_all'
-        """Returns: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]"""
+        """Contains ALL possible combinations of levels, even if they don't exist in the data.
+
+        :return: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2,
+        C_l1, X_l1, Hue_l1), ... ]."""
         return [key for key in product(*self.levels_tuples)]
+
+    @property  # * [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
+    def levelkeys(self) -> list[tuple]:
+        """Contains only combinations of levels that exist in the data. Returns: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ].
+
+        :return: _description_
+        :rtype: _type_
+        """
+
+        return list(self.data.groupby(self.factors_all).groups.keys())
 
     @property  # * [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
     def levelkeys_rowcol(self) -> list[tuple | str]:
@@ -387,8 +403,8 @@ class DimsAndLevels:
                 [l.append(e) for e in S.unique()]
         return tuple(l)
 
-    #
-    # == Properties of Levels .......................................................
+    # ==
+    # == Properties of Levels ==========================================================
 
     @property
     def len_rowlevels(self) -> int:
@@ -404,10 +420,103 @@ class DimsAndLevels:
         else:
             return 1  # * Used by subplots, we need minimum of one col
 
-    #
+    # ==
+    # == COUNT FULLY CONNECTED LEVELS ==================================================
 
-    #
-    # == SETTERS ..................................................................................................."""
+    def _count_levelcombos(self) -> defaultdict:
+        """For each level of each factor count how often it appears together with another
+        level of every other factor
+
+        :return: Dictionary with levelpairs as keys and appearance count as values
+        :rtype: defaultdict (doesn't require initialisation of keys
+        """
+        ### Create a dictionary to store the counts of level combinations
+        level_combocount = defaultdict(int)
+
+        ### Iterate through the list of level keys
+        # * To initialize, we need all possible combinations of levels from all factors
+        for level_key in self.levelkeys_all:
+            ### Iterate through all pairs of levels in the level key
+            for i in range(len(level_key)):
+                for j in range(i + 1, len(level_key)):
+                    ### Sort the levels in alphabetical order to count combinations regardless of order
+                    combination = tuple(sorted((level_key[i], level_key[j])))
+                    level_combocount[combination] += 1
+
+        return level_combocount
+
+    def levels_combocount(
+        self, normalize=False, heatmap=True
+    ) -> pd.DataFrame | plt.Figure:
+        """Makes a DataFrame or its heatmap comparing every level with each other, counting how often they
+        appear together in the data. This is useful to see how well the factors structure
+        the data. If a factor has levels that are always found together, the levels have the
+        largest number in that DataFrame, meaning that's factor is a good candidate to facet
+        the data by.
+
+        :param normalize: Normalizes result by max value, defaults to False
+        :type normalize: bool
+        :param heatmap: If True, returns a heatmap, otherwise a DataFrame, defaults to True
+        :type heatmap: bool
+        :return: _description_
+        :rtype: pd.DataFrame | plt.Figure
+        """
+
+        ### Get level_combocount
+        # * dict with every pairwise combination of levels from every factor as keys and
+        # * count as values
+        levelcombo_count: dict = self._count_levelcombos()
+
+        ### Flatten the levels
+        leveldict = self.levels_dict_factor
+        flattened_levels = [level for levels in leveldict.values() for level in levels]
+
+        ### Initialize the DataFrame using the flattened levels to preserve level order
+        df = pd.DataFrame(0, columns=flattened_levels, index=flattened_levels)
+
+        ### Update the DataFrame with the counts from level_combinations
+        for levelkey, count in levelcombo_count.items():
+            df.loc[levelkey[0], levelkey[1]] = count
+            df.loc[levelkey[1], levelkey[0]] = count  # * Ensure symmetry
+
+        ### Normalize the DataFrame by dividing by the maximum value
+        # * make percent format, round to 0 decimals
+        if normalize:
+            df = df / df.max().max() * 100
+            df = df.round(0).astype(int)
+
+        ### Plot Heatmap, way more helpful than DataFrame
+        if heatmap:
+
+            def heatmap_combocount(matrix: np.array, depth: int):
+                ### Colors:
+                custom_cmap = ut.make_cmap_saturation(
+                    undersat=(0.5, 0.0, 0.0),  # * dark red
+                    oversat=(0.0, 0.7, 0.0),  # * darker green
+                    n = depth
+                )
+
+                ### Create a heatmap of the inconsistency matrix
+                fig = plt.figure(figsize=(8, 6))
+                sns.heatmap(matrix, cbar=True, cmap=custom_cmap)
+                s = "Counts how often each level appears with another in the same data point"
+                s += "\nGreen = levels appear together in ALL data points"
+                s += "\nGrey = levels appear together in part of data points"
+                s += "\nRed =  levels appear together in 0 data points"
+                plt.title(s, fontsize=10)
+                plt.xlabel("Levels")
+                plt.ylabel("Levels")
+                return fig
+
+            fig = heatmap_combocount(matrix=df, depth = df.max().max())
+            return fig
+        else:
+            return df
+
+    # ==
+
+    # ==
+    # == SETTERS =======================================================================
 
     # !
     def switch(

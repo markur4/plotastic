@@ -12,6 +12,7 @@ REQUIREMENTS = (
     "statannotations",
     "pingouin",
     "pyperclip",
+    "colour", # * For custom colour maps
     # "statsmodels",
     # "joblib",
     # "ipynbname",

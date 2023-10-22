@@ -73,13 +73,9 @@ class DataFrameTool(DimsAndLevels):
         self._y_untransformed = self.dims.y
 
         ### Check for empties or missing group combinations
+        self.factors_always_together = None
         if verbose:
-            ut.print_separator("=")
-            print("#!cking data integrity...")
             self.data_check_integrity()
-            if subject:
-                self._data_check_subjects_with_missing_data()
-            ut.print_separator("=")  # * fresh new line
 
         ### Make Categorical
         if levels:
@@ -372,7 +368,7 @@ class DataFrameTool(DimsAndLevels):
         return df
 
     # ==
-    # == COUNT STUFF ===================================================================
+    # == COUNT GROUPS AND SAMPLESIZE ===================================================
 
     def data_get_samplesizes(self) -> pd.Series:
         """Returns a DataFrame with samplesizes per group/facet"""
@@ -440,7 +436,7 @@ class DataFrameTool(DimsAndLevels):
         return count
 
     # ==
-    # == INTEGRITY CHECKS ==============================================================
+    # == FIND MISSING DATA==============================================================
     def data_get_rows_with_NaN(self) -> pd.DataFrame:
         ### Make complete df with all possible groups/facets and with factors as index
         df = self.data_ensure_allgroups().set_index(self.factors_all)
@@ -454,12 +450,12 @@ class DataFrameTool(DimsAndLevels):
         # * Rows with only NaNs (these are completely missing in self.data)
         allNaN_df = df[df.isna().all(axis=1)]
         empty_group_keys = allNaN_df.index.to_list()
-        
+
         ### Is only X not fully represented in each group?
         # * Every x has data from each other factor, but not every other Factor has data from each x
         # * e.g. with the qPCR data
         # * Make a Tree ..?
-        
+
         return empty_group_keys
 
     def _data_check_empty_groups(self) -> None:
@@ -512,9 +508,19 @@ class DataFrameTool(DimsAndLevels):
             )
 
     def data_check_integrity(self) -> None:
+        """Prints information about Integrity of the data, including empty groups, rows
+        with NaN, equal samplesizes and factors that are suitable for faceting.
+        
+        """        
+        ut.print_separator("=")
+        print("#! checking data integrity...")
         self._data_check_empty_groups()
         self._data_check_rows_with_NaN()
         self._data_check_equal_samplesizes()
+        self._levels_combocount_eval()  # * Identify factors that are always together
+        if self.subject:
+            self._data_check_subjects_with_missing_data()
+        ut.print_separator("=")  # * fresh new line
 
     def _data_check_subjects_with_missing_data(self) -> None:
         """Prints a warning if there are subjects with missing data"""
@@ -536,6 +542,84 @@ class DataFrameTool(DimsAndLevels):
             print(missing_data_df)
         else:
             print("✅ Subjects complete: No subjects with missing data")
+
+    # ==
+    # == FIND WELL CONNECTED FACTORS/LEVELS ============================================
+
+    def _levels_always_together(
+        self,
+    ) -> tuple[list[tuple[str]], list[str]]:
+        """Get every levelkey that has the max value from combocount
+        These levels are very useful! They show which levels are guaranteed to be found
+        together (at least once)!
+        These factors that facet our data very reliably without missing groups, which is
+        a good candidate to specify as hue for example
+
+        :return: _description_
+        :rtype: list
+        """
+
+        ### Count how often each level appears with another leve
+        df = self.levels_combocount(normalize=False, heatmap=False)  # * Get combocount
+
+        ### Max value of combocountdf should be the number of levelkeys found in Data
+        len_levelcombos = df.max().max()
+        assert len_levelcombos == len(
+            self.levelkeys
+        ), "Max value of combocount_df should be the number of levelkeys"
+
+        ### Get every levelkey that has the max value from combocount
+        # * These levels are guaranteed to be found together at leat once!
+        # fmt: off
+        AT_df: pd.DataFrame = (        # * at = always together
+            df[df == len_levelcombos]   # * get max values
+            .dropna(axis=0, how="all")  # * drop rows that are all NaN
+            .dropna(axis=1, how="all")  # * drop columns that are all NaN
+        )
+
+        ### Retrieve the fully connected levels
+        AT_levels = (
+            AT_df
+            .where(AT_df != np.nan) # * remove NaNs
+            .stack()                # * convert to Series with MultiIndex from columns
+            .index.to_list()
+        )
+        # fmt: on
+
+        ### Check if the always together levels fully cover every level of a factor
+        # * If so, that factor is a good candidate to facet the data by
+        leveldict = self.levels_dict_factor  # * factor as key, levellist as value
+
+        AT_flat = set([level for levels in AT_levels for level in levels])
+        AT_factors = []
+        for factor, levels in leveldict.items():
+            if all([level in AT_flat for level in levels]):
+                # print(f"{factor} is fully connected")
+                AT_factors.append(factor)
+
+        return AT_levels, AT_factors
+
+    def _levels_combocount_eval(self):
+        """Evaluates counts of how often each level appears with another level to describe
+        the structure of the data
+        :return: _description_
+        :rtype: pd.DataFrame
+        """
+        ### Count how often each level appears with another leve
+        # df = self.levels_combocount(normalize=False)  # * It's called by _levels_always_together()
+
+        ### Get every levelkey that has the max value from combocount
+        # * AT = always together
+        AT_levels, AT_factors = self._levels_always_together()
+
+        if len(AT_factors) != 0:
+            print(
+                f" 🌳 LEVELS WELL CONNECTED: These Factors have levels that are always found together: {AT_factors}. Call .levels_combocount() to see them all."
+            )
+
+        ### Set Attributes
+        # self.levels_always_together = AT_levels # ? Not seeing where this is useful
+        self.factors_always_together = AT_factors  # ? Could be useful?
 
     # ==
     # == Iterate through Data SKIPPING OF EMPTY GROUPS =================================

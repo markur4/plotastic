@@ -1295,6 +1295,37 @@ def hex_to_RGBA(value):
     rgbaN = (e / 255 for e in rgba)
     return rgbaN
 
+def make_cmap_saturation(
+    undersat: tuple = (0.5, 0.0, 0.0),
+    oversat: tuple = (0.0, 0.7, 0.0),
+    n: int = 100,
+):
+    """Make a colormap that displays max and lowest (over and undersaturation) of values
+
+    :param undersat: RGB tuple of undersaturated color
+    :type undersat: tuple
+    :param oversat: RGB tuple of oversaturated color
+    :type oversat: tuple
+    :param n: number of colors to generate, defaults to 50
+    :type n: int, optional
+    :return: matplotlib colormap
+    :rtype: matplotlib.colors.LinearSegmentedColormap
+    """
+    from colour import Color
+    from matplotlib.colors import ListedColormap
+
+    ### Create a custom colormap from scratch
+    # * Create a list of colors
+    colors = list(Color("black").range_to(Color("white"), n))
+    colors = [c.rgb for c in colors]  # * Convert to RGB
+
+    ### Add a color for values under and over the range of the colormap
+    colors.append(oversat)
+    colors.insert(0, undersat)
+    custom_cmap = ListedColormap(colors, N=len(colors))
+
+    return custom_cmap
+
 
 # @timeit  ## Trying to fix matplotlib memory leak
 def delete_fig(fig, gc_collect=True, iterations=2):
