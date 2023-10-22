@@ -3,7 +3,6 @@
 
 import matplotlib.pyplot as plt
 import pytest
-import ipytest
 
 import plotastic as plst
 from plotastic import Annotator
@@ -71,6 +70,9 @@ def test_pairwiseannotations_tips(DF, dims, annot_kwargs):
             only_sig="all",
         )
     )
+    ### Don't plot while executing pytest in terminal
+    if __name__ != "__main__":
+        plt.close()
 
 
 # %% Testing for dataset FMRI
@@ -122,7 +124,7 @@ zipped_fmri: list[tuple] = ct.add_zip_column(
 
 @pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_fmri)
 def test_pairwiseannotations_fmri(DF, dims, annot_kwargs):
-    AN = Annotator(data=DF, dims=dims, verbose=True, subject="subject") # ! subject
+    AN = Annotator(data=DF, dims=dims, verbose=True, subject="subject")  # ! subject
     _ph = AN.test_pairwise(paired=True, padjust="bonf")
     AN = (
         AN.subplots()
@@ -133,36 +135,91 @@ def test_pairwiseannotations_fmri(DF, dims, annot_kwargs):
             only_sig="strict",
         )
     )
+    ### Don't plot while executing pytest in terminal
+    if __name__ != "__main__":
+        plt.close()
 
-#%% For dataset qPCR
+
+# %% For dataset qPCR
 
 
-# @pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_qpcr)
-def test_pairwiseannotation_qpcr(DF, dims, **annot_kwargs):
+QPCR_annot_pairwise_kwargs = [
+    dict(
+        include=["F1", "LOXL2", "SOST"],
+        exclude=["F2", {"IL2RG": ("F1", "F3")}],
+        include_in_facet={
+            "MMPs": ["IL2RG", {"CCL20": ("F1", "F2")}],
+            "Bone Metabolism": ["SOST", "F2", {"TIMP1": ("F3", "F1")}],
+        },
+        exclude_in_facet={
+            "Wash": ["IL2RG", {"CCL20": ("F1", "F2")}],
+            "MACS": ["SOST", {"JAK2": ("F1", "F2")}],
+        },
+    ),
+    dict(
+        include=["F1", "LOXL2", "SOST"],
+        exclude=["F2", {"IL2RG": ("F1", "F3")}],
+        include_in_facet={
+            "MMPs": ["IL2RG", {"CCL20": ("F1", "F2")}],
+            "Bone Metabolism": ["SOST", "F2", {"TIMP1": ("F3", "F1")}],
+        },
+        exclude_in_facet={
+            "Wash": ["IL2RG", {"CCL20": ("F1", "F2")}],
+            "MACS": ["SOST", {"JAK2": ("F1", "F2")}],
+        },
+    ),
+    dict(
+        include="__HUE",
+        exclude=["F2", {"IL2RG": ("F1", "F3")}],
+    ),
+    dict(
+        include="__X",
+        exclude=["F2", {"IL2RG": ("F1", "F3")}],
+    ),
+    dict(
+        include=["Vimentin", "IL2RG"],
+        exclude=["FZD4"],
+    ),
+]
+
+zipped_qpcr: list[tuple] = ct.add_zip_column(
+    ct.zipped_noempty_qpcr, QPCR_annot_pairwise_kwargs
+)
+
+
+@pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_qpcr)
+def test_pairwiseannotation_qpcr(DF, dims, annot_kwargs):
     AN = Annotator(data=DF, dims=dims, verbose=True)
     _ph = AN.test_pairwise(paired=False, padjust="none", subject="subject")
     AN = (
         AN.subplots(sharey=False, figsize=(10, 10))
         .fillaxes(kind="box")
-        .transform_y("log10") # ! log transform
-        .edit_y_scale_log(10) # ! MUST be called before annotation!
+        .transform_y("log10")  # ! log transform
+        .edit_y_scale_log(10)  # ! MUST be called before annotation!
         .annotate_pairwise(
-            **annot_kwargs,
-            include="__HUE",
+            # include="__HUE",
             show_ph=False,
             only_sig="tolerant",
+            **annot_kwargs,
         )
         # .edit_tight_layout() # ! just uglier
     )
+    ### Don't plot while executing pytest in terminal
+    if __name__ != "__main__":
+        plt.close()
+
+
 
 ### Run without pytest
 if __name__ == "__main__":
-    DF, dims= plst.load_dataset("qpcr")
-    # AN = Annotator(data=DF, dims=dims, verbose=True)
-    test_pairwiseannotation_qpcr(DF, dims)
+    DF, dims = plst.load_dataset("qpcr")
+    AN = Annotator(data=DF, dims=dims, verbose=True)
+    AN.levels_dendrogram()
+    test_pairwiseannotation_qpcr(DF, dims, annot_kwargs=QPCR_annot_pairwise_kwargs[0])
 
 # %% Interactive testing to display Plots
 
 if __name__ == "__main__":
-    pass
-    # ipytest.run()
+    import ipytest
+
+    ipytest.run()

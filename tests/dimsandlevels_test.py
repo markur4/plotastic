@@ -1,9 +1,11 @@
 # %% Imports
 import pytest
+import matplotlib.pyplot as plt
 
 import plotastic as plst
 
 import conftest as ct
+
 
 
 # %% test dendrogram
@@ -13,6 +15,7 @@ def test_levels_dendrogram(DF, dims):
     if not len(dims.keys()) == 2:
         DA = plst.DataAnalysis(data=DF, dims=dims)
         DA.levels_dendrogram()
+    plt.close()
 
 
 # %% test combocounts
@@ -24,6 +27,7 @@ def test_levels_combocounts(DF, dims):
     if not len(dims.keys()) == 2:
         DA = plst.DataAnalysis(data=DF, dims=dims)
         DA.levels_combocounts()
+    plt.close()
 
 
 if __name__ == "__main__":

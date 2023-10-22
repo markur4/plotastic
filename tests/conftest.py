@@ -55,6 +55,7 @@ dims_noempty_fmri = [
 
 dims_noempty_qpcr = [
     dict(y="FC", x="Gene", hue="Fraction", col="Class", row="Method"),
+    dict(y="FC", x="Gene", hue="Fraction", col="Method", row="Class"),
     dict(y="FC", x="Gene", hue="Fraction", col="Class"),
     dict(y="FC", x="Gene", hue="Fraction"),
     dict(y="FC", x="Gene"),
@@ -65,9 +66,10 @@ dims_noempty_qpcr = [
 
 zipped_noempty_tips = [(DF_tips, dim) for dim in dims_noempty_tips]
 zipped_noempty_fmri = [(DF_fmri, dim) for dim in dims_noempty_fmri]
-zipped_nompty_qpcr = [(DF_qpcr, dim) for dim in dims_noempty_qpcr]
-zipped_noempty_ALL = zipped_noempty_tips + zipped_noempty_fmri + zipped_nompty_qpcr
-
+zipped_noempty_qpcr = [(DF_qpcr, dim) for dim in dims_noempty_qpcr]
+### All should make 14 test
+zipped_noempty_ALL = zipped_noempty_tips + zipped_noempty_fmri + zipped_noempty_qpcr
+# len(zipped_noempty_ALL) # * -> 14 total tests
 
 ###  (DF, dims) -> (DF, dims, kwargs)
 def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
