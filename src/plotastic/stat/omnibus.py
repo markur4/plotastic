@@ -19,6 +19,21 @@ class Omnibus(Assumptions):
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
 
+    @staticmethod
+    def _enhance_omnibus(DF: pd.DataFrame) -> pd.DataFrame:
+        """Enhances the result DataFrame by adding additional columns
+
+        :param DF: Result from omnibus_functions
+        :type DF: pd.DataFrame
+        :return: _description_
+        :rtype: pd.DataFrame
+        """
+        ### Insert Star column right after "p-unc"
+        stars = DF["p-unc"].apply(Omnibus._p_to_stars)
+        DF.insert(DF.columns.get_loc("p-unc") + 1, "stars", stars)
+
+        return DF
+
     def _ensure_more_than_one_sample_per_group(
         self,
         df: pd.DataFrame,
@@ -73,8 +88,13 @@ class Omnibus(Assumptions):
             # * key = (row, col)
             aov = pg.anova(df, **kwargs)  # ? Doesn't seem to print annoying warnings
             aov_dict[key] = aov
-
         aov_DF = pd.concat(aov_dict, keys=aov_dict.keys(), names=self.factors_rowcol)
+
+        ### Add extra columns
+        aov_DF = self._enhance_omnibus(aov_DF)
+
+        ### Save Result
+        self.results.DF_omnibus_rmanova = aov_DF
 
         return aov_DF
 
@@ -133,10 +153,14 @@ class Omnibus(Assumptions):
             # * key = (row, col)
             rmaov = self._omnibus_rm_anova_base(df, facetkey=key, **kwargs)
             rmaov_dict[key] = rmaov
-
         rmaov_DF = pd.concat(
             rmaov_dict, keys=rmaov_dict.keys(), names=self.factors_rowcol
         )
+        ### Add extra columns
+        rmaov_DF = self._enhance_omnibus(rmaov_DF)
+
+        ### Save Result
+        self.results.DF_omnibus_rmanova = rmaov_DF
 
         return rmaov_DF
 
@@ -165,10 +189,14 @@ class Omnibus(Assumptions):
             # * key = (row, col, hue)
             kruskal = pg.kruskal(df, **kwargs)
             kruskal_dict[key] = kruskal
-
         kruskal_DF = pd.concat(
             kruskal_dict, keys=kruskal_dict.keys(), names=self.factors_all_without_x
         )
+        ### Add extra columns
+        kruskal_DF = self._enhance_omnibus(kruskal_DF)
+
+        ### Save Result
+        self.results.DF_omnibus_kruskal = kruskal_DF
 
         return kruskal_DF
 
@@ -176,7 +204,7 @@ class Omnibus(Assumptions):
 # !
 # ! end class
 
-# %% Test features
+# %% Test Omnibus
 
 if __name__ == "__main__":
     from plotastic.example_data.load_dataset import load_dataset
@@ -217,8 +245,8 @@ if __name__ == "__main__":
 
     # %% Check stuff
 
-    # aov = DA.omnibus_anova()
-    # rmaov = DA.omnibus_rm_anova()
+    aov = DA.omnibus_anova()
+    rmaov = DA.omnibus_rm_anova()
     kruskal = DA.omnibus_kruskal()
 
     # %% Check Kruskal
