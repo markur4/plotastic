@@ -48,9 +48,8 @@ class Assumptions(StatTest):
 
         ### Perform Test
         # * Iterate over rows, cols, hue
-        normDF_dict = {}
-
         # * Skip empty groups
+        normDF_dict = {}
         for key, df in self.data_iter__key_groups_skip_empty:
             # * key = (row, col, hue)
             normdf = pg.normality(df, **kwargs)
@@ -93,21 +92,20 @@ class Assumptions(StatTest):
 
         ### Perform Test
         # * Iterate over rows, cols, and hue
-        homoscedDF_dict = {}
-
         # * Skip empty groups
+        homosced_dict = {}
         for key, df in self.data_iter__key_groups_skip_empty:
             # * key = (row, col, hue)
-            homosceddf = pg.homoscedasticity(df, **kwargs)
+            homosced = pg.homoscedasticity(df, **kwargs)
             # * Add number of groups
-            homosceddf["group count"] = self.data_count_groups_in_x(df)
+            homosced["group count"] = self.data_count_groups_in_x(df)
             # * Add n to see how big groups are, make nested list to fit into single cell
-            homosceddf["n per group"] = [self.data_count_n_per_x(df).to_list()]
+            homosced["n per group"] = [self.data_count_n_per_x(df).to_list()]
 
-            homoscedDF_dict[key] = homosceddf
+            homosced_dict[key] = homosced
             
         homoscedDF = pd.concat(
-            homoscedDF_dict, keys=homoscedDF_dict.keys(), names=self.factors_all
+            homosced_dict, keys=homosced_dict.keys(), names=self.factors_all
         )
 
         #
@@ -159,9 +157,8 @@ class Assumptions(StatTest):
 
         ### Perform Test
         # * Iterate over rows, cols, and hue
-        spherDF_dict = {}
-
         # * Skip empty groups
+        spher_dict = {}
         for key, df in self.data_iter__key_groups_skip_empty:
             # * key = (row, col, hue)
             spher = pg.sphericity(df, **kwargs)
@@ -172,10 +169,10 @@ class Assumptions(StatTest):
             # * Add n to seehow big groups are
             spherdf["n per group"] = [self.data_count_n_per_x(df).to_list()]
 
-            spherDF_dict[key] = spherdf
+            spher_dict[key] = spherdf
 
         spherDF = pd.concat(
-            spherDF_dict, keys=spherDF_dict.keys(), names=self.factors_all
+            spher_dict, keys=spher_dict.keys(), names=self.factors_all
         )
         
         ### Save Results

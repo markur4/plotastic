@@ -456,8 +456,8 @@ class DimsAndLevels:
                 for j in range(i + 1, len(level_key)):
                     ### Sort the levels in alphabetical order to count combinations regardless of order
                     # ! can't sort tuples with different types
-                    # combination = tuple(sorted((level_key[i], level_key[j]))) 
-                    combination = tuple(set((level_key[i], level_key[j]))) # * WORKING
+                    # combination = tuple(sorted((level_key[i], level_key[j])))
+                    combination = tuple(set((level_key[i], level_key[j])))  # * WORKING
                     level_combocount[combination] += 1
 
         return level_combocount
@@ -483,9 +483,10 @@ class DimsAndLevels:
         # * count as values
         levelcombo_count: dict = self._count_levelcombos()
 
-
         ### Initialize the DataFrame with multiindexes
-        index = pd.MultiIndex.from_tuples(self.levels_factortuples, names=["factor", "level"])
+        index = pd.MultiIndex.from_tuples(
+            self.levels_factortuples, names=["factor", "level"]
+        )
         df = pd.DataFrame(0, columns=index, index=index)
 
         ### Update the DataFrame with the counts from level_combinations
@@ -531,9 +532,8 @@ class DimsAndLevels:
     # ==
     # == Dendrogramm ===================================================================
 
-    ### Calculate the Jaccard similarity between combinations
+    @staticmethod
     def _jaccard_similarity(
-        self,
         combination1: list | tuple,
         combination2: list | tuple,
     ) -> float:
@@ -545,9 +545,9 @@ class DimsAndLevels:
         - Measure the length of the union (=7)
         - Divide the intersection by the union (1/7 = 0.14)
 
-        :param combination1: _description_
+        :param combination1: Some listlike object
         :type combination1: list | tuple
-        :param combination2: _description_
+        :param combination2: Some listlike object
         :type combination2: list | tuple
         :return: Similarity between two lists
         :rtype: float
@@ -562,60 +562,76 @@ class DimsAndLevels:
         len_union = len(set1) + len(set2) - len_intersection
         return len_intersection / len_union
 
-    def _link_levelkeys(self, method="ward") -> np.array:
-        """_summary_
-        :method: How to link distance matrix by sch.linkage.
+    @staticmethod
+    def _link_levelkeys(levelkeys: list[tuple[str]], method: str = "ward") -> np.array:
+        """Calculates Jaccard distance matrix between levelkeys and links them by
+        hierarchical clustering.
+        :param method: How to link distance matrix by sch.linkage.
             ["ward","single","complete","average"], defaults to "ward"
-        :return: _description_
-        :rtype: _type_
+        :param levelkeys: List of tuples with levels from each factor. E.g. [(R_lvl1,
+            C_lvl1, X_lvl1, Hue_lvl1), (R_lvl2, C_lvl1, X_lvl2, Hue_lvl1)]. Can be
+            obtained with DF.set_index(Factors).unique()), defaults to None
+        :return: Linkage matrix
+        :rtype: np.array
         """
         ### Take Unique values from the index
         # * The number of occurences of each index is not important
         # * They often represent technical replicates
         # * It's more important how often the levels occur together within one element
         ### levelkeys are the same as index after setting DF.index to all factors
-        levelkeys = self.levelkeys
+        # ! keep this static, since it's useful.
+        # levelkeys = self.levelkeys if levelkeys is None else levelkeys
 
         ### Create a square distance matrix based on Jaccard similarity
         n = len(levelkeys)
         dist_matrix = np.zeros((n, n))
         for i in range(n):
             for j in range(n):
-                dist_matrix[i, j] = 1 - self._jaccard_similarity(
+                dist_matrix[i, j] = 1 - DimsAndLevels._jaccard_similarity(
                     levelkeys[i], levelkeys[j]
                 )
 
         ### Find links for hierarchical clustering
-        Z = sch.linkage(dist_matrix, method=method)
+        Z: np.array = sch.linkage(dist_matrix, method=method)
 
         return Z
 
-    def levels_dendrogram(
-        self, clustering_method="ward", ret=False, **dendrogramm_kws
-    ) -> dict:
+    @staticmethod
+    def _plot_dendrogram_from_levelkeys(
+        levelkeys: list[tuple[str]],
+        clustering_method: str = "ward",
+        ret: bool = False,
+        **dendrogramm_kws,
+    ):
         """Plots a dendrogramm that shows the hierarchical clustering of each levelkeys.
         It helps determining how the data is organized by each factor's levels.
 
+        :param levelkeys: List of tuples with levels from each factor. E.g. [(R_lvl1,
+            C_lvl1, X_lvl1, Hue_lvl1), (R_lvl2, C_lvl1, X_lvl2, Hue_lvl1), ...]. Can be
+            obtained with DF.set_index(Factors).index.unique()), defaults to None
+        :type levelkeys: list[tuple[str]]
         :param clustering_method: How to link distance matrix by sch.linkage.
             ["ward","single","complete","average"], defaults to "ward"
         :type clustering_method: str, optional
+        :param ret: _description_, defaults to False
+        :type ret: bool, optional
         :return: A dictionary with dendrogramm info and a matplotlib plot
+        :rtype: dict
         """
-        
-        assert not self.factors_is_just_x, "#! Can't plot dendrogramm for X only, need at least one facet (hue, row, col)."
 
-        Z = self._link_levelkeys(method=clustering_method)
+        ### Get linkage matrix
+        Z = DimsAndLevels._link_levelkeys(
+            levelkeys=levelkeys,
+            method=clustering_method,
+        )
 
         ### Initialize figure
-        plt.figure(
-            figsize=(3, (len(Z) / 10) + 2),
-        )
-        # plt.autoscale()
+        plt.figure(figsize=(3, (len(Z) / 10) + 2))  # ? (w, h) Works good!
 
         ### Plot Dendrogramm
         dendro: dict = sch.dendrogram(
             Z,
-            labels=self.levelkeys,
+            labels=levelkeys,
             # labels=self.levelkeys_all, #* Same as DF.index.unique() if factors are set as index
             orientation="right",
             **dendrogramm_kws,
@@ -623,10 +639,42 @@ class DimsAndLevels:
 
         ### Plot edits
         # plt.legend() # ? not working
-
         plt.title("Combination Hierarchy")
         plt.xlabel("Linkage Distance")
-        # plt.show()
+
+        if ret:
+            return dendro
+
+    def levels_dendrogram(
+        self,
+        clustering_method="ward",
+        ret=False,
+        **dendrogramm_kws,
+    ) -> dict:
+        """Plots a dendrogramm that shows the hierarchical clustering of each levelkeys.
+        It helps determining how the data is organized by each factor's levels.
+
+        :param clustering_method: How to link distance matrix by sch.linkage.
+            ["ward","single","complete","average"], defaults to "ward"
+        :type clustering_method: str, optional
+        :param ret: Return dendrogram, defaults to False
+        :type ret: bool, optional
+        :return: A dictionary with dendrogramm info and a matplotlib plot
+        :rtype: dict
+        """
+
+        ### If no facets this gives cryptic error, redirect that
+        assert (
+            not self.factors_is_just_x
+        ), "#! Can't plot dendrogramm for X only, need at least one facet (hue, row, col)."
+
+        ### Plot dendrogram
+        dendro = self._plot_dendrogram_from_levelkeys(
+            levelkeys=self.levelkeys,
+            clustering_method=clustering_method,
+            ret=ret,
+            **dendrogramm_kws,
+        )
 
         if ret:
             return dendro

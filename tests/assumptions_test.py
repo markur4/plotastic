@@ -30,10 +30,12 @@ def test_homoscedasticity(DF, dims):
     AS.check_homoscedasticity()
 
 
-@pytest.mark.parametrize("DF, dims", ct.zipped_noempty_fmri)
+@pytest.mark.parametrize("DF, dims", ct.zipped_noempty_ALL)
 def test_sphericity(DF, dims):
-    AS = Assumptions(data=DF, dims=dims, verbose=True, subject="subject")
-    AS.check_sphericity()
+    ### Don't test sphericity for unpaired data
+    if not "total_bill" in DF.columns:
+        AS = Assumptions(data=DF, dims=dims, verbose=True, subject="subject")
+        AS.check_sphericity()
 
 
 # %% interactive testing to display Plots

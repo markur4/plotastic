@@ -54,11 +54,11 @@ dims_noempty_fmri = [
 ]
 
 dims_noempty_qpcr = [
-    dict(y="FC", x="Gene", hue="Fraction", col="Class", row="Method"),
-    dict(y="FC", x="Gene", hue="Fraction", col="Method", row="Class"),
-    dict(y="FC", x="Gene", hue="Fraction", col="Class"),
-    dict(y="FC", x="Gene", hue="Fraction"),
-    dict(y="FC", x="Gene"),
+    dict(y="FC", x="gene", hue="fraction", col="class", row="method"),
+    dict(y="FC", x="gene", hue="fraction", col="method", row="class"),
+    dict(y="FC", x="gene", hue="fraction", col="class"),
+    dict(y="FC", x="gene", hue="fraction"),
+    dict(y="FC", x="gene"),
 ]
 
 # %%  Combine for pytest.parametrize

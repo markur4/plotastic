@@ -7,7 +7,6 @@ import plotastic as plst
 import conftest as ct
 
 
-
 # %% test dendrogram
 @pytest.mark.parametrize("DF, dims", ct.zipped_noempty_ALL)
 def test_levels_dendrogram(DF, dims):
@@ -15,7 +14,12 @@ def test_levels_dendrogram(DF, dims):
     if not len(dims.keys()) == 2:
         DA = plst.DataAnalysis(data=DF, dims=dims)
         DA.levels_dendrogram()
-    plt.close()
+
+    ### Plot if interactive
+    if __name__ != "__main__":
+        plt.close()
+    else:
+        plt.show()  # * show plot, otherwise too many figures
 
 
 # %% test combocounts
@@ -27,7 +31,12 @@ def test_levels_combocounts(DF, dims):
     if not len(dims.keys()) == 2:
         DA = plst.DataAnalysis(data=DF, dims=dims)
         DA.levels_combocounts()
-    plt.close()
+
+    ### Plot if interactive
+    if __name__ != "__main__":
+        plt.close()
+    else:
+        plt.show()  # * show plot, otherwise too many figures
 
 
 if __name__ == "__main__":

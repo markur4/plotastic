@@ -13,7 +13,7 @@ FILES = dict(
 DIMS = dict(
     fmri=dict(y="signal", x="timepoint", hue="event", col="region"),
     tips=dict(y="tip", x="size-cut", hue="smoker", col="sex", row="time"),
-    qpcr=dict(y="FC", x="Gene", hue="Fraction", col="Class", row="Method"),
+    qpcr=dict(y="FC", x="gene", hue="fraction", col="class", row="method"),
 )
 
 
@@ -47,4 +47,3 @@ def load_dataset(name: str = "tips", verbose=True) -> tuple[pd.DataFrame, dict]:
         )
 
     return df, dims
-
