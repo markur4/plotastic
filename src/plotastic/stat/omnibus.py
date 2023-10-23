@@ -68,7 +68,7 @@ class Omnibus(Assumptions):
     # == ANOVA =========================================================================
 
     def omnibus_anova(self, **user_kwargs) -> pd.DataFrame:
-        """Performs an ANOVA on all facets of self.data
+        """Performs an ANOVA (parametric, unpaired) on all facets of self.data
 
         :return: Result from pg.anova with row and column as MultiIndex
         :rtype: pd.DataFrame
@@ -132,7 +132,9 @@ class Omnibus(Assumptions):
         self,
         **user_kwargs,
     ) -> pd.DataFrame:
-        """Performs a repeated measures ANOVA on all facets of self.data
+        """Performs a repeated measures ANOVA (parametric, paired) on all facets of
+        self.data
+        
 
         :return: Result from pg.rm_anova with row and column as MultiIndex
         :rtype: pd.DataFrame
@@ -168,7 +170,9 @@ class Omnibus(Assumptions):
     # == Kruskal-Wallis ================================================================
 
     def omnibus_kruskal(self, **user_kwargs) -> pd.DataFrame:
-        """Performs a Kruskal-Wallis test on all facets of self.data
+        """Performs a Kruskal-Wallis test (non-parametric, unpaired) on all facets of
+        self.data
+        
 
         :return: Result from pg.kruskal with row and column as MultiIndex
         :rtype: pd.DataFrame
@@ -199,6 +203,41 @@ class Omnibus(Assumptions):
         self.results.DF_omnibus_kruskal = kruskal_DF
 
         return kruskal_DF
+    
+    def omnibus_friedman(self, **user_kwargs) -> pd.DataFrame:
+        """Performs a Friedman test (non-parametric, paired) on all facets of self.data
+
+        :return: Result from pg.friedman with row and column as MultiIndex
+        :rtype: pd.DataFrame
+        """
+        ### Gather Arguments
+        kwargs = dict(
+            dv=self.dims.y,
+            subject=self.subject,
+            within=self.dims.x,
+            # detailed=True, # ! pg.friedman doesn't have this option
+        )
+        kwargs.update(user_kwargs)  # * Add user kwargs
+        
+        ### Perform Friedman
+        # * pg.friedman takes only a single factor
+        # * Skip empty groups
+        friedman_dict = {}
+        for key, df in self.data_iter__key_groups_skip_empty:
+            # * key = (row, col, hue)
+            friedman = pg.friedman(df, **kwargs)
+            friedman_dict[key] = friedman
+        friedman_DF = pd.concat(
+            friedman_dict, keys=friedman_dict.keys(), names=self.factors_all_without_x
+        )
+        ### Add extra columns
+        friedman_DF = self._enhance_omnibus(friedman_DF)
+        
+        ### Save Result
+        self.results.DF_omnibus_friedman = friedman_DF
+        
+        return friedman_DF
+        
 
 
 # !
@@ -248,5 +287,6 @@ if __name__ == "__main__":
     aov = DA.omnibus_anova()
     rmaov = DA.omnibus_rm_anova()
     kruskal = DA.omnibus_kruskal()
+    friedman = DA.omnibus_friedman()
 
     # %% Check Kruskal

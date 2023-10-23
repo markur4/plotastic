@@ -21,6 +21,7 @@ class StatResults:
         self.DF_omnibus_anova: pd.DataFrame = self.DEFAULT_UNTESTED
         self.DF_omnibus_rmanova: pd.DataFrame = self.DEFAULT_UNTESTED
         self.DF_omnibus_kruskal: pd.DataFrame = self.DEFAULT_UNTESTED
+        self.DF_omnibus_friedman: pd.DataFrame = self.DEFAULT_UNTESTED
         self.DF_posthoc: pd.DataFrame = self.DEFAULT_UNTESTED
         self.DF_bivariate: pd.DataFrame = self.DEFAULT_UNTESTED
 

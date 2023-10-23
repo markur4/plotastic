@@ -151,7 +151,7 @@ pip install git+https://github.com/markur4/plotastic.git
   - Homoscedasticity (e.g. Levene)
   - Sphericity (e.g. Mauchly)
 - **Omnibus tests:**
-  - ANOVA, RMANOVA, Kruskal-Wallis
+  - ANOVA, RMANOVA, Kruskal-Wallis, Friedman
 - **PostHoc**
   - pg.pairwise_tests works with all primary options. That includes all parametric,
     non-parametric, paired, unpaired, etc. tests (t-test, paired t-test, MWU, Wilcoxon, etc.)
@@ -163,7 +163,7 @@ pip install git+https://github.com/markur4/plotastic.git
   - QQ-Plot
   - Kaplan-Meyer plots
 - **Omnibus tests:**
-  - paired version of Kruskal Wallis
+  - mixed ANOVA
 - **Post-hoc tests:**
   - Make correction for multiple testing go over complete DataFrame and not Facet-wise.
 - **Bivariate tests:**
