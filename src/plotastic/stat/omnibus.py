@@ -52,7 +52,12 @@ class Omnibus(Assumptions):
     # ==
     # == ANOVA =========================================================================
 
-    def omnibus_anova(self, **user_kwargs) -> bool:
+    def omnibus_anova(self, **user_kwargs) -> pd.DataFrame:
+        """Performs an ANOVA on all facets of self.data
+
+        :return: Result from pg.anova with row and column as MultiIndex
+        :rtype: pd.DataFrame
+        """
         ### Gather Arguments
         kwargs = dict(
             dv=self.dims.y,
@@ -106,7 +111,12 @@ class Omnibus(Assumptions):
     def omnibus_rm_anova(
         self,
         **user_kwargs,
-    ) -> bool:
+    ) -> pd.DataFrame:
+        """Performs a repeated measures ANOVA on all facets of self.data
+
+        :return: Result from pg.rm_anova with row and column as MultiIndex
+        :rtype: pd.DataFrame
+        """
         ### Gather Arguments
         kwargs = dict(
             dv=self.dims.y,
@@ -129,8 +139,38 @@ class Omnibus(Assumptions):
         )
 
         return rmaov_DF
-    
-    
+
+    # ==
+    # == Kruskal-Wallis ================================================================
+
+    def omnibus_kruskal(self, **user_kwargs) -> pd.DataFrame:
+        """Performs a Kruskal-Wallis test on all facets of self.data
+
+        :return: Result from pg.kruskal with row and column as MultiIndex
+        :rtype: pd.DataFrame
+        """
+        ### Gather Arguments
+        kwargs = dict(
+            dv=self.dims.y,
+            between=self.dims.x,
+            detailed=True,
+        )
+        kwargs.update(user_kwargs)  # * Add user kwargs
+
+        ### Perform Kruskal-Wallis
+        # * pg.Kruskal takes only a single factor
+        # * Skip empty groups
+        kruskal_dict = {}
+        for key, df in self.data_iter__key_groups_skip_empty:
+            # * key = (row, col, hue)
+            kruskal = pg.kruskal(df, **kwargs)
+            kruskal_dict[key] = kruskal
+
+        kruskal_DF = pd.concat(
+            kruskal_dict, keys=kruskal_dict.keys(), names=self.factors_all_without_x
+        )
+
+        return kruskal_DF
 
 
 # !
@@ -145,27 +185,15 @@ if __name__ == "__main__":
     DF, dims = load_dataset("qpcr")
 
     # %% CHECK pingouin ANOVA
-    aov = pg.anova(
-        data=DF,
-        dv=dims["y"],
-        between=[dims["x"], dims["hue"]],
-        detailed=True,
-    )
-    rmaov = pg.rm_anova(
-        data=DF,
-        dv=dims["y"],
-        within=[dims["x"], dims["hue"]],
-        subject="subject",
-        detailed=True,
-    )
+    kwargs = dict(data=DF, dv=dims["y"], detailed=True)
+
+    aov = pg.anova(between=[dims["x"], dims["hue"]], **kwargs)
+    rmaov = pg.rm_anova(within=[dims["x"], dims["hue"]], subject="subject", **kwargs)
+    kruskal = pg.kruskal(between=dims["hue"], **kwargs)
 
     # %% Make DataAnalysis
 
     DA = Omnibus(data=DF, dims=dims, subject="subject", verbose=True)
-
-    # %% Check ANOVA
-
-    aov = DA.omnibus_anova()
 
     # %% There's a problem with the Data: Only 1 sample in MMP and MACS
 
@@ -186,8 +214,11 @@ if __name__ == "__main__":
         subject="subject",
     )
     #
-    # %% Check RMANOVA
-    
-    rmaov = DA.omnibus_rm_anova()
 
-    # %%
+    # %% Check stuff
+
+    # aov = DA.omnibus_anova()
+    # rmaov = DA.omnibus_rm_anova()
+    kruskal = DA.omnibus_kruskal()
+
+    # %% Check Kruskal
