@@ -619,7 +619,7 @@ class DataFrameTool(DimsAndLevels):
 
         if len(AT_factors) != 0:
             print(
-                f" 🌳 LEVELS WELL CONNECTED: These Factors have levels that are always found together: {AT_factors}. Call .levels_combocount() to see them all."
+                f" 🌳 LEVELS WELL CONNECTED: These Factors have levels that are always found together: {AT_factors}. Call .levels_combocount() or .levels_dendrogram() to see them all."
             )
 
         ### Set Attributes

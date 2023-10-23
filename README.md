@@ -146,8 +146,15 @@ pip install git+https://github.com/markur4/plotastic.git
 - **Multi-Layered single-line plots**
   - Multi-layerd plots with arguments configured for one another
   - Box-plot + swarm/strip
+- **Assumption testing:**
+  - Normality (e.g. Shapiro-Wilk)
+  - Homoscedasticity (e.g. Levene)
+  - Sphericity (e.g. Mauchly)
+- **Omnibus tests:**
+  - ANOVA, RMANOVA, Kruskal-Wallis
 - **PostHoc**
-  - pg.pairwise_tests works with all primary options
+  - pg.pairwise_tests works with all primary options. That includes all parametric,
+    non-parametric, paired, unpaired, etc. tests (t-test, paired t-test, MWU, Wilcoxon, etc.)
 - **Plot Annotations**
   - Stars! PostHoc Tables can be annotated in plots and specific pairs are user-selectable!
 
@@ -155,11 +162,8 @@ pip install git+https://github.com/markur4/plotastic.git
 - **Plotting:**
   - QQ-Plot
   - Kaplan-Meyer plots
-- **Assumption testing:**
-  - Normality (Shapiro-Wilk)
-  - Sphericity (Levene)
 - **Omnibus tests:**
-  - All of 'em, ANOVA, kruskal, etc.
+  - paired version of Kruskal Wallis
 - **Post-hoc tests:**
   - Make correction for multiple testing go over complete DataFrame and not Facet-wise.
 - **Bivariate tests:**

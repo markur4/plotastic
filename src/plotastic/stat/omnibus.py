@@ -88,7 +88,7 @@ class Omnibus(Assumptions):
             # * key = (row, col)
             aov = pg.anova(df, **kwargs)  # ? Doesn't seem to print annoying warnings
             aov_dict[key] = aov
-        aov_DF = pd.concat(aov_dict, keys=aov_dict.keys(), names=self.factors_rowcol)
+        aov_DF = pd.concat(aov_dict, keys=aov_dict.keys(), names=self.factors_rowcol_list)
 
         ### Add extra columns
         aov_DF = self._enhance_omnibus(aov_DF)
@@ -154,7 +154,7 @@ class Omnibus(Assumptions):
             rmaov = self._omnibus_rm_anova_base(df, facetkey=key, **kwargs)
             rmaov_dict[key] = rmaov
         rmaov_DF = pd.concat(
-            rmaov_dict, keys=rmaov_dict.keys(), names=self.factors_rowcol
+            rmaov_dict, keys=rmaov_dict.keys(), names=self.factors_rowcol_list
         )
         ### Add extra columns
         rmaov_DF = self._enhance_omnibus(rmaov_DF)
