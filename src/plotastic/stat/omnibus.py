@@ -15,9 +15,13 @@ from plotastic.stat.assumptions import Assumptions
 
 
 class Omnibus(Assumptions):
+    # ==
     # == __init__ ======================================================================
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
+
+    # ==
+    # == Helpers =======================================================================
 
     @staticmethod
     def _enhance_omnibus(DF: pd.DataFrame) -> pd.DataFrame:
@@ -88,13 +92,15 @@ class Omnibus(Assumptions):
             # * key = (row, col)
             aov = pg.anova(df, **kwargs)  # ? Doesn't seem to print annoying warnings
             aov_dict[key] = aov
-        aov_DF = pd.concat(aov_dict, keys=aov_dict.keys(), names=self.factors_rowcol_list)
+        aov_DF = pd.concat(
+            aov_dict, keys=aov_dict.keys(), names=self.factors_rowcol_list
+        )
 
         ### Add extra columns
         aov_DF = self._enhance_omnibus(aov_DF)
 
         ### Save Result
-        self.results.DF_omnibus_rmanova = aov_DF
+        self.results.DF_omnibus_anova = aov_DF
 
         return aov_DF
 
@@ -134,7 +140,7 @@ class Omnibus(Assumptions):
     ) -> pd.DataFrame:
         """Performs a repeated measures ANOVA (parametric, paired) on all facets of
         self.data
-        
+
 
         :return: Result from pg.rm_anova with row and column as MultiIndex
         :rtype: pd.DataFrame
@@ -172,7 +178,7 @@ class Omnibus(Assumptions):
     def omnibus_kruskal(self, **user_kwargs) -> pd.DataFrame:
         """Performs a Kruskal-Wallis test (non-parametric, unpaired) on all facets of
         self.data
-        
+
 
         :return: Result from pg.kruskal with row and column as MultiIndex
         :rtype: pd.DataFrame
@@ -203,7 +209,10 @@ class Omnibus(Assumptions):
         self.results.DF_omnibus_kruskal = kruskal_DF
 
         return kruskal_DF
-    
+
+    # ==
+    # == Friedman ======================================================================
+
     def omnibus_friedman(self, **user_kwargs) -> pd.DataFrame:
         """Performs a Friedman test (non-parametric, paired) on all facets of self.data
 
@@ -218,7 +227,7 @@ class Omnibus(Assumptions):
             # detailed=True, # ! pg.friedman doesn't have this option
         )
         kwargs.update(user_kwargs)  # * Add user kwargs
-        
+
         ### Perform Friedman
         # * pg.friedman takes only a single factor
         # * Skip empty groups
@@ -232,12 +241,11 @@ class Omnibus(Assumptions):
         )
         ### Add extra columns
         friedman_DF = self._enhance_omnibus(friedman_DF)
-        
+
         ### Save Result
         self.results.DF_omnibus_friedman = friedman_DF
-        
+
         return friedman_DF
-        
 
 
 # !

@@ -1,17 +1,28 @@
+
+# %% Imports
 from typing import TYPE_CHECKING
 
+from pathlib import Path
+
+import pandas as pd
 
 if TYPE_CHECKING:
     import pandas as pd
 
+# %% class StatResults
 
 class StatResults:
-    DEFAULT_UNCHECKED = "NOT CHECKED"  # * If ASSUMPTION not tested,
-    DEFAULT_UNTESTED = (
-        "NOT TESTED"  # * If statistical test not tested (posthoc, omnibus)
-    )
-    DEFAULT_UNASSESSED = "NOT ASSESSED"  # * If not
+    
+    # ==
+    # == DEFAULTS ======================================================================
+    # fmt: off
+    DEFAULT_UNCHECKED = "NOT CHECKED"   # * If ASSUMPTION not tested,
+    DEFAULT_UNTESTED = "NOT TESTED"     # * If statistical test not tested (posthoc, omnibus)
+    DEFAULT_UNASSESSED = "NOT ASSESSED" # * If not
+    # fmt: on
 
+    # ==
+    # == INIT ==========================================================================
     def __init__(self):
         ### Data Tables
         self.DF_normality: pd.DataFrame = self.DEFAULT_UNCHECKED
@@ -32,7 +43,38 @@ class StatResults:
 
         self._parametric: bool = self.DEFAULT_UNASSESSED
 
-    # == GETTERS AND SETTERS
+    # == 
+    # == Summarize Results =============================================================
+    
+    @property
+    def as_dict(self) -> dict:
+        d = dict(
+            ### Assumptions
+            normality = self.DF_normality,
+            homoscedasticity = self.DF_homoscedasticity,
+            sphericity= self.DF_sphericity,
+            ### Omnibus
+            anova = self.DF_omnibus_anova,
+            rm_anova = self.DF_omnibus_rmanova,
+            kruskal = self.DF_omnibus_kruskal,
+            friedman = self.DF_omnibus_friedman,
+            ### Posthoc
+            posthoc = self.DF_posthoc,
+            ### Bivariate
+            bivariate = self.DF_bivariate,
+        )
+        
+        ### Remove untested
+        d = {k:v for k,v in d.items() if v is not self.DEFAULT_UNTESTED}
+        
+        return d
+
+    def __iter__(self) -> tuple[str, pd.DataFrame]:
+        for test_name, DF in self.as_dict.items():
+            yield test_name, DF
+    
+    # ==
+    # == GETTERS AND SETTERS ===========================================================
 
     @property
     def normal(self):
@@ -56,7 +98,8 @@ class StatResults:
         print(f"#! Defining parametric as {value}!")
         self._parametric = value
 
-    # == ASSESS ASSUMPTIONS
+    # ==
+    # == ASSESS ASSUMPTIONS ============================================================
 
     def assess_normality(self, data) -> bool:
         """Uses result from normality test for each group and decides if data should be considered normal or not"""
@@ -70,3 +113,48 @@ class StatResults:
         """Uses results from normality, homoscedasticity and sphericity tests to decide if parametric tests should be used"""
         self.parametric = self.normal and self.homoscedastic and self.spherical
         return self.parametric
+    
+    # == 
+    # == EXPORT ========================================================================
+    
+    def save(self, out:str="plotastic_results") -> None:
+        """Exports all statistics to one excel file. Different sheets for different
+        tests
+        
+        :param out: Path to save excel file, optional (default="")
+        :type out: str, optional
+        """
+        ### Construct output path
+        out = Path(out).with_suffix(".xlsx")
+        
+        ### Init writer for multiple sheets
+        writer = pd.ExcelWriter(out, engine="xlsxwriter")       
+        workbook = writer.book
+        
+        ### Iterate through results
+        for test_name, DF in self.as_dict.items():
+            worksheet= workbook.add_worksheet(test_name) # * Make sheet
+            writer.sheets[test_name] = worksheet # * Add sheet name to writer
+            DF.to_excel(writer, sheet_name=test_name) # * # Write DF to sheet
+            
+        ### Save
+        writer.save()
+         
+        
+        
+    
+# !
+# ! end class
+
+#%% test it
+# if __name__ == "__main__":
+
+#     # %% Load Data, make DA, fill it with stuff
+#     from plotastic.example_data.load_dataset import load_dataset
+#     DF, dims = load_dataset("qpcr")
+#     # DA = DataAnalysis(DF, dims)
+#     # DA.test_pairwise()
+    
+
+    
+    

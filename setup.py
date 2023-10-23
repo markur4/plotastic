@@ -12,7 +12,8 @@ REQUIREMENTS = (
     "statannotations",
     "pingouin",
     "pyperclip",
-    "colour", # * For custom colour maps
+    "colour",  # * For custom colour maps
+    "xlsxwriter",  # * For saving results to excel
     # "statsmodels",
     # "joblib",
     # "ipynbname",

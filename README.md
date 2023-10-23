@@ -141,7 +141,7 @@ pip install git+https://github.com/markur4/plotastic.git
 
 #### *Implemented*
 - **Base plotting and Editing of plots:**
-  - Done 90%
+  - Done "90%"
   - All (non-facetgrid) seaborn plots should work
 - **Multi-Layered single-line plots**
   - Multi-layerd plots with arguments configured for one another

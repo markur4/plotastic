@@ -2,6 +2,8 @@
 
 # %% imports
 
+import warnings
+
 import pandas as pd
 
 import markurutils as ut
@@ -74,6 +76,48 @@ zipped_noempty_PAIRED = zipped_noempty_fmri + zipped_noempty_qpcr
 zipped_noempty_ALL = zipped_noempty_tips + zipped_noempty_fmri + zipped_noempty_qpcr
 # len(zipped_noempty_ALL) # * -> 14 total tests
 
+
+# %% Dataanalysis objects
+
+
+def get_DA_with_full_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
+    """Makes a DA object with every possible data stored in it
+
+    :param dataset: "tips", "fmri", or "qpcr"
+    :type dataset: str
+    """
+
+    ### ignore warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+
+        ### Example Data that's Paired, so we can use tests for paired data
+        assert dataset not in ["tips"], f"{dataset} is not paired"
+
+        ### Load example data
+        DF, dims = plst.load_dataset(dataset, verbose=False)
+
+        ### Init DA
+        DA = plst.DataAnalysis(DF, dims, subject="subject", verbose=False)
+
+        ### Assumptions
+        DA.check_normality()
+        DA.check_homoscedasticity()
+        DA.check_sphericity()
+
+        ### Omnibus
+        DA.omnibus_anova()
+        DA.omnibus_rm_anova()
+        DA.omnibus_kruskal()
+        DA.omnibus_friedman()
+
+        ### Posthoc
+        DA.test_pairwise()
+
+    return DA
+
+
+# %% Utils
 ###  (DF, dims) -> (DF, dims, kwargs)
 def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
     """Adds a column to a list of tuples. Useful for adding a list of arguments to a

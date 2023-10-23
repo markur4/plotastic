@@ -21,7 +21,7 @@ from plotastic.dataanalysis.annotator import Annotator
 
 
 class DataAnalysis(Annotator):
-    ### == __init__ ..........................................................................
+    # == __init__ ====================================================================
     def __init__(
         self,
         data: pd.DataFrame,
@@ -50,8 +50,8 @@ class DataAnalysis(Annotator):
         ### statistics
         # self.test = Test()
 
-    #
-    ### == TITLE .......................................................................................................'''
+    # ==
+    # == TITLE =======================================================================
 
     @property
     def title(self) -> str:
@@ -86,7 +86,7 @@ class DataAnalysis(Annotator):
             a.title = f"{a.title}{con}{to_end}"
         return a
 
-    # == I/O PLOTTING #.............................................................................................
+    # == I/O PLOTTING ==================================================================
 
     def save_plot_tofile(
         self,
@@ -106,7 +106,7 @@ class DataAnalysis(Annotator):
         :param overwrite:
         :return:
         """
-        raise NotImplementedError
+        # raise NotImplementedError
         g = g if g else self.graphic
 
         """### CONSTRUCT FILEPATH"""
@@ -164,6 +164,28 @@ class DataAnalysis(Annotator):
         # ! can#t return the whole PlotTool object, since pyplot will mix the fig with previous objects
         return fig, axes
 
+    # ==
+    # == Save Statistic al DataFrames ==================================================
+    
+    def save_statistics(self, out:str="plotastic_results") -> None:
+        """Exports all statistics to one excel file. Different sheets for different
+        tests
+        
+        :param out: Path to save excel file, optional (default="")
+        :type out: str, optional
+        """
+        self.results.save(out=out)
+
+    def save_all(self, out:str="plotastic_results") -> None:
+        """Exports all files stored in DataAnalysis object 
+        
+        :param out: Path to save excel file, optional (default="")
+        :type out: str, optional
+        """
+        raise NotImplementedError
+        self.save_statistics(out=out)
+        self.save_plot_tofile(out=out)
+
     # @staticmethod
     # def _redraw_fig(fig):
     #     """create a dummy figure and use its manager to display "fig" """
@@ -175,9 +197,15 @@ class DataAnalysis(Annotator):
 
 
 # %%
+if __name__ == "__main__":
 
-# DF, DIMS = ut.load_dataset("fmri")
-# DA = DataAnalysis(DF, DIMS)
+    from plotastic.example_data.load_dataset import load_dataset
+    DF, dims = ut.load_dataset("qpcr")
+    DA = DataAnalysis(DF, dims)
+    
+    # %% Fill DA with stuff
+     
 
+    
 
 # %%
