@@ -16,7 +16,7 @@ REQUIREMENTS = (
     "xlsxwriter",  # * For saving results to excel
     # "statsmodels",
     # "joblib",
-    # "ipynbname",
+    "ipynbname", # * For getting the filename of the current notebook
 )
 
 # https://setuptools.pypa.io/en/latest/references/keywords.html

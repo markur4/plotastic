@@ -1,5 +1,6 @@
 from importlib import metadata
-import glob
+
+# import glob
 from pathlib import Path
 
 
@@ -52,24 +53,27 @@ __author__ = "markur4"
 
 ### Vscode requires explicit imports for syntax highlighting
 
-from .dimensions.dims import Dims
-from .dimensions.dimsandlevels import DimsAndLevels
-from .dimensions.dataframetool import DataFrameTool
+# from .dimensions.dims import Dims
+# from .dimensions.dimsandlevels import DimsAndLevels
+# from .dimensions.dataframetool import DataFrameTool
 
 from .plotting.rc import set_style, set_palette
-from .plotting.plottool import PlotTool
-from .plotting.plotedits import PlotEdits
-from .plotting.multiplot import MultiPlot
 
-from .stat.statresults import StatResults
-from .stat.stattest import StatTest
-from .stat.assumptions import Assumptions
-from .stat.bivariate import Bivariate
-from .stat.posthoc import PostHoc
-from .stat.omnibus import Omnibus
+# from .plotting.plottool import PlotTool
+# from .plotting.plotedits import PlotEdits
+# from .plotting.multiplot import MultiPlot
 
-from .dataanalysis.annotator import Annotator
+# from .stat.statresults import StatResults
+# from .stat.stattest import StatTest
+# from .stat.assumptions import Assumptions
+# from .stat.bivariate import Bivariate
+# from .stat.posthoc import PostHoc
+# from .stat.omnibus import Omnibus
+
 from .dataanalysis.dataanalysis import DataAnalysis
+
+# from .dataanalysis.annotator import Annotator
+# from .dataanalysis.filer import Filer
 
 from .example_data.load_dataset import load_dataset
 
@@ -79,19 +83,20 @@ __all__ = [
     set_style,
     set_palette,
     load_dataset,
-    DataFrameTool,
-    Dims,
-    DimsAndLevels,
-    PlotTool,
-    PlotEdits,
-    MultiPlot,
-    StatResults,
-    StatTest,
-    Assumptions,
-    Bivariate,
-    PostHoc,
-    Omnibus,
-    Annotator,
+    # DataFrameTool,
+    # Dims,
+    # DimsAndLevels,
+    # PlotTool,
+    # PlotEdits,
+    # MultiPlot,
+    # StatResults,
+    # StatTest,
+    # Assumptions,
+    # Bivariate,
+    # PostHoc,
+    # Omnibus,
+    # Annotator,
+    # Filer,
 ]
 
 # == Cleanup Namespace ....................................................... """

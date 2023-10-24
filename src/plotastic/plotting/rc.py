@@ -7,7 +7,7 @@ import seaborn as sns
 import markurutils as ut
 
 
-# %% .... Apply settings ........................................................
+# %% .... Apply settings
 def set_style(settings: dict | str):
     """Iterates through settings dictionary and applies them to matplotlib rcParams via mpl.rcParams[setting] = value.
 
@@ -55,7 +55,7 @@ def set_palette(palette: str | list = "Paired", verbose=True):
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=sns.color_palette(palette))
 
 
-# %% .... Style: Paper .............................................................
+# %% .... Style: Paper
 
 FONTSIZE = 10
 
@@ -65,7 +65,7 @@ STYLE_PAPER = {
     "figure.figsize": (3, 3),  # * default is way too big
     "figure.facecolor": "grey",  # * it's easier on the eyes
     # == Savefig
-    "savefig.dpi": 300,
+    "savefig.dpi": 300,  # * Saving figures needs more dpi
     "savefig.format": "pdf",
     "savefig.transparent": True,
     # == Font

@@ -23,10 +23,11 @@ def test_save_statistics():
 
     # %% test
     out = "test_result"
-    DA.save_statistics(out=out)
-    
+    DA.save_statistics(fname=out)
+
     ### Delete file
     os.remove(out + ".xlsx")
+
 
 # %% interactive testing to display Plots
 

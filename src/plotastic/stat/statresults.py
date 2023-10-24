@@ -1,4 +1,3 @@
-
 # %% Imports
 from typing import TYPE_CHECKING
 
@@ -11,8 +10,8 @@ if TYPE_CHECKING:
 
 # %% class StatResults
 
+
 class StatResults:
-    
     # ==
     # == DEFAULTS ======================================================================
     # fmt: off
@@ -43,36 +42,36 @@ class StatResults:
 
         self._parametric: bool = self.DEFAULT_UNASSESSED
 
-    # == 
+    # ==
     # == Summarize Results =============================================================
-    
+
     @property
     def as_dict(self) -> dict:
         d = dict(
             ### Assumptions
-            normality = self.DF_normality,
-            homoscedasticity = self.DF_homoscedasticity,
-            sphericity= self.DF_sphericity,
+            normality=self.DF_normality,
+            homoscedasticity=self.DF_homoscedasticity,
+            sphericity=self.DF_sphericity,
             ### Omnibus
-            anova = self.DF_omnibus_anova,
-            rm_anova = self.DF_omnibus_rmanova,
-            kruskal = self.DF_omnibus_kruskal,
-            friedman = self.DF_omnibus_friedman,
+            anova=self.DF_omnibus_anova,
+            rm_anova=self.DF_omnibus_rmanova,
+            kruskal=self.DF_omnibus_kruskal,
+            friedman=self.DF_omnibus_friedman,
             ### Posthoc
-            posthoc = self.DF_posthoc,
+            posthoc=self.DF_posthoc,
             ### Bivariate
-            bivariate = self.DF_bivariate,
+            bivariate=self.DF_bivariate,
         )
-        
+
         ### Remove untested
-        d = {k:v for k,v in d.items() if v is not self.DEFAULT_UNTESTED}
-        
+        d = {k: v for k, v in d.items() if v is not self.DEFAULT_UNTESTED}
+
         return d
 
     def __iter__(self) -> tuple[str, pd.DataFrame]:
         for test_name, DF in self.as_dict.items():
             yield test_name, DF
-    
+
     # ==
     # == GETTERS AND SETTERS ===========================================================
 
@@ -113,40 +112,38 @@ class StatResults:
         """Uses results from normality, homoscedasticity and sphericity tests to decide if parametric tests should be used"""
         self.parametric = self.normal and self.homoscedastic and self.spherical
         return self.parametric
-    
-    # == 
+
+    # ==
     # == EXPORT ========================================================================
-    
-    def save(self, out:str="plotastic_results") -> None:
+
+    def save(self, fname: str = "plotastic_results") -> None:
         """Exports all statistics to one excel file. Different sheets for different
         tests
-        
+
         :param out: Path to save excel file, optional (default="")
         :type out: str, optional
         """
         ### Construct output path
-        out = Path(out).with_suffix(".xlsx")
-        
+        fname = Path(fname).with_suffix(".xlsx")
+
         ### Init writer for multiple sheets
-        writer = pd.ExcelWriter(out, engine="xlsxwriter")       
+        writer = pd.ExcelWriter(fname, engine="xlsxwriter")
         workbook = writer.book
-        
+
         ### Iterate through results
         for test_name, DF in self.as_dict.items():
-            worksheet= workbook.add_worksheet(test_name) # * Make sheet
-            writer.sheets[test_name] = worksheet # * Add sheet name to writer
-            DF.to_excel(writer, sheet_name=test_name) # * # Write DF to sheet
-            
+            worksheet = workbook.add_worksheet(test_name)  # * Make sheet
+            writer.sheets[test_name] = worksheet  # * Add sheet name to writer
+            DF.to_excel(writer, sheet_name=test_name)  # * # Write DF to sheet
+
         ### Save
         writer.save()
-         
-        
-        
-    
+
+
 # !
 # ! end class
 
-#%% test it
+# %% test it
 # if __name__ == "__main__":
 
 #     # %% Load Data, make DA, fill it with stuff
@@ -154,7 +151,3 @@ class StatResults:
 #     DF, dims = load_dataset("qpcr")
 #     # DA = DataAnalysis(DF, dims)
 #     # DA.test_pairwise()
-    
-
-    
-    

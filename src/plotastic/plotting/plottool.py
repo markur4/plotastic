@@ -25,6 +25,7 @@ from plotastic.dimensions.dataframetool import DataFrameTool
 if TYPE_CHECKING:
     # from numpy import ndarray
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
+    from matplotlib.figure import Figure
 
     # from matplotlib.axes import Axes # ! Doesn't work
     # import pandas as pd
@@ -34,7 +35,7 @@ if TYPE_CHECKING:
     # from matplotlib import axes
 
 
-# %% Class: PlotTool ...................................................................................
+# %% Class: PlotTool
 
 
 class PlotTool(DataFrameTool):
@@ -96,7 +97,7 @@ class PlotTool(DataFrameTool):
         "rel": "https://seaborn.pydata.org/generated/seaborn.relplot.html#seaborn.relplot",
     }
 
-    # ==__INIT__ :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    # ==__INIT__ =======================================================================
 
     def __init__(self, **dataframetool_kws):
         """
@@ -117,7 +118,7 @@ class PlotTool(DataFrameTool):
 
         ### Initialise figure and axes
         fig, axes = plt.subplots(nrows=self.len_rowlevels, ncols=self.len_collevels)
-        self.fig: mpl.figure.Figure = fig
+        self.fig: Figure = fig
         self.axes = axes
         plt.close()  # * Close the figure to avoid displaying it
 
@@ -128,7 +129,7 @@ class PlotTool(DataFrameTool):
     #
     #
 
-    # == ITERATORS #..........................................................
+    # == ITERATORS =====================================================================
 
     #
     ### NESTED / FLAT....................................#
@@ -243,9 +244,9 @@ class PlotTool(DataFrameTool):
             for ax in row:  # * Through columns
                 yield ax
 
-    #
-    #
-    #  ... PLOT .........................................................................................................
+    # ==
+    # ==
+    # ==   PLOT  =======================================================================
 
     def subplots(
         self,
@@ -268,7 +269,7 @@ class PlotTool(DataFrameTool):
         # == Handle kwargs
         ### Adds extra kwargs depending on kwargs already present
         if sharey and (wspace is None):
-            wspace = 0.05 
+            wspace = 0.05
         elif not sharey and (wspace is None):
             wspace = 0.5
 
@@ -295,12 +296,12 @@ class PlotTool(DataFrameTool):
         # == EDITS ==
         ### Add titles to axes to provide basic orientation
         self.edit_axtitles_reset()
-        
+
         ### Scale
         # ! Must sometimes be done BEFORE seaborn functions, otherwise they might look weird
         if not y_scale is None:
             plt.yscale(y_scale, **y_scale_kws)
-            
+
         return self
 
     def subplots_SNIP(self, doclink=True) -> str:
@@ -334,7 +335,7 @@ class PlotTool(DataFrameTool):
         :return: _description_
         :rtype: PlotTool | DataAnalysis
         """
-        
+
         ### If row or col, assure that axes_count == facet_count
         if self.factors_rowcol:
             assert (
@@ -362,7 +363,7 @@ class PlotTool(DataFrameTool):
         if not self.dims.col is None:
             for ax in self.axes_iter_notleftmost_col:
                 ax.set_ylabel("")
-        
+
         ### Remove legend per axes, since we want one legend for the whole figure
         if (
             self.dims.hue
@@ -386,14 +387,14 @@ class PlotTool(DataFrameTool):
 
     #
     #
-    # == Fig properties ............................................................................
+    # == Fig properties ================================================================
     @property
     def figsize(self) -> tuple[int]:
         return self.fig.get_size_inches()
 
     #
     #
-    # == Small EDITS and those required to be set BEFORE seaborn plots......................................................
+    # == Small EDITS and those required to be set BEFORE seaborn plots =================
     def edit_axtitles_reset(self) -> "PlotTool | DataAnalysis":
         for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))
@@ -403,6 +404,17 @@ class PlotTool(DataFrameTool):
         for ax in self.axes_flat:
             if ax.legend_:
                 ax.legend_.remove()
+
+    # == Save =========================================================================
+
+    def save_fig(self, **savefig_kwargs) -> None:
+        """Calls plt.figure.Figure.savefig(). Overridden by DataAnalysis.save_fig(), but
+        useful to have here for testing purposes..?
+
+        :param safefig_kwargs: kwargs passed to plt.figure.Figure.savefig()
+        """
+        # ! This function is overriden by DataAnalysis.save_fig()
+        self.fig.savefig(**savefig_kwargs)
 
 
 # ! # end class
