@@ -38,7 +38,7 @@ class DataAnalysis(Annotator):
         verbose=True,
     ) -> "DataAnalysis":
         ### Inherit
-        # * verbosity false, since each subclass can test its own DataFrame
+        # ! verbosity set to False, since each subclass shouldn't test its own DataFrame
         dataframetool_kws = dict(
             data=data, dims=dims, subject=subject, levels=levels, verbose=False
         )
@@ -94,19 +94,7 @@ class DataAnalysis(Annotator):
             a.title = f"{a.title}{con}{to_end}"
         return a
 
-    # == I/O PLOTTING ==================================================================
 
-    def save_fig_tobuffer(self, name=""):
-        filename = Path(self.buffer + name).with_suffix(".pickle")
-        with open(filename, "wb") as file:
-            pickle.dump((self.fig, self.axes), file)
-
-    def load_fig_frombuffer(self, name=""):
-        filename = Path(self.buffer + name).with_suffix(".pickle")
-        with open(filename, "rb") as file:
-            fig, axes = pickle.load(file)
-        # ! can#t return the whole PlotTool object, since pyplot will mix the fig with previous objects
-        return fig, axes
 
     # ==
     # == Saving stuff ==================================================================
@@ -192,8 +180,9 @@ class DataAnalysis(Annotator):
         fname = Path(fname).with_suffix("." + format)
 
         ### Save figure
-        # ! Not working, self.fig is never updated during plotting 
-        self.fig.savefig(fname, **kwargs)
+        # todo Not working, self.fig is never updated during plotting (only axes?)
+        # self.fig.savefig(fname, **kwargs)
+        plt.savefig(fname, **kwargs)
 
         return self
 

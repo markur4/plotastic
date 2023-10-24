@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 import matplotlib as mpl
+from matplotlib.figure import Figure
 import matplotlib.axes
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -25,7 +26,7 @@ from plotastic.dimensions.dataframetool import DataFrameTool
 if TYPE_CHECKING:
     # from numpy import ndarray
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
-    from matplotlib.figure import Figure
+    # from matplotlib.figure import Figure
 
     # from matplotlib.axes import Axes # ! Doesn't work
     # import pandas as pd
@@ -121,9 +122,6 @@ class PlotTool(DataFrameTool):
         self.fig: Figure = fig
         self.axes: np.ndarray = axes
         plt.close()  # * Close the figure to avoid displaying it
-
-        ### Buffer to store plot intermediates
-        self.buffer = Path("__figcache")
 
     # __init__
     #
@@ -298,7 +296,7 @@ class PlotTool(DataFrameTool):
 
         # == SUBPLOTS ===========
         fig, ax = plt.subplots(
-            # squeeze=False, # ! Always return 2D array. Don't use, it's fine as it is
+            # squeeze=False, # ! Always return 2D array. Don't use, requires unnecessary refactoring
             **KWS,
         )
 
@@ -383,7 +381,7 @@ class PlotTool(DataFrameTool):
         ):  # ! also: legend=False doesn't work with sns.barplot for some reason..
             self.remove_legend()
 
-        ### todo Save current plot as attribute, so that we can save mid-plot 
+        ### todo Save current plot as attribute, so that we can save mid-plot
         # self.fig = plt.gcf() # ! Doesn't work, seems to overwrite self.axes to list
         # self.axes = self.fig.get_axes() # ! Doesn't work, always returns list, not 2D array
 
@@ -431,10 +429,43 @@ class PlotTool(DataFrameTool):
         :param safefig_kwargs: kwargs passed to plt.figure.Figure.savefig()
         """
         # ! This function is overriden by DataAnalysis.save_fig()
-        # ! ALSO: not working, self.fig is Never updated during .fillaxes!
-        self.fig.savefig(**savefig_kwargs)
-        # plt.savefig(**savefig_kwargs) # ? Use rather this..?
+        plt.savefig(**savefig_kwargs) 
+        # ! ot working, self.fig is Never updated during .fillaxes!
+        # self.fig.savefig(**savefig_kwargs)
         return self
+
+    # == Buffer =======================================================================
+
+    ### Originals
+    # def save_fig_tobuffer(self, name=""):
+    #     filename = Path(self.buffer + name).with_suffix(".pickle")
+    #     with open(filename, "wb") as file:
+    #         pickle.dump((self.fig, self.axes), file)
+
+    # def load_fig_frombuffer(self, name=""):
+    #     filename = Path(self.buffer + name).with_suffix(".pickle")
+    #     with open(filename, "rb") as file:
+    #         fig, axes = pickle.load(file)
+    #     # ! can't return the whole PlotTool object, since pyplot will mix the fig with previous objects
+    #     return fig, axes
+
+    @staticmethod
+    def save_fig_tobuffer(fig: Figure, axes: np.ndarray, name=""):
+        buffer = Path("__figcache" + name)
+        filename = Path(buffer).with_suffix(".pickle")
+        with open(filename, "wb") as file:
+            pickle.dump((fig, axes), file)
+
+    @staticmethod
+    def load_fig_frombuffer(fig: Figure, axes: np.ndarray, name=""):
+        buffer = Path("__figcache" + name)
+        filename = Path(buffer).with_suffix(".pickle")
+        with open(filename, "rb") as file:
+            fig, axes = pickle.load(file)
+        # ! can't return the whole PlotTool object, since pyplot will mix the fig with previous objects
+        return fig, axes
+
+        ### Buffer to store plot intermediates
 
 
 # ! # end class
