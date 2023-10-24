@@ -119,7 +119,7 @@ class PlotTool(DataFrameTool):
         ### Initialise figure and axes
         fig, axes = plt.subplots(nrows=self.len_rowlevels, ncols=self.len_collevels)
         self.fig: Figure = fig
-        self.axes = axes
+        self.axes: np.ndarray = axes
         plt.close()  # * Close the figure to avoid displaying it
 
         ### Buffer to store plot intermediates
@@ -137,6 +137,12 @@ class PlotTool(DataFrameTool):
     @property  # * [[ax11, ax12], [ax21, ax22]]
     def axes_nested(self) -> np.ndarray[np.ndarray[matplotlib.axes.Axes]]:
         """Always returns a 2D nested array of axes, even if there is only one row or column."""
+
+        # ! subplots(square=True) returns a 2D array, so no need to reshape
+        # ! BUT that would mean I'd also have to refactor everything that needs flat.
+        # ! So let's just keep it this way
+        # return self.axes
+
         if bool(self.dims.row and self.dims.col):  # * both row and col
             return self.axes
         elif self.factors_is_1_facet:  # * either or
@@ -290,10 +296,13 @@ class PlotTool(DataFrameTool):
         # * User args override defaults
         KWS = ut.update_dict_recursive(KWS, subplot_kws)
 
-        # == SUBPLOTS ==
-        self.fig, self.axes = plt.subplots(**KWS)
+        # == SUBPLOTS ===========
+        fig, ax = plt.subplots(
+            # squeeze=False, # ! Always return 2D array. Don't use, it's fine as it is
+            **KWS,
+        )
 
-        # == EDITS ==
+        # == EDITS ==============
         ### Add titles to axes to provide basic orientation
         self.edit_axtitles_reset()
 
@@ -301,6 +310,10 @@ class PlotTool(DataFrameTool):
         # ! Must sometimes be done BEFORE seaborn functions, otherwise they might look weird
         if not y_scale is None:
             plt.yscale(y_scale, **y_scale_kws)
+
+        ### Save current plot as attributes
+        self.fig = fig  # * Figure
+        self.axes = ax  # * np.ndarray[np.ndarray[matplotlib.axes.Axes]]
 
         return self
 
@@ -370,6 +383,10 @@ class PlotTool(DataFrameTool):
         ):  # ! also: legend=False doesn't work with sns.barplot for some reason..
             self.remove_legend()
 
+        ### todo Save current plot as attribute, so that we can save mid-plot 
+        # self.fig = plt.gcf() # ! Doesn't work, seems to overwrite self.axes to list
+        # self.axes = self.fig.get_axes() # ! Doesn't work, always returns list, not 2D array
+
         return self
 
     def fillaxes_SNIP(self, kind: str = "strip", doclink=True) -> str:
@@ -407,14 +424,17 @@ class PlotTool(DataFrameTool):
 
     # == Save =========================================================================
 
-    def save_fig(self, **savefig_kwargs) -> None:
+    def save_fig(self, **savefig_kwargs) -> "PlotTool | DataAnalysis":
         """Calls plt.figure.Figure.savefig(). Overridden by DataAnalysis.save_fig(), but
         useful to have here for testing purposes..?
 
         :param safefig_kwargs: kwargs passed to plt.figure.Figure.savefig()
         """
         # ! This function is overriden by DataAnalysis.save_fig()
+        # ! ALSO: not working, self.fig is Never updated during .fillaxes!
         self.fig.savefig(**savefig_kwargs)
+        # plt.savefig(**savefig_kwargs) # ? Use rather this..?
+        return self
 
 
 # ! # end class

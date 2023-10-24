@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pytest
 
 import plotastic as plst
-from plotastic import Annotator
+from plotastic.dataanalysis.annotator import Annotator
 
 import markurutils as ut
 

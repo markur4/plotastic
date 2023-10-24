@@ -137,7 +137,7 @@ class StatResults:
             DF.to_excel(writer, sheet_name=test_name)  # * # Write DF to sheet
 
         ### Save
-        writer.save()
+        writer.close()
 
 
 # !

@@ -115,7 +115,7 @@ class DataAnalysis(Annotator):
         self,
         fname: str | Path = "plotastic_results",
         format: str = "pdf",
-        overwrite: bool = None,  # * Added overwrite protection
+        overwrite: str | bool = "day",  # * Added overwrite protection
         dpi: int | str = 300,  # ! mpl default is "figure"
         bbox_inches: "str | Bbox" = "tight",
         pad_inches: float = 0.1,
@@ -126,10 +126,13 @@ class DataAnalysis(Annotator):
     ) -> "DataAnalysis":
         """Calls plt.figure.Figure.savefig(). Also provides an overwrite protection
 
-        :param overwrite: If True, overwrites existing files. If False, prevents
-            overwriting existing files. If None, uses rcParams["savefig.overwrite"]
-            (rcParams defaults to True)., defaults to None
-        :type overwrite: bool, optional
+        :param overwrite: Mode of overwrite protection. If "day", it simply adds the
+            current date at the end of the filename, causing every output on the same
+            day to overwrite itself. If "nothing" ["day", "nothing"], files with the
+            same filename will be detected in the current work directory and a number
+            will be added to the filename. If True, everything will be overwritten.,
+            defaults to "day"
+        :type overwrite: str|bool, optional
         :param fname: A path, or a Python file-like object. If format is set, it
             determines the output format, and the file is saved as fname. Note that
             fname is used verbatim, and there is no attempt to make the extension, if
@@ -170,7 +173,7 @@ class DataAnalysis(Annotator):
 
         ### Gather arguments
         kwargs = dict(
-            fname=self.title,
+            # fname=self.title, # ! pass it directly
             format=format,
             dpi=dpi,
             bbox_inches=bbox_inches,
@@ -182,38 +185,74 @@ class DataAnalysis(Annotator):
         kwargs.update(**user_kwargs)  # * Add user kwargs
 
         ### Overwrite protection
-        if not overwrite and not overwrite is None:
-            kwargs["fname"] = self.filer.prevent_overwrite(filename=kwargs["fname"])
+        if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
+            fname = self.filer.prevent_overwrite(filename=fname, mode=overwrite)
+
+        ### Add Suffix
+        fname = Path(fname).with_suffix("." + format)
 
         ### Save figure
-        self.fig.savefig(**kwargs)
+        # ! Not working, self.fig is never updated during plotting 
+        self.fig.savefig(fname, **kwargs)
 
         return self
 
     def save_statistics(
         self,
         fname: str = "plotastic_results",
-        overwrite: bool = None,
+        overwrite: str | bool = "day",
     ) -> None:
         """Exports all statistics to one excel file. Different sheets for different
         tests
 
+        :param overwrite: Mode of overwrite protection. If "day", it simply adds the
+            current date at the end of the filename, causing every output on the same
+            day to overwrite itself. If "nothing" ["day", "nothing"], files with the
+            same filename will be detected in the current work directory and a number
+            will be added to the filename. If True, everything will be overwritten.,
+            defaults to "day"
+        :type overwrite: str | bool, optional
         :param out: Path to save excel file, optional (default="")
         :type out: str, optional
         """
-        if not overwrite and not overwrite is None:
-            fname = self.filer.prevent_overwrite(filename=fname)
+        
+        ### Overwrite Protection
+        if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
+            fname = self.filer.prevent_overwrite(filename=fname, mode=overwrite)
+            
+        ### Save Statistics
         self.results.save(fname=fname)
 
-    def save_all(self, fname: str = "plotastic_results") -> None:
+    def save_all(
+        self,
+        fname: str = "plotastic_results",
+        overwrite: str | bool = "day",
+        savefig_kws: dict = None,
+    ) -> None:
         """Exports all files stored in DataAnalysis object
 
-        :param out: Path to save excel file, optional (default="")
-        :type out: str, optional
+        :param fname: Path to save excel file, optional (default="")
+        :type fname: str, optional
+        :param overwrite: Mode of overwrite protection. If "day", it simply adds the
+            current date at the end of the filename, causing every output on the same
+            day to overwrite itself. If "nothing" ["day", "nothing"], files with the
+            same filename will be detected in the current work directory and a number
+            will be added to the filename. If True, everything will be overwritten.,
+            defaults to "day"
+        :type overwrite: str|bool, optional
+        :param savefig_kws: Additional kwargs passed to plt.figure.Figure.savefig()
+        :type savefig_kws: dict, optional
         """
-        raise NotImplementedError
-        self.save_statistics(fname=fname)
-        self.save_fig(out=fname)
+
+        ### Gather Arguments
+        if savefig_kws is None:
+            savefig_kws = dict()
+
+        # if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
+        #     fname = self.filer.prevent_overwrite(filename=fname, mode=overwrite)
+
+        self.save_statistics(fname=fname, overwrite=overwrite)
+        self.save_fig(fname=fname, overwrite=overwrite, **savefig_kws)
 
     # @staticmethod
     # def _redraw_fig(fig):

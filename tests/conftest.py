@@ -2,9 +2,13 @@
 
 # %% imports
 
+import os
 import warnings
+from glob import glob
 
 import pandas as pd
+
+import matplotlib.pyplot as plt
 
 import markurutils as ut
 
@@ -116,6 +120,31 @@ def get_DA_with_full_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
 
     return DA
 
+def get_DA_with_plot(dataset: str = "qpcr") -> plst.DataAnalysis:
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        ### Load example data
+        DF, dims = plst.load_dataset(dataset, verbose=False)
+
+        ### Init DA
+        DA = plst.DataAnalysis(DF, dims, subject="subject", verbose=False)
+        
+        DA.plot_box_strip()
+        plt.close()
+        return DA
+
+def get_DA_with_all(dataset: str) -> plst.DataAnalysis:
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        
+        DA = get_DA_with_full_statistics(dataset)
+        DA.plot_box_swarm()
+        plt.close()
+        return DA
+
+DA_COMPLETE_STATISTICS = get_DA_with_full_statistics(dataset="qpcr")
+DA_COMPLETE_PLOT = get_DA_with_plot(dataset="qpcr")
+DA_COMPLETE_ALL = get_DA_with_all(dataset="qpcr")
 
 # %% Utils
 ###  (DF, dims) -> (DF, dims, kwargs)
@@ -138,3 +167,9 @@ def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
     for tup, e in zip(zipped, column):
         zipped_with_column.append(tup + (e,))
     return zipped_with_column
+
+def cleanfiles(fname:str):
+    """deletes all files that start with fname"""
+    testfiles = glob(fname + "*")
+    for file in testfiles:
+        os.remove(file)

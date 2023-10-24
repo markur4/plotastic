@@ -24,7 +24,7 @@ IPython.extract_module_locals()[1].get("__vsc_ipynb_file__")
 
 DF, dims = plst.load_dataset("tips", verbose=False)
 DA = plst.DataAnalysis(DF, dims, verbose=False)
-DA_FULL = ct.get_DA_with_full_statistics()
+DA_COMPLETE = ct.DA_COMPLETE_STATISTICS
 
 
 # %% Test prevent_overwrite
@@ -33,8 +33,14 @@ DA_FULL = ct.get_DA_with_full_statistics()
 def test_prevent_overwrite():
     ### Define a name
     testfile_name = "TEST_FILE_123"
+    distraction_names = [
+        "TEST_FILE_",
+        "_TEST_FILE_",
+        "TEST_FILE_12",
+        "TEST_FIL_12",
+    ]
 
-    def make_testfiles(testfile_name):
+    def mk_testfiles(testfile_name) -> str:
         ### Make a testfile excel
         df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
         df.to_excel(testfile_name + ".xlsx")
@@ -45,36 +51,51 @@ def test_prevent_overwrite():
 
         return testfile_name
 
-    ### Make sure it's clean before testing
-    testfiles = glob(testfile_name + "*")
-    for file in testfiles:
-        os.remove(file)
+    ### Cleanup before testing
+    ct.cleanfiles(testfile_name)
+    for name in distraction_names:
+        ct.cleanfiles(name)
 
-    # == TEST
+
+    ### Make Distraction Files
+    for name in distraction_names:
+        mk_testfiles(name)
+
+    # == TEST 0: mode="day"
+    kws = dict(mode="day")
+    new = DA.filer.prevent_overwrite(testfile_name, **kws)
+    assert (
+        new == testfile_name + f"_{DA.filer.current_day}"
+    ), f"new_name = {new}, testfile_name = {testfile_name}"
+
+    # == TEST 1: mode="nothing"
+    kws = dict(mode="nothing")
 
     ### If NO file exists, it should return the same name with _0
-    new = DA.filer.prevent_overwrite(testfile_name, ret_parent=False)
-    assert new == testfile_name + "_0", f"new_name = {new}"
+    new = DA.filer.prevent_overwrite(testfile_name, **kws)
+    assert (
+        new == testfile_name + "_0"
+    ), f"new_name = {new}, testfile_name = {testfile_name}"
 
     ### If a file EXISTS, it should return the same name with _0
-    tested = make_testfiles(testfile_name)
-    new = DA.filer.prevent_overwrite(testfile_name, ret_parent=False)
+    tested = mk_testfiles(testfile_name)
+    new = DA.filer.prevent_overwrite(testfile_name, **kws)
     assert new == testfile_name + "_0", f"new_name = {new}, testfile_name = {tested}"
 
     ### If a file with _0 exists, it should return a new name with _1
-    tested = make_testfiles(testfile_name + "_0")
-    new = DA.filer.prevent_overwrite(testfile_name, ret_parent=False)
+    tested = mk_testfiles(new)  # * "testfile_name_0"
+    new = DA.filer.prevent_overwrite(testfile_name, **kws)
     assert new == testfile_name + "_1", f"new_name = {new}, testfile_name = {tested}"
 
     ### If a file with _1 exists, it should return a new name with _2
-    tested = make_testfiles(testfile_name + "_1")
-    new = DA.filer.prevent_overwrite(testfile_name, ret_parent=False)
+    tested = mk_testfiles(new)  # * "testfile_name_1"
+    new = DA.filer.prevent_overwrite(testfile_name, **kws)
     assert new == testfile_name + "_2", f"new_name = {new}, testfile_name = {tested}"
 
     # == Cleanup
-    testfiles = glob(testfile_name + "*")
-    for file in testfiles:
-        os.remove(file)
+    ct.cleanfiles(testfile_name)
+    for name in distraction_names:
+        ct.cleanfiles(name)
 
 
 if __name__ == "__main__":
