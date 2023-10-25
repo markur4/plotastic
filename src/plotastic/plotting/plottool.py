@@ -295,7 +295,7 @@ class PlotTool(DataFrameTool):
         KWS = ut.update_dict_recursive(KWS, subplot_kws)
 
         # == SUBPLOTS ===========
-        fig, ax = plt.subplots(
+        self.fig, self.axes = plt.subplots(
             # squeeze=False, # ! Always return 2D array. Don't use, requires unnecessary refactoring
             **KWS,
         )
@@ -310,8 +310,9 @@ class PlotTool(DataFrameTool):
             plt.yscale(y_scale, **y_scale_kws)
 
         ### Save current plot as attributes
-        self.fig = fig  # * Figure
-        self.axes = ax  # * np.ndarray[np.ndarray[matplotlib.axes.Axes]]
+        # ? Not needed? Further actions edit self.axes reference 
+        # self.fig = fig  # * Figure
+        # self.axes = ax  # * np.ndarray[np.ndarray[matplotlib.axes.Axes]]
 
         return self
 
@@ -339,11 +340,14 @@ class PlotTool(DataFrameTool):
     def fillaxes(
         self, kind: str = "strip", **sns_kws: dict
     ) -> "PlotTool | DataAnalysis":
-        """_summary_
+        """Iterates through self.data and self.axes and plots data into axes using
+        seaborn plotting functions.
 
-        :param kind: _description_, defaults to "strip"
+        :param kind: Kind of plot, any seaborn plot should work ["bar", "box", "strip",
+            "swarm", "point", "violin", etc.]. , defaults to "strip"
         :type kind: str, optional
-        :return: _description_
+        :param sns_kws: Keyword arguments passed to seaborn function selected in kind.
+        :return: DataAnalysis object for method chaining
         :rtype: PlotTool | DataAnalysis
         """
 
