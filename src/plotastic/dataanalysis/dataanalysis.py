@@ -102,95 +102,96 @@ class DataAnalysis(Annotator):
     # ==
     # == Saving stuff ==================================================================
 
-    @docstrings.subst(overwrite=docstrings.param_overwrite)
-    def save_fig(
-        self,
-        fname: str | Path = "plotastic_results",
-        format: str = "pdf",
-        fig: Figure = None,
-        overwrite: str | bool = "day",  # * Added overwrite protection
-        dpi: int | str = 300,  # ! mpl default is "figure"
-        bbox_inches: "str | Bbox" = "tight",
-        pad_inches: float = 0.1,
-        facecolor: str = "none",  # ! mpl default is "auto", using current figure facecolor
-        edgecolor: str = "none",  # ! mpl default is "auto", using current figure edgecolor
-        backend: str = None,
-        **user_kwargs,
-    ) -> "DataAnalysis":
-        """Calls plt.figure.Figure.savefig(). Also provides an overwrite protection
+    # @docstrings.subst(overwrite=docstrings.param_overwrite)
+    # def save_fig(
+    #     self,
+    #     fname: str | Path = "plotastic_results",
+    #     format: str = "pdf",
+    #     fig: Figure = None,
+    #     overwrite: str | bool = "day",  # * Added overwrite protection
+    #     dpi: int | str = 300,  # ! mpl default is "figure"
+    #     bbox_inches: "str | Bbox" = "tight",
+    #     pad_inches: float = 0.1,
+    #     facecolor: str = "none",  # ! mpl default is "auto", using current figure facecolor
+    #     edgecolor: str = "none",  # ! mpl default is "auto", using current figure edgecolor
+    #     backend: str = None,
+    #     **user_kwargs,
+    # ) -> "DataAnalysis":
+    #     """Calls plt.figure.Figure.savefig(). Also provides an overwrite protection
 
-        {overwrite}
-        :param fname: A path, or a Python file-like object. If format is set, it
-            determines the output format, and the file is saved as fname. Note that
-            fname is used verbatim, and there is no attempt to make the extension, if
-            any, of fname match format, and no extension is appended.
+    #     {overwrite}
+    #     :param fname: A path, or a Python file-like object. If format is set, it
+    #         determines the output format, and the file is saved as fname. Note that
+    #         fname is used verbatim, and there is no attempt to make the extension, if
+    #         any, of fname match format, and no extension is appended.
 
-            If format is not set, then the format is inferred from the extension of
-            fname, if there is one. If format is not set and fname has no extension,
-            then the file is saved with rcParams["savefig.format"] (default: 'png') and
-            the appropriate extension is appended to fname., defaults to
-            "plotastic_results"
-        :type fname: str | path.Path, optional
-        :param format: The file format, e.g. 'png', 'pdf', 'svg', ... The behavior when
-            this is unset is documented under fname., defaults to "pdf"
-        :type format: str, optional
-        :param dpi: The resolution in dots per inch. If 'figure', use the figure's dpi
-            value., defaults to 300
-        :type dpi: int, optional
-        :param bbox_inches: Bounding box in inches: only the given portion of the figure
-            is saved. If 'tight', try to figure out the tight bbox of the figure.,
-            defaults to "tight"
-        :type bbox_inches: str | plt.Bbox, optional
-        :param pad_inches: Amount of padding in inches around the figure when
-            bbox_inches is 'tight'. If 'layout' use the padding from the constrained or
-            compressed layout engine; ignored if one of those engines is not in use,
-            defaults to 0.1
-        :type pad_inches: float, optional
-        :param facecolor: The facecolor of the figure. If 'auto', use the current figure
-            facecolor., defaults to "auto"
-        :type facecolor: str, optional
-        :param edgecolor: The edgecolor of the figure. If 'auto', use the current figure
-            edgecolor., defaults to "auto"
-        :type edgecolor: str, optional
-        :param backend: The backend to use for the rendering. If None, use
-            rcParams["savefig.backend"], otherwise use backend, defaults to None
-        :type backend: str, optional
-        :param user_kwargs: Additional kwargs passed to plt.figure.Figure.savefig()
-        """
+    #         If format is not set, then the format is inferred from the extension of
+    #         fname, if there is one. If format is not set and fname has no extension,
+    #         then the file is saved with rcParams["savefig.format"] (default: 'png') and
+    #         the appropriate extension is appended to fname., defaults to
+    #         "plotastic_results"
+    #     :type fname: str | path.Path, optional
+    #     :param format: The file format, e.g. 'png', 'pdf', 'svg', ... The behavior when
+    #         this is unset is documented under fname., defaults to "pdf"
+    #     :type format: str, optional
+    #     :param dpi: The resolution in dots per inch. If 'figure', use the figure's dpi
+    #         value., defaults to 300
+    #     :type dpi: int, optional
+    #     :param bbox_inches: Bounding box in inches: only the given portion of the figure
+    #         is saved. If 'tight', try to figure out the tight bbox of the figure.,
+    #         defaults to "tight"
+    #     :type bbox_inches: str | plt.Bbox, optional
+    #     :param pad_inches: Amount of padding in inches around the figure when
+    #         bbox_inches is 'tight'. If 'layout' use the padding from the constrained or
+    #         compressed layout engine; ignored if one of those engines is not in use,
+    #         defaults to 0.1
+    #     :type pad_inches: float, optional
+    #     :param facecolor: The facecolor of the figure. If 'auto', use the current figure
+    #         facecolor., defaults to "auto"
+    #     :type facecolor: str, optional
+    #     :param edgecolor: The edgecolor of the figure. If 'auto', use the current figure
+    #         edgecolor., defaults to "auto"
+    #     :type edgecolor: str, optional
+    #     :param backend: The backend to use for the rendering. If None, use
+    #         rcParams["savefig.backend"], otherwise use backend, defaults to None
+    #     :type backend: str, optional
+    #     :param user_kwargs: Additional kwargs passed to plt.figure.Figure.savefig()
+    #     """
 
-        ### Gather arguments
-        kwargs = dict(
-            # fname=self.title, # ! pass it directly
-            format=format,
-            dpi=dpi,
-            bbox_inches=bbox_inches,
-            pad_inches=pad_inches,
-            facecolor=facecolor,
-            edgecolor=edgecolor,
-            backend=backend,
-        )
-        kwargs.update(**user_kwargs)  # * Add user kwargs
+    #     ### Gather arguments
+    #     kwargs = dict(
+    #         # fname=self.title, # ! pass it directly
+    #         format=format,
+    #         dpi=dpi,
+    #         bbox_inches=bbox_inches,
+    #         pad_inches=pad_inches,
+    #         facecolor=facecolor,
+    #         edgecolor=edgecolor,
+    #         backend=backend,
+    #     )
+    #     kwargs.update(**user_kwargs)  # * Add user kwargs
 
-        ### Overwrite protection
-        if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
-            fname = self.filer.prevent_overwrite(filename=fname, mode=overwrite)
+    #     ### Overwrite protection
+    #     if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
+    #         fname = self.filer.prevent_overwrite(filename=fname, mode=overwrite)
 
-        ### Add Suffix
-        fname = Path(fname).with_suffix("." + format)
+    #     ### Add Suffix
+    #     fname = Path(fname).with_suffix("." + format)
 
-        ### take figure
-        if fig is None:
-            fig = self.fig
-        fig.savefig(fname, **kwargs)
+    #     ### take figure
+    #     if fig is None:
+    #         fig = self.fig
+    #     fig.savefig(fname, **kwargs)
         
 
-        ### Save figure
-        # todo Not working, self.fig is never updated during plotting (only axes?)
-        # self.fig.savefig(fname, **kwargs)
-        # plt.savefig(fname, **kwargs)
+    #     ### Save figure
+    #     # todo Not working, self.fig is never updated during plotting (only axes?)
+    #     # self.fig.savefig(fname, **kwargs)
+    #     # plt.savefig(fname, **kwargs)
 
-        return self
+    #     return self
 
+    @docstrings.subst(overwrite=docstrings.param_overwrite)
     def save_statistics(
         self,
         fname: str = "plotastic_results",
@@ -198,14 +199,8 @@ class DataAnalysis(Annotator):
     ) -> None:
         """Exports all statistics to one excel file. Different sheets for different
         tests
-
-        :param overwrite: Mode of overwrite protection. If "day", it simply adds the
-            current date at the end of the filename, causing every output on the same
-            day to overwrite itself. If "nothing" ["day", "nothing"], files with the
-            same filename will be detected in the current work directory and a number
-            will be added to the filename. If True, everything will be overwritten.,
-            defaults to "day"
-        :type overwrite: str | bool, optional
+        
+        {param_overwrite}
         :param out: Path to save excel file, optional (default="")
         :type out: str, optional
         """
@@ -217,36 +212,36 @@ class DataAnalysis(Annotator):
         ### Save Statistics
         self.results.save(fname=fname)
 
-    def save_all(
-        self,
-        fname: str = "plotastic_results",
-        overwrite: str | bool = "day",
-        savefig_kws: dict = None,
-    ) -> None:
-        """Exports all files stored in DataAnalysis object
+    # def save_all(
+    #     self,
+    #     fname: str = "plotastic_results",
+    #     overwrite: str | bool = "day",
+    #     savefig_kws: dict = None,
+    # ) -> None:
+    #     """Exports all files stored in DataAnalysis object
 
-        :param fname: Path to save excel file, optional (default="")
-        :type fname: str, optional
-        :param overwrite: Mode of overwrite protection. If "day", it simply adds the
-            current date at the end of the filename, causing every output on the same
-            day to overwrite itself. If "nothing" ["day", "nothing"], files with the
-            same filename will be detected in the current work directory and a number
-            will be added to the filename. If True, everything will be overwritten.,
-            defaults to "day"
-        :type overwrite: str|bool, optional
-        :param savefig_kws: Additional kwargs passed to plt.figure.Figure.savefig()
-        :type savefig_kws: dict, optional
-        """
+    #     :param fname: Path to save excel file, optional (default="")
+    #     :type fname: str, optional
+    #     :param overwrite: Mode of overwrite protection. If "day", it simply adds the
+    #         current date at the end of the filename, causing every output on the same
+    #         day to overwrite itself. If "nothing" ["day", "nothing"], files with the
+    #         same filename will be detected in the current work directory and a number
+    #         will be added to the filename. If True, everything will be overwritten.,
+    #         defaults to "day"
+    #     :type overwrite: str|bool, optional
+    #     :param savefig_kws: Additional kwargs passed to plt.figure.Figure.savefig()
+    #     :type savefig_kws: dict, optional
+    #     """
 
-        ### Gather Arguments
-        if savefig_kws is None:
-            savefig_kws = dict()
+    #     ### Gather Arguments
+    #     if savefig_kws is None:
+    #         savefig_kws = dict()
 
-        # if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
-        #     fname = self.filer.prevent_overwrite(filename=fname, mode=overwrite)
+    #     # if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
+    #     #     fname = self.filer.prevent_overwrite(filename=fname, mode=overwrite)
 
-        self.save_statistics(fname=fname, overwrite=overwrite)
-        self.save_fig(fname=fname, overwrite=overwrite, **savefig_kws)
+    #     self.save_statistics(fname=fname, overwrite=overwrite)
+    #     self.save_fig(fname=fname, overwrite=overwrite, **savefig_kws)
 
     # @staticmethod
     # def _redraw_fig(fig):
