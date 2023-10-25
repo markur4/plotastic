@@ -26,6 +26,7 @@ from plotastic.dimensions.dataframetool import DataFrameTool
 if TYPE_CHECKING:
     # from numpy import ndarray
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
+
     # from matplotlib.figure import Figure
 
     # from matplotlib.axes import Axes # ! Doesn't work
@@ -295,6 +296,8 @@ class PlotTool(DataFrameTool):
         KWS = ut.update_dict_recursive(KWS, subplot_kws)
 
         # == SUBPLOTS ===========
+        self.fig: Figure
+        self.axes: np.ndarray
         self.fig, self.axes = plt.subplots(
             # squeeze=False, # ! Always return 2D array. Don't use, requires unnecessary refactoring
             **KWS,
@@ -310,7 +313,7 @@ class PlotTool(DataFrameTool):
             plt.yscale(y_scale, **y_scale_kws)
 
         ### Save current plot as attributes
-        # ? Not needed? Further actions edit self.axes reference 
+        # ? Not needed? Further actions edit self.axes reference
         # self.fig = fig  # * Figure
         # self.axes = ax  # * np.ndarray[np.ndarray[matplotlib.axes.Axes]]
 
@@ -387,7 +390,15 @@ class PlotTool(DataFrameTool):
 
         ### todo Save current plot as attribute, so that we can save mid-plot
         # self.fig = plt.gcf() # ! Doesn't work, seems to overwrite self.axes to list
-        # self.axes = self.fig.get_axes() # ! Doesn't work, always returns list, not 2D array
+        # self.axes = self.fig.get_axes() # ! Doesn't work, always returns list, not 2D
+        # array
+
+        ### Explicitly update the figure to include modified axes
+        # plt.figure(self.fig.number) # ! from chatgpt doesn't work
+
+        ### Update the figure reference
+        # ax = self.axes_flat[-1]  # Select the last modified axes
+        # self.fig = ax.get_figure()  # Update the figure reference
 
         return self
 
@@ -433,7 +444,7 @@ class PlotTool(DataFrameTool):
         :param safefig_kwargs: kwargs passed to plt.figure.Figure.savefig()
         """
         # ! This function is overriden by DataAnalysis.save_fig()
-        plt.savefig(**savefig_kwargs) 
+        plt.savefig(**savefig_kwargs)
         # ! ot working, self.fig is Never updated during .fillaxes!
         # self.fig.savefig(**savefig_kwargs)
         return self

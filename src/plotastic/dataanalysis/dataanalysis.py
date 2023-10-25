@@ -13,6 +13,7 @@ import pickle
 import pandas as pd
 
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
 from plotastic import docstrings
 
@@ -106,6 +107,7 @@ class DataAnalysis(Annotator):
         self,
         fname: str | Path = "plotastic_results",
         format: str = "pdf",
+        fig: Figure = None,
         overwrite: str | bool = "day",  # * Added overwrite protection
         dpi: int | str = 300,  # ! mpl default is "figure"
         bbox_inches: "str | Bbox" = "tight",
@@ -176,10 +178,16 @@ class DataAnalysis(Annotator):
         ### Add Suffix
         fname = Path(fname).with_suffix("." + format)
 
+        ### take figure
+        if fig is None:
+            fig = self.fig
+        fig.savefig(fname, **kwargs)
+        
+
         ### Save figure
         # todo Not working, self.fig is never updated during plotting (only axes?)
         # self.fig.savefig(fname, **kwargs)
-        plt.savefig(fname, **kwargs)
+        # plt.savefig(fname, **kwargs)
 
         return self
 
