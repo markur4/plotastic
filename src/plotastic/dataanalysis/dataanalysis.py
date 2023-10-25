@@ -14,6 +14,8 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
+from plotastic import docstrings
+
 import markurutils as ut
 from plotastic.dataanalysis.annotator import Annotator
 from plotastic.dataanalysis.filer import Filer
@@ -99,6 +101,7 @@ class DataAnalysis(Annotator):
     # ==
     # == Saving stuff ==================================================================
 
+    @docstrings.subst(overwrite=docstrings.param_overwrite)
     def save_fig(
         self,
         fname: str | Path = "plotastic_results",
@@ -114,13 +117,7 @@ class DataAnalysis(Annotator):
     ) -> "DataAnalysis":
         """Calls plt.figure.Figure.savefig(). Also provides an overwrite protection
 
-        :param overwrite: Mode of overwrite protection. If "day", it simply adds the
-            current date at the end of the filename, causing every output on the same
-            day to overwrite itself. If "nothing" ["day", "nothing"], files with the
-            same filename will be detected in the current work directory and a number
-            will be added to the filename. If True, everything will be overwritten.,
-            defaults to "day"
-        :type overwrite: str|bool, optional
+        {overwrite}
         :param fname: A path, or a Python file-like object. If format is set, it
             determines the output format, and the file is saved as fname. Note that
             fname is used verbatim, and there is no attempt to make the extension, if
