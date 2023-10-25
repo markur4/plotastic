@@ -436,20 +436,22 @@ class PlotTool(DataFrameTool):
                 ax.legend_.remove()
 
     # == Save =========================================================================
+    # ! NOT WORKING, just use plt.savefig() manually, I couldn't figure this out
 
-    def save_fig(self, **savefig_kwargs) -> "PlotTool | DataAnalysis":
-        """Calls plt.figure.Figure.savefig(). Overridden by DataAnalysis.save_fig(), but
-        useful to have here for testing purposes..?
+    # def save_fig(self, **savefig_kwargs) -> "PlotTool | DataAnalysis":
+    #     """Calls plt.figure.Figure.savefig(). Overridden by DataAnalysis.save_fig(), but
+    #     useful to have here for testing purposes..?
 
-        :param safefig_kwargs: kwargs passed to plt.figure.Figure.savefig()
-        """
-        # ! This function is overriden by DataAnalysis.save_fig()
-        plt.savefig(**savefig_kwargs)
-        # ! ot working, self.fig is Never updated during .fillaxes!
-        # self.fig.savefig(**savefig_kwargs)
-        return self
+    #     :param safefig_kwargs: kwargs passed to plt.figure.Figure.savefig()
+    #     """
+    #     # ! This function is overriden by DataAnalysis.save_fig()
+    #     plt.savefig(**savefig_kwargs)
+    #     # ! Not working, self.fig is Never updated during .fillaxes!
+    #     # self.fig.savefig(**savefig_kwargs)
+    #     return self
 
     # == Buffer =======================================================================
+    # ? Not used
 
     ### Originals
     # def save_fig_tobuffer(self, name=""):

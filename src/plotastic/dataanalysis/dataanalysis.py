@@ -97,12 +97,31 @@ class DataAnalysis(Annotator):
             a.title = f"{a.title}{con}{to_end}"
         return a
 
-
-
     # ==
     # == Saving stuff ==================================================================
 
-    # @docstrings.subst(overwrite=docstrings.param_overwrite)
+    @docstrings.subst(param_overwrite=docstrings.param_overwrite)
+    def save_statistics(
+        self,
+        fname: str = "plotastic_results",
+        overwrite: str | bool = "day",
+    ) -> None:
+        """Exports all statistics to one excel file. Different sheets for different
+        tests
+
+        {param_overwrite}
+        :param out: Path to save excel file, optional (default="")
+        :type out: str, optional
+        """
+
+        ### Overwrite Protection
+        if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
+            fname = self.filer.prevent_overwrite(fname=fname, overwrite=overwrite)
+
+        ### Save Statistics
+        self.results.save(fname=fname)
+
+    # @docstrings.subst(param_overwrite=docstrings.param_overwrite)
     # def save_fig(
     #     self,
     #     fname: str | Path = "plotastic_results",
@@ -119,7 +138,7 @@ class DataAnalysis(Annotator):
     # ) -> "DataAnalysis":
     #     """Calls plt.figure.Figure.savefig(). Also provides an overwrite protection
 
-    #     {overwrite}
+    #     {param_overwrite}
     #     :param fname: A path, or a Python file-like object. If format is set, it
     #         determines the output format, and the file is saved as fname. Note that
     #         fname is used verbatim, and there is no attempt to make the extension, if
@@ -182,35 +201,13 @@ class DataAnalysis(Annotator):
     #     if fig is None:
     #         fig = self.fig
     #     fig.savefig(fname, **kwargs)
-        
 
     #     ### Save figure
-    #     # todo Not working, self.fig is never updated during plotting (only axes?)
+    #     #  Not working, self.fig is never updated during plotting (only axes?)
     #     # self.fig.savefig(fname, **kwargs)
     #     # plt.savefig(fname, **kwargs)
 
     #     return self
-
-    @docstrings.subst(overwrite=docstrings.param_overwrite)
-    def save_statistics(
-        self,
-        fname: str = "plotastic_results",
-        overwrite: str | bool = "day",
-    ) -> None:
-        """Exports all statistics to one excel file. Different sheets for different
-        tests
-        
-        {param_overwrite}
-        :param out: Path to save excel file, optional (default="")
-        :type out: str, optional
-        """
-        
-        ### Overwrite Protection
-        if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
-            fname = self.filer.prevent_overwrite(filename=fname, mode=overwrite)
-            
-        ### Save Statistics
-        self.results.save(fname=fname)
 
     # def save_all(
     #     self,

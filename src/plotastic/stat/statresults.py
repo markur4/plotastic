@@ -64,7 +64,7 @@ class StatResults:
         )
 
         ### Remove untested
-        d = {k: v for k, v in d.items() if v is not self.DEFAULT_UNTESTED}
+        d = {k: v for k, v in d.items() if not isinstance(v, str)}
 
         return d
 

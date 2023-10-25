@@ -25,7 +25,7 @@ def wrap_descr(string: str, width: int = 76, width_first_line: int = 58) -> str:
     ### Return if string is already short enough
     if len(string) <= width:
         return string
-    
+
     ### Remove any newline and tabs
     string = string.replace("\n", " ").replace("\t", " ")
 
@@ -134,7 +134,13 @@ def subst(*args, **kwargs):
         doc = func.__doc__
         ### Shouldn't raise error if no docstring is present
         if doc:
-            func.__doc__ = doc.format(*args, **kwargs)
+            try:
+                ### Substitute args
+                func.__doc__ = doc.format(*args, **kwargs)
+            except KeyError as e:
+                raise KeyError(
+                    f"Could not substitute {e} in docstring of {func.__name__} with {args} or {list(kwargs.keys())}"
+                )
 
         return func
 

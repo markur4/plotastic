@@ -24,21 +24,26 @@ IPython.extract_module_locals()[1].get("__vsc_ipynb_file__")
 
 DF, dims = plst.load_dataset("tips", verbose=False)
 DA = plst.DataAnalysis(DF, dims, verbose=False)
-DA_COMPLETE = ct.DA_COMPLETE_STATISTICS
+DA_COMPLETE = ct.DA_STATISTICS
 
 
 # %% Test prevent_overwrite
 
 
+
+    
+
 def test_prevent_overwrite():
     ### Define a name
-    testfile_name = "TEST_FILE_123"
+    testfile_name = "_FILE_123"
     distraction_names = [
-        "TEST_FILE_",
-        "_TEST_FILE_",
-        "TEST_FILE_12",
-        "TEST_FIL_12",
+        "_FILE_",
+        "__FILE_",
+        "_FILE_12",
+        "_FIL_12",
     ]
+
+        
 
     def mk_testfiles(testfile_name) -> str:
         ### Make a testfile excel
@@ -56,20 +61,19 @@ def test_prevent_overwrite():
     for name in distraction_names:
         ct.cleanfiles(name)
 
-
     ### Make Distraction Files
     for name in distraction_names:
         mk_testfiles(name)
 
     # == TEST 0: mode="day"
-    kws = dict(mode="day")
+    kws = dict(overwrite="day")
     new = DA.filer.prevent_overwrite(testfile_name, **kws)
     assert (
         new == testfile_name + f"_{DA.filer.current_day}"
     ), f"new_name = {new}, testfile_name = {testfile_name}"
 
     # == TEST 1: mode="nothing"
-    kws = dict(mode="nothing")
+    kws = dict(overwrite="nothing")
 
     ### If NO file exists, it should return the same name with _0
     new = DA.filer.prevent_overwrite(testfile_name, **kws)
@@ -107,4 +111,4 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     import ipytest
 
-    # ipytest.run()
+    ipytest.run()

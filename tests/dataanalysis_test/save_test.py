@@ -15,9 +15,9 @@ import plotastic as plst
 
 
 import conftest as ct
-print(os.getcwd())
 
-#%% testfigure
+
+# %% testfigure
 # import matplotlib.pyplot as plt
 # import numpy as np
 # fig, ax = plt.subplots(2,2)
@@ -28,11 +28,12 @@ print(os.getcwd())
 # %% Test
 
 
-DA = ct.DA_COMPLETE_STATISTICS
+DA = ct.DA_STATISTICS
+
 funcs = [
     DA.save_statistics,
-    DA.save_fig,
-    DA.save_all,
+    # DA.save_fig, # ! Not working, but let's keep it for now
+    # DA.save_all, # ! Not working
 ]
 
 
@@ -60,7 +61,6 @@ def test_save(func: Callable, lastcleanup=True):
 
     ct.cleanfiles(fname)
 
-
     # == Test overwrite="day" ===============================
     kwargs = dict(fname=fname, overwrite="day")
     func(**kwargs)
@@ -75,14 +75,14 @@ def test_save(func: Callable, lastcleanup=True):
     ], "Should have saved one or two files, insted got: " + str(saved)
 
     ct.cleanfiles(fname)
-    
+
     # == Test overwrite="nothing" ===============================
     kwargs = dict(fname=fname, overwrite="nothing")
     func(**kwargs)
     func(**kwargs)  # * Should NOT overwrite
     func(**kwargs)  # * Should NOT overwrite
 
-    ### Make sure files didn't delet each other
+    ### Make sure files didn't delete each other
     saved = glob(fname + "*")
     assert len(saved) in [
         3,
@@ -94,17 +94,21 @@ def test_save(func: Callable, lastcleanup=True):
 
 
 if __name__ == "__main__":
-    # test_save(func=DA.save_all, lastcleanup=False)
-  
-    import matplotlib.pyplot as plt
-    DA.plot_box_strip()
-    DA.save_fig(fname="p1", overwrite=True) # ? saves wrong fig ?
-    DA.save_fig(fname="p2", overwrite=True, fig=DA.fig) # ? saves wrong fig ??
-    DA.fig.savefig("p3.pdf") # ? saves CORRECT FIG!!
-    # plt.savefig("pla.pdf")
+    test_save(func=DA.save_statistics, lastcleanup=False)
+    
+    ### cleanup
+    # for file in glob("plotastic_results*"):
+    #     os.remove(file)
 
-    # os.remove(out + ".xlsx")
+# %%
 
+    # %% Test save_fig
+    # import matplotlib.pyplot as plt
+    # DA.plot_box_strip()
+    # DA.save_fig(fname="p1", overwrite=True)  # ? saves wrong fig ?
+    # DA.save_fig(fname="p2", overwrite=True, fig=DA.fig)  # ? saves wrong fig ??
+    # DA.fig.savefig("p3.pdf")  # ? saves CORRECT FIG!!
+    # plt.savefig("p4.pdf")
 
 
 

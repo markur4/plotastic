@@ -19,6 +19,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from plotastic import docstrings
+
 
 # %% Class Filer
 class Filer:
@@ -94,33 +96,31 @@ class Filer:
 
         return f"{filename}_{newindex}"
 
-    def prevent_overwrite(self, filename: "str | Path", mode: str = "day") -> str:
+    @docstrings.subst(param_overwrite=docstrings.param_overwrite)
+    def prevent_overwrite(self, fname: "str | Path", overwrite: str = "day") -> str:
         """Returns a new filename that has a number or current date at the end to enable
         different modes of overwriting protection.
 
-        :param filename: filename to be protected from overwriting
-        :type filename: str | Path
-        :param mode: Mode of overwrite protection. If "day", it simply adds the
-            current date at the end of the filename, causing every output on the same
-            day to overwrite itself. If "nothing" ["day", "nothing"], files with the
-            same filename will be detected in the current work directory and a number
-            will be added to the filename, defaults to "day"
-        :type mode: str, optional
+        :param fname: filename to be protected from overwriting
+        :type fname: str | Path
+        {param_overwrite}
         :return: filename that is protected from overwriting by adding either number or
             the current date at its end
         :rtype: str
         """
-        mode_args = ["day", "nothing"]
-        assert mode in mode_args, f"mode must be one of {mode_args}, not {mode}"
+        overwrite_args = ["day", "daily", "nothing", True, False]
+        assert (
+            overwrite in overwrite_args
+        ), f"overwrite must be one of {overwrite_args}, not {overwrite}"
 
         ### Convert to string if path
-        filename = str(filename) if isinstance(filename, Path) else filename
+        fname = str(fname) if isinstance(fname, Path) else fname
         ### Remove suffix
-        filename = filename.split(".")[0]
+        fname = fname.split(".")[0]
 
-        if mode == mode_args[0]:  # * "day"
-            filename = f"{filename}_{self.current_day}"
-        elif mode == mode_args[1]:  # * "nothing"
-            filename = self._prevent_overwrite_all(filename=filename)
+        if overwrite in ["day", "daily"]:  # * "day"
+            fname = f"{fname}_{self.current_day}"
+        elif overwrite in ["nothing", False]:  # * "nothing"
+            fname = self._prevent_overwrite_all(filename=fname)
 
-        return filename
+        return fname

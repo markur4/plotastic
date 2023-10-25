@@ -6,6 +6,9 @@ import os
 import warnings
 from glob import glob
 
+from joblib import Memory
+
+
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -13,6 +16,15 @@ import matplotlib.pyplot as plt
 import markurutils as ut
 
 import plotastic as plst
+
+# %% Making DataAnalysis objects takes a few seconds, cache it
+
+location = "./.joblib_cache"
+memory = Memory(location, verbose=0)
+
+
+def clear_cache():
+    memory.clear(warn=False)
 
 
 # %% Datasets
@@ -84,7 +96,7 @@ zipped_noempty_ALL = zipped_noempty_tips + zipped_noempty_fmri + zipped_noempty_
 # %% Dataanalysis objects
 
 
-def get_DA_with_full_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
+def get_DA_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
     """Makes a DA object with every possible data stored in it
 
     :param dataset: "tips", "fmri", or "qpcr"
@@ -120,7 +132,8 @@ def get_DA_with_full_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
 
     return DA
 
-def get_DA_with_plot(dataset: str = "qpcr") -> plst.DataAnalysis:
+
+def get_DA_plot(dataset: str = "qpcr") -> plst.DataAnalysis:
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         ### Load example data
@@ -128,23 +141,32 @@ def get_DA_with_plot(dataset: str = "qpcr") -> plst.DataAnalysis:
 
         ### Init DA
         DA = plst.DataAnalysis(DF, dims, subject="subject", verbose=False)
-        
+
         DA.plot_box_strip()
         plt.close()
         return DA
 
-def get_DA_with_all(dataset: str) -> plst.DataAnalysis:
+
+def get_DA_all(dataset: str) -> plst.DataAnalysis:
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        
-        DA = get_DA_with_full_statistics(dataset)
+
+        DA = get_DA_statistics(dataset)
         DA.plot_box_swarm()
         plt.close()
         return DA
 
-DA_COMPLETE_STATISTICS = get_DA_with_full_statistics(dataset="qpcr")
-DA_COMPLETE_PLOT = get_DA_with_plot(dataset="qpcr")
-DA_COMPLETE_ALL = get_DA_with_all(dataset="qpcr")
+
+### Cache results of these functions to speed up testing
+get_DA_statistics = memory.cache(get_DA_statistics)
+get_DA_plot = memory.cache(get_DA_plot)
+get_DA_all = memory.cache(get_DA_all)
+
+### Make DataAnalysis objects for testing
+DA_STATISTICS: plst.DataAnalysis = get_DA_statistics("qpcr")
+DA_PLOT: plst.DataAnalysis = get_DA_plot("qpcr")
+DA_ALL: plst.DataAnalysis = get_DA_all("qpcr")
+
 
 # %% Utils
 ###  (DF, dims) -> (DF, dims, kwargs)
@@ -168,7 +190,8 @@ def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
         zipped_with_column.append(tup + (e,))
     return zipped_with_column
 
-def cleanfiles(fname:str):
+
+def cleanfiles(fname: str):
     """deletes all files that start with fname"""
     testfiles = glob(fname + "*")
     for file in testfiles:
