@@ -2,6 +2,8 @@
 
 # %% imports
 
+from typing import Callable
+
 import os
 import warnings
 from glob import glob
@@ -13,11 +15,9 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
-import markurutils as ut
-
 import plotastic as plst
 
-# %% Making DataAnalysis objects takes a few seconds, cache it
+# %% Cache all you can, otherwise everything is re-executed at every test
 
 location = "./.joblib_cache"
 memory = Memory(location, verbose=0)
@@ -31,11 +31,15 @@ def clear_cache():
 
 ### Source of files is seaborn, markurutils just adds cut column
 
+# ==
+# == Load example data =================================================================
 
-### Load example data
-DF_tips, dims_tips = plst.load_dataset("tips", verbose=False)
-DF_fmri, dims_fmri = plst.load_dataset("fmri", verbose=False)
-DF_qpcr, dims_qpcr = plst.load_dataset("qpcr", verbose=False)
+### Cache function
+load_dataset: Callable = memory.cache(plst.load_dataset)
+
+DF_tips, dims_tips = load_dataset("tips", verbose=False)
+DF_fmri, dims_fmri = load_dataset("fmri", verbose=False)
+DF_qpcr, dims_qpcr = load_dataset("qpcr", verbose=False)
 
 
 # %% Arguments
@@ -81,10 +85,11 @@ dims_noempty_qpcr = [
 
 # %%  Combine for pytest.parametrize
 
-
 zipped_noempty_tips = [(DF_tips, dim) for dim in dims_noempty_tips]
 zipped_noempty_fmri = [(DF_fmri, dim) for dim in dims_noempty_fmri]
 zipped_noempty_qpcr = [(DF_qpcr, dim) for dim in dims_noempty_qpcr]
+
+
 ### Paired Data (with subject)
 zipped_noempty_PAIRED = zipped_noempty_fmri + zipped_noempty_qpcr
 
@@ -158,9 +163,9 @@ def get_DA_all(dataset: str) -> plst.DataAnalysis:
 
 
 ### Cache results of these functions to speed up testing
-get_DA_statistics = memory.cache(get_DA_statistics)
-get_DA_plot = memory.cache(get_DA_plot)
-get_DA_all = memory.cache(get_DA_all)
+get_DA_statistics: Callable = memory.cache(get_DA_statistics)
+get_DA_plot: Callable = memory.cache(get_DA_plot)
+get_DA_all: Callable = memory.cache(get_DA_all)
 
 ### Make DataAnalysis objects for testing
 DA_STATISTICS: plst.DataAnalysis = get_DA_statistics("qpcr")

@@ -1,0 +1,11 @@
+numpy
+pandas==1.5.3
+matplotlib
+seaborn
+scipy
+statannotations
+pingouin
+joblib
+pyperclip
+colour
+xlsxwriter

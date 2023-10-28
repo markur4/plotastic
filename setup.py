@@ -1,23 +1,12 @@
 from setuptools import setup, find_packages
 
+import _setup_env.env_utils as eu
+
+requirements_file = "_setup_env/requirements-dev.txt"
 
 NAME = "plotastic"
-REQUIREMENTS = (
-    "seaborn",
-    "matplotlib",
-    "numpy",
-    "pandas==1.5.3",  # ! pingouin Not working with 2.0 yet
-    "scipy",
-    # "statannot",
-    "statannotations",
-    "pingouin",
-    "pyperclip",
-    "colour",  # * For custom colour maps
-    "xlsxwriter",  # * For saving results to excel
-    # "statsmodels",
-    # "joblib",
-    "ipynbname", # * For getting the filename of the current notebook
-)
+PYTHON_VERSION = eu.parse_requirements(fname=requirements_file, ret_pyversion=True)
+REQUIREMENTS = eu.parse_requirements(fname=requirements_file)
 
 # https://setuptools.pypa.io/en/latest/references/keywords.html
 ### LAYOUT:
@@ -40,30 +29,35 @@ REQUIREMENTS = (
 # *            └── module2.py
 
 setup(
-    description="A wrapper for seaborn plotters for convenient statistics powered by pingouin!",
-    python_requires=">=3.10",  # * 3.11 recommended, 3.10 might work, too
+    # == Metadata ======================================================================
     name=NAME,
     version="0.0.1",
-    url="https://github.com/markur4/plotastic",
     author="markur4",
-    # * Find all packages in src that have a __init__.py file and match the name of the package
+    description="A wrapper for seaborn plotters for convenient statistics powered by pingouin!",
+    python_requires=PYTHON_VERSION,  
+    install_requires=REQUIREMENTS,
+    # extras_requires=REQUIREMENTS_DEV,
+    url="https://github.com/markur4/plotastic",
+    license="MIT",
+    # == Package Structure =============================================================
+    ### Automatically find all packages in src
+    # * Those that have an __init__.py AND match the name of the package
     packages=find_packages(where="src", include=[NAME]),
-    # * Define location of all packages. "" is the current directory (where setup.py is)
+    ### Define location of all packages.
     package_dir={
-        "": "src",
+        "": "src",  # * "" is the package root (where setup.py is)
         # NAME: f"src/{NAME}",
         # "dataanalysis": "src/plotastic/dataanalysis",
     },
-    # * Non- .py files (e.g. py.typed, documentation...) required by package
+    # == Non .py Files =================================================================
+    ### Required files (e.g. py.typed, documentation...)
     package_data={
-        "": [f"py.typed"],
+        "": [f"py.typed"],  # * "" is the package root (where setup.py is)
         "dataanalysis": [f"py.typed"],
         "example_data": ["data/*.xlsx"],
     },
-    # * Non- .py files (e.g. .gif .txt, ...) that should be installed with the package
+    ### Extra Files to be installed with the package (e.g. useful .gif .txt, ...)
     data_files={},
-    install_requires=REQUIREMENTS,
-    license="MIT",
 )
 
 ### CHECK IF THIS PACKAGE IS INSTALLABLE:
