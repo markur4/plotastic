@@ -23,52 +23,39 @@ import requirements as req
 #     - requirements.txt is parsed
 #     - package will be installed
 # 
+# == 
+# == 
+# == 1. Base Python interpreter =========================================================
+# %% Install python
+# *  Just use a global one from `brew`!
+# ! brew install python@3.11 # !!! <-- Uncomment
 
-# %% [markdown]
-# ## 1. Base Python interpreter
-# ### Just use a global one from `brew`!
+### VSCode will ask us to select a python interpreter: For now, use the global one we installed
 
-# %%
-# Install python
-# ! brew install python@3.11 # ! <-- Uncomment
-
-# %% [markdown]
-# #### VSCode will ask us to select a python interpreter: For now, use the global one we installed
-
-# %% [markdown]
-# #### Add base python interpreter to `PATH`? 
+# %% Add base python interpreter to `PATH`? 
 # - No need to add to `PATH`, since we will use `venv` to create a virtual environment for each project
 # - Having out terminal no connection with any python interpreter will make sure that we are not using the wrong interpreter by accident
 
-# %%
-# Do NOT add the python interpreter to your path!
-## export PATH="/usr/local/opt/python/libexec/bin:$PATH" # !!! Don't do this
+# ! export PATH="/usr/local/opt/python/libexec/bin:$PATH" # !!! Don't do this
 
-# %%
-# Check PATH
+# %% Check PATH
 PATH = subprocess.check_output(["echo $PATH"], shell=True)
 PATH_list = PATH.decode("utf-8").split(":")
 print(len(PATH_list))
 for path in PATH_list:
     print(path)
 
-# %% [markdown]
-# ## 2. Setup a Virtual Environment using `venv`
 
-# %% [markdown]
-# ### Create environment
-
-# %%
-### Describe the folder stucture
-# ! VScode finds this automatically ONLY if it's in the root folder of the workspace
-PROJECT_DIR = "." # ! Don't change, or vscode won't find it
+# == 2. Setup a Virtual Environment using `venv` =======================================
+# %% Describe the folder stucture
+# !!! VScode finds this automatically ONLY if it's in the root folder of the workspace
+PROJECT_DIR = "." # !!! Don't change, or vscode won't find it
 ENV_NAME = "venv" # 
 ENV_PATH = os.path.join(PROJECT_DIR, ENV_NAME)
 ENV_PATH
 
-# %%
-### Create Virtual Environment
-# venv.create(env_dir=ENV_PATH, clear=True, with_pip=True) # ! <-- Uncomment
+# %% Create Virtual Environment
+# venv.create(env_dir=ENV_PATH, clear=True, with_pip=True) # !!! <-- Uncomment
 
 # %% [markdown]
 # ### Activate Environment
@@ -86,18 +73,16 @@ ENV_PATH
 # - Select environment for THIS NOTEBOOK
 #   - VScode will ask you to install the `IPython` extension, do that
 
-# %%
-### Check if the virtual environment can be activated
-# ! This is a notebook, manually select the interpreter for the Jupyter Kernel
+# %% Can environment can be activated?
+# !!! This is a notebook, manually select the interpreter for the Jupyter Kernel
 ! source venv/bin/activate  
 
-# %%
-### Check if the virtual environment is active
-! which python # ! Should be within the project directory
+# %% Environmant active?
+! which python # * -> Should be within the project directory
 
-# %%
-! pip install pytest
-
+# == 
+# == 
+# == 3. Install Project Requirements ===================================================
 # %% [markdown]
 # ## 3. Install Project Requirements
 # 1. **Prepare requirements**
@@ -114,114 +99,47 @@ ENV_PATH
 #    - `pip install -e .`
 #    - Makes it testable
 
-# %%
-### Check Requirements
+# %% Check Requirements
 req.REQUIREMENTS
 
-# %%
-# Check extra requirements that are only installed if needed
+# %% Check extra requirements that are only installed if needed
 req.REQUIREMENTS_EXTRA
 
-# %%
-### Pip can't handle comments, make a new temporary file
+# %% Write requirements to file
 req.to_txt(fname="requirements-dev.txt", requirements=req.REQUIREMENTS)
 
-# %%
-### Install requirements from a file without comments
+# %% Install requirements from a file without comments
 ! pip install -r requirements-dev.txt
 
-# %%
-### Export requirements to be used by the publix
+# %% Export requirements to be used by the publix
 ! pip freeze > ../requirements.txt
 
-# %% [markdown]
-# ### `pip install -e .`
-
-# %%
-### Direct to the project directory where setup.py is located
+# == 
+# == 
+# == 4. Install project in editable mode ===============================================
+# %% 
 # ? This can take a while
-# ! pip install -e . # ! <-- Uncomment
+# ! pip install -e . # !!! <-- Uncomment
 
-# %%
-### test if package is importable
-import plotastic # ! Need to restart kernel if freshly installed
+# %% Package importable?
+import plotastic # !!! Need to restart kernel if freshly installed
 
-# %%
-### uninstall to reinstall
+# %% uninstall to reinstall
 # ! pip uninstall plotastic -y
 
-# %% [markdown]
-# ## 4. Install Development Tools
-
-# %%
-### Check devtools
+# ==
+# == 
+# == 5. Install Development Tools ======================================================
+# %% Check devtools
 DEVELOPMENT_TOOLS = req.DEVELOPMENT_TOOLS
 DEVELOPMENT_TOOLS
 
-# %%
+# %% Install devtools
 req.to_txt(fname="_devtools.txt", requirements=DEVELOPMENT_TOOLS)
 ! pip install -r _devtools.txt
 os.remove("_devtools.txt") # * cleanup
 
-# %% [markdown]
-# ## Old Shell scripts
-
-# %%
-# import subprocess
-
-# # Set the desired Python version (retrieve from setup.py)
-# PYTHON_VERSION = "3.11"  # Replace with actual Python version from setup.py
-
-# # Path to your project folder (modify as needed)
-# PROJECT_PATH = "/path/to/your/project"
-
-# # Create a virtual environment with the desired Python version
-# subprocess.run(["python" + PYTHON_VERSION, "-m", "venv", f"{PROJECT_PATH}/venv"])
-
-# # Activate the virtual environment
-# subprocess.run(["source", f"{PROJECT_PATH}/venv/bin/activate"])
-
-# # Install your project's dependencies from the REQUIREMENTS variable in setup.py
-# # Ensure that setup.py contains the REQUIREMENTS variable in the expected format
-# # For example, REQUIREMENTS = ["package1", "package2"]
-# subprocess.run(["python", "-c", "from setup import REQUIREMENTS; import subprocess; subprocess.run(['pip', 'install'] + REQUIREMENTS)"])
-
-# # Deactivate the virtual environment when you're done
-# subprocess.run(["deactivate"])
 
 
-# %%
-# #!/bin/bash
-
-# # ! Execute from within project folder, where setup.py is located
-
-# ### Retrieve python version from ./setup.py and store in variable
-# PYTHON_VERSION=$(python -c "import ast; exec(open('./setup.py').read()); print(PYTHON_VERSION)")
-
-# ### Path to your project folder
-# PROJECT_PATH="."
-
-# ### Name of folder to store virtual environment
-# VENV=".venv"
-
-# ### Create a virtual environment with the desired Python version
-# # python3.11 -m venv "./.venv"
-# python$PYTHON_VERSION -m venv $PROJECT_PATH/$VENV
-
-# ### Activate the virtual environment
-# # source "./.venv/bin/activate"
-# source $PROJECT_PATH/$VENV/bin/activate
-
-# ### Install your project's dependencies from the REQUIREMENTS variable in setup.py
-# # ! Ensure that setup.py contains the REQUIREMENTS variable in the expected format
-# # * For example, REQUIREMENTS = ["package1", "package2"]
-# # pip install -r requirements.txt
-# python -c "from setup import REQUIREMENTS; import subprocess; subprocess.run(['pip', 'install'] + REQUIREMENTS)"
-
-# ### Make a requirements.txt file for your project
-# pip freeze > requirements.txt
-
-# ### Don't peactivate the virtual environment when you're done
-# # deactivate
 
 
