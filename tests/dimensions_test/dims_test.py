@@ -1,16 +1,15 @@
 #
 # %% imports
-import markurutils as ut
 import plotastic as plst
 import unittest
+
 
 
 # %% Import Test Data
 DF, dims = plst.load_dataset("tips")  # * Import Data
 DA = plst.DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
 
-# %% Catplot
-DA.catplot()
+
 
 # %% Unit Tests
 
@@ -18,7 +17,7 @@ DA.catplot()
 class TestDataAnalysis(unittest.TestCase):
     def test_switching(self):
         v = False
-        data, dims = ut.load_dataset("tips", verbose=v)
+        data, dims = plst.load_dataset("tips", verbose=v)
         DA = plst.DataAnalysis(data, dims, verbose=v)
 
         ### Chaining work?

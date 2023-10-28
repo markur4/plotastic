@@ -1,6 +1,3 @@
-# vscode
-.vscode
-
 # DS_store
 .DS_Store
 
@@ -14,6 +11,9 @@ _development
 # !! paper, publish it only when publishing
 paper.md
 paper.bib
+
+# vscode
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

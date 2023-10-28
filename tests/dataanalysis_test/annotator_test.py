@@ -7,7 +7,6 @@ import pytest
 import plotastic as plst
 from plotastic.dataanalysis.annotator import Annotator
 
-import markurutils as ut
 
 import conftest as ct
 

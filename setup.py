@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-import plotastic.requirements as req
+import requirements as req
 
 # requirements_file = "_setup_env/requirements-dev.txt"
 

@@ -9,3 +9,5 @@ joblib
 pyperclip
 colour
 xlsxwriter
+ipynbname
+openpyxl

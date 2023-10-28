@@ -29,10 +29,14 @@ REQUIREMENTS = [
     "pyperclip",
     "colour",  # * For custom colour maps
     "xlsxwriter",  # * For saving results to excel
+    "ipynbname",  # * Used by utils
+    "openpyxl", # * optional for Pandas, but error when not installed 
 ]
 REQUIREMENTS_EXTRA = [
-    "ipynbname",  # * For getting the filename of the current notebook
-    "pytest",
+    # 
+]
+DEVELOPMENT_TOOLS = [
+    "pytest", "ipytest"
 ]
 
 # %% Write to .txt

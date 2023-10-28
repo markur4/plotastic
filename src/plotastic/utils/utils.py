@@ -7,8 +7,13 @@ library
 from typing import TYPE_CHECKING, Hashable
 from decimal import Decimal
 
+import collections
 
-from IPython.display import DisplayObject # * For type hinting of ut.pp()
+import warnings
+
+import re
+
+from IPython.display import DisplayObject  # * For type hinting of ut.pp()
 
 import numpy as np
 import pandas as pd
@@ -40,12 +45,44 @@ NUMERICAL_TYPES = [
 ]
 
 
+# %% print
+
+
+def get_terminal_width():
+    import shutil
+
+    try:
+        # Get the terminal width
+        columns, _ = shutil.get_terminal_size(fallback=(80, 24))
+        return columns
+    except Exception:
+        # Handle exceptions if the terminal size cannot be determined
+        return 80  # Default value
+
+
+def print_separator(char="="):
+    # Get the terminal width
+    terminal_width = get_terminal_width()
+
+    # Calculate the number of characters required
+    num_chars = terminal_width // len(char)
+
+    # Print the separator line
+    print(char * num_chars)
+
+
 # %% Builtins: ALL
 
 
 def get_type(o):
     """gets the type of an object as a string, e.g. 'int' or 'str'"""
     return str(type(o)).split("'")[1]
+
+
+def catch_duplicates(l: list | tuple) -> list:
+    """Checks if all elements of a list (x) are within another list (y)"""
+    l = (l,) if isinstance(l, str) else l
+    return [item for item, count in collections.Counter(l).items() if count > 1]
 
 
 def check_unordered_identity(
@@ -91,8 +128,6 @@ def capitalize(s: str) -> str:
     # s = "conc.: 1 mL"
     s1 = s.split(" ")[0].capitalize()
     return s1 + " " + " ".join(s.split(" ")[1:])
-
-
 
 
 def re_matchgroups(pattern, string: str, flags=None) -> list[dict]:
@@ -177,18 +212,37 @@ def all_of_l1_in_l2(l1: list | tuple, l2: tuple | list) -> bool:
 # %% Builtins: Dicts
 
 
-def printable_dict(D, key_adjust=5, start_message=None, print_type=True):
-    s = "\n######" + start_message if start_message else "\n######"
-    for k, v in D.items():
-        key = f"'{k}'" if type(k) is str else k
-        val = f"'{v}'" if type(v) is str else v
-        s += f"\n  |# {key.ljust(key_adjust)}: {val}"
-        if print_type:
-            s += f"\t {type(v)}"
-        s += f"\t#|"
-    s += "\n"
-    return s
+def get_key(q, dic):
+    """
 
+    :param val:
+    :param dic: {k1: [1,2,3,"et"], k2: [4,"wsef"]}
+    :return: key if q is in val
+    """
+    result = "not found"
+    for k, v in dic.items():
+        if q in v:
+            result = k
+
+    return result
+
+
+def update_dict_recursive(d: dict, u: dict) -> dict:
+    """Recursively update a dict.
+
+    Args:
+        d (dict): Dictionary to be updated
+        u (dict): Dictionary to update with
+
+    Returns:
+        dict: New dictionary
+    """
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update_dict_recursive(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
 
 
 def remove_None_recursive(d: dict) -> dict:
@@ -210,7 +264,20 @@ def remove_None_recursive(d: dict) -> dict:
     return d
 
 
-# %% 
+def printable_dict(D, key_adjust=5, start_message=None, print_type=True):
+    s = "\n######" + start_message if start_message else "\n######"
+    for k, v in D.items():
+        key = f"'{k}'" if type(k) is str else k
+        val = f"'{v}'" if type(v) is str else v
+        s += f"\n  |# {key.ljust(key_adjust)}: {val}"
+        if print_type:
+            s += f"\t {type(v)}"
+        s += f"\t#|"
+    s += "\n"
+    return s
+
+
+# %%
 
 # %% pandas
 
@@ -311,6 +378,7 @@ def insert_after(
 
     return df
 
+
 def drop_columns_by_regex(DF: "pd.DataFrame", pattern: str):
     DF = DF[DF.columns.drop(list(DF.filter(regex=pattern)))]
     return DF
@@ -358,10 +426,29 @@ make_cmap_saturation = memory.cache(make_cmap_saturation)
 # %% I/O
 
 
+def glob_searchfilename(path: "Path", filename: str, rettype="list"):
+    rettypes = ["list", "str"]
+    assert (
+        rettype in rettypes
+    ), f"#! rettype {rettype} should have been one of {rettypes}"
+
+    rough_matches = path.glob(f"*{filename}*")
+    files = [
+        str(path.stem) for path in list(rough_matches)
+    ]  # Find all pdf files in outpath
+
+    """Making one big string saves us the for loop for re searches. Needs flag re.MULTILINE"""
+    if rettype == "list":
+        return files
+    elif rettype == "str":
+        return "\n".join(files)
+
+
 def copy_by_pickling(obj, plt_close=True):
     """converts to bytes and loads it to return it"""
-
+    import io
     import pickle
+    from matplotlib import pyplot as plt
 
     # * CONVERT TO BYTE RAM
     # with io.BytesIO() as buf: # ! 'with' statement not working with pyplot
@@ -380,7 +467,6 @@ def copy_by_pickling(obj, plt_close=True):
     return copy
 
 
-
 def is_notebook() -> bool:
     """checks from where the script is executed. Handy if you want to print() or use HTML based outputs"""
     try:
@@ -393,6 +479,9 @@ def is_notebook() -> bool:
             return False  # Other type (?)
     except NameError:
         return False  # Probably standard Python interpreter
+
+
+# %% Warnings and exceptions
 
 
 def ignore_warnings(func) -> callable:
@@ -409,4 +498,3 @@ def ignore_warnings(func) -> callable:
         # warnings.resetwarnings()
 
     return wrapper
-
