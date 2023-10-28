@@ -1,12 +1,15 @@
 from setuptools import setup, find_packages
 
-import _setup_env.env_utils as eu
+import plotastic.requirements as req
 
-requirements_file = "_setup_env/requirements-dev.txt"
+# requirements_file = "_setup_env/requirements-dev.txt"
 
 NAME = "plotastic"
-PYTHON_VERSION = eu.parse_requirements(fname=requirements_file, ret_pyversion=True)
-REQUIREMENTS = eu.parse_requirements(fname=requirements_file)
+# PYTHON_VERSION = eu.parse_requirements(fname=requirements_file, ret_pyversion=True)
+# REQUIREMENTS = eu.parse_requirements(fname=requirements_file)
+PYTHON_VERSION = req.PYTHON_VERSION
+REQUIREMENTS = req.REQUIREMENTS
+REQUIREMENTS_EXTRA = req.REQUIREMENTS_EXTRA
 
 # https://setuptools.pypa.io/en/latest/references/keywords.html
 ### LAYOUT:
@@ -34,9 +37,9 @@ setup(
     version="0.0.1",
     author="markur4",
     description="A wrapper for seaborn plotters for convenient statistics powered by pingouin!",
-    python_requires=PYTHON_VERSION,  
+    python_requires=PYTHON_VERSION,
     install_requires=REQUIREMENTS,
-    # extras_requires=REQUIREMENTS_DEV,
+    extras_requires=REQUIREMENTS_EXTRA,
     url="https://github.com/markur4/plotastic",
     license="MIT",
     # == Package Structure =============================================================

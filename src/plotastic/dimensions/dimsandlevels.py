@@ -22,7 +22,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic.utils.utils as ut
 
 from plotastic.dimensions.dims import Dims
 
@@ -61,7 +62,7 @@ class DimsAndLevels:
             if (
                 not a.startswith("_")
                 and not callable(getattr(self, a))
-                and not isinstance(getattr(self, a), ut.Filer)
+                # and not isinstance(getattr(self, a), ut.Filer)
             )
         }
 

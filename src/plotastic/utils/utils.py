@@ -1,0 +1,412 @@
+"""Small utility functions that are frequently used in multiple modules across complete
+library 
+"""
+
+# %% Imports: Just the re-used ones, special ones are imported in the functions
+
+from typing import TYPE_CHECKING, Hashable
+from decimal import Decimal
+
+
+from IPython.display import DisplayObject # * For type hinting of ut.pp()
+
+import numpy as np
+import pandas as pd
+
+if TYPE_CHECKING:
+    pass
+
+
+# %% Make cache dir
+
+from joblib import Memory
+
+location = "./.joblib_cache"
+memory = Memory(location, verbose=0)
+
+
+def clear_cache():
+    memory.clear(warn=False)
+
+
+# %% Types
+
+NUMERICAL_TYPES = [
+    int,
+    float,
+    complex,
+    Decimal,
+    np.number,
+]
+
+
+# %% Builtins: ALL
+
+
+def get_type(o):
+    """gets the type of an object as a string, e.g. 'int' or 'str'"""
+    return str(type(o)).split("'")[1]
+
+
+def check_unordered_identity(
+    o1: str | tuple | list, o2: str | tuple | list, ignore_duplicates=False
+) -> bool:
+    """both objects should be the same type. But we don't care about order of elements"""
+    if not isinstance(o1, str) and not isinstance(o2, str):
+        if set(o1) == set(o2):
+            if len(o1) != len(o2) and not ignore_duplicates:
+                dupl_o1 = catch_duplicates(o1)
+                dupl_o2 = catch_duplicates(o2)
+                raise AssertionError(
+                    f"Both lists have matching elements, but at least one has duplicate elements: {dupl_o1}, {dupl_o2} "
+                )
+            return True
+    elif isinstance(o1, int) and isinstance(o2, int):
+        return o1 == o2
+    elif isinstance(o1, str) and isinstance(o2, str):
+        return o1 == o2
+    else:
+        raise AssertionError(
+            f"#! {o1} is not comparable to {o2} (Did you miss the comma in your tuple?)"
+        )
+
+
+# %% Builtins: Numbers
+
+
+def exponent_from_float(number: float):
+    (sign, digits, exponent) = Decimal(number).as_tuple()
+    return len(digits) + exponent - 1
+
+
+def mantissa_from_float(number: float):
+    return Decimal(number).scaleb(-exponent_from_float(number)).normalize()
+
+
+# %% Builtins: Strings
+
+
+def capitalize(s: str) -> str:
+    """Takes first word of string and capitalizes it, e.g. 'conc.: 1 mL'-> 'Conc.: 1 mL'"""
+    # s = "conc.: 1 mL"
+    s1 = s.split(" ")[0].capitalize()
+    return s1 + " " + " ".join(s.split(" ")[1:])
+
+
+
+
+def re_matchgroups(pattern, string: str, flags=None) -> list[dict]:
+    """
+    Takes a regular expression searchpattern that includes group names (?P<name>...)
+    and returns a list of dictionaries with groupnames as keys and matched strings as values
+    :param pattern: compiled re searchpattern, e.g. from re.compile(".*")
+    :param string: str,
+    :param flags: e.g. re.MULTILINE or re.DOTALL
+    :returns dict
+
+    :Example:
+
+    >>> string = "abc abc2 abc3"
+    >>> pattern = re.compile(r'(?P<WORD>abc)(?P<INDEX>\d)')
+    >>> matches = re_matchgroups(pattern=pattern, string=string)
+    >>> matches
+    [{'WORD': 'abc', 'INDEX': '2'},
+    {'WORD': 'abc', 'INDEX': '3'}]
+    """
+    return [
+        match.groupdict()
+        for match in re.finditer(pattern=pattern, string=string, flags=flags)
+    ]
+
+
+# %% Builtins: Lists
+
+
+def ensure_list(
+    s: str | list | tuple | str | Hashable | None, allow_none=True, convert_none=False
+) -> list | None:
+    """Converts Element into a list, even if it's just one"""
+    if s is None:
+        if convert_none:
+            return [
+                None,
+            ]
+        elif allow_none:
+            return None
+        else:
+            raise TypeError(f"#! Must pass tuple, None not allowed. ({s} was passed)")
+    elif isinstance(s, list):
+        return s
+    elif isinstance(s, (tuple, set)):
+        return list(s)
+    else:
+        return [
+            s,
+        ]
+
+
+def flatten(s: list | tuple, np=False) -> list:
+    """
+
+    :param s: Listor tuple or iterable
+    :param np: If list is deeper than one Nesting (e.g. 3D), use numpy flatten method.
+    Otherwise it'll perform list comprehension
+    :return:
+    """
+    if np:
+        return np.array(s, dtype="object").flatten(order="K").tolist()
+    else:
+        return [e for sublist in s for e in sublist]
+
+
+def get_duplicate(s: list | tuple):
+    result = [item for item, count in collections.Counter(s).items() if count > 1]
+    if len(result):
+        return result[0]
+    else:
+        return result
+
+
+def all_of_l1_in_l2(l1: list | tuple, l2: tuple | list) -> bool:
+    """Checks if all elements of a list (x) are within another list (y)"""
+    l1 = (l1,) if isinstance(l1, str) else l1
+    l2 = (l2,) if isinstance(l2, str) else l2
+    return all(tuple(e in l2 for e in l1))
+
+
+# %% Builtins: Dicts
+
+
+def printable_dict(D, key_adjust=5, start_message=None, print_type=True):
+    s = "\n######" + start_message if start_message else "\n######"
+    for k, v in D.items():
+        key = f"'{k}'" if type(k) is str else k
+        val = f"'{v}'" if type(v) is str else v
+        s += f"\n  |# {key.ljust(key_adjust)}: {val}"
+        if print_type:
+            s += f"\t {type(v)}"
+        s += f"\t#|"
+    s += "\n"
+    return s
+
+
+
+def remove_None_recursive(d: dict) -> dict:
+    """Recursively remove None values from a dict.
+
+    Args:
+        d (dict): Dictionary to be updated
+
+    Returns:
+        dict: New dictionary
+    """
+
+    for k in list(d.keys()):
+        v = d[k]
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = remove_None_recursive(v)
+        elif v is None:
+            del d[k]
+    return d
+
+
+# %% 
+
+# %% pandas
+
+
+def pp(df, prec: int = None, ret: bool = False) -> DisplayObject:
+    """
+    Displays pandas dataframe to jupyter notebook
+    :param df:
+    :param prec: display precision of floats
+    :param ret:  If True (default), also returns the dataframe
+    :return:
+    """
+    from IPython.display import display, HTML
+
+    if prec:
+        # with pd.option_context('display.float_format', '${:,.2f}'.format):
+        with pd.option_context("display.precision", prec):
+            display(HTML(df.to_html().replace("\\n", "<br>")))
+    else:
+        display(HTML(df.to_html().replace("\\n", "<br>")))
+
+    if ret:
+        return df
+
+
+def multi_categorical(df, catdict, renamedict=None, verbose=True):
+    """
+    :param df:
+    :param catdict:     catdict = {
+                            'MSC : INA-6':    ["1:1", "1:2", "1:4"],
+                            'INA-6–Count per MSC': ['0', '≥ 1', '≥ 3', '≥ 6'],
+                            'Patient':     ['1571', '1573', '1578'],
+                            'Co-Culture Duration [h]': [24,48],
+                                }
+    :param renamedict: renamedict = {'Co-Culture Duration [h]': ["24 h","48 h"], }
+    :return:
+    """
+
+    for col, lvls in catdict.items():
+        oldType = type(df[col].tolist()[0])
+        newType = type(lvls[0])
+        if oldType != newType:
+            if verbose:
+                print(
+                    f"#! '{col}' has type ({oldType}), but {newType} was passed! Converting '{col}' into {newType}"
+                )
+            df[col] = df[col].astype(newType)
+            # print(df.dtypes)
+
+        ### REMOVE UNSEEN LEADING AND TRAILING SPACES FROM DF TO PREVENT FRUSTRATION
+        if df[col].dtype is str:
+            df.rename(str.strip, axis="columns", inplace=True)  ## COLUMN NAMES
+            df[col] = df[col].str.strip()  ## COLUMN LEVELS
+
+        ### CONVERT TO CATEGORICAL"""
+        df[col] = pd.Categorical(df[col], categories=lvls, ordered=True)
+
+    if renamedict:
+        for col, names in renamedict.items():
+            if col in catdict:
+                df[col] = df[col].cat.rename_categories(names)
+
+    return df
+
+
+def insert_after(
+    df,
+    after: str,
+    newcol: list | pd.Series = None,
+    newcol_name=None,
+    func: callable = None,
+) -> pd.DataFrame:
+    """
+    inserts a column after specified column. Changes dataframe inplace!
+    :param df: pandas dataframe
+    :param after: Column name to insert after
+    :param newcol: Data seried
+    :param newcol_name:
+    :param func:
+    :return: df
+    """
+    if newcol_name:
+        newcol_name = newcol_name
+    elif func:
+        newcol_name = after + func.__name__
+    else:
+        newcol_name = after + "_0"
+
+    if newcol:
+        newcol = newcol
+    elif func:
+        newcol = func(df[after])
+    else:
+        raise Exception("#! insert_after: Must pass either func or newcol")
+
+    location = df.columns.get_loc(after)
+    df.insert(loc=location + 1, column=newcol_name, value=newcol)
+
+    return df
+
+def drop_columns_by_regex(DF: "pd.DataFrame", pattern: str):
+    DF = DF[DF.columns.drop(list(DF.filter(regex=pattern)))]
+    return DF
+
+
+# %% plotting
+
+
+def make_cmap_saturation(
+    undersat: tuple = (0.5, 0.0, 0.0),
+    oversat: tuple = (0.0, 0.7, 0.0),
+    n: int = 100,
+):
+    """Make a colormap that displays max and lowest (over and undersaturation) of values
+
+    :param undersat: RGB tuple of undersaturated color
+    :type undersat: tuple
+    :param oversat: RGB tuple of oversaturated color
+    :type oversat: tuple
+    :param n: number of colors to generate, defaults to 50
+    :type n: int, optional
+    :return: matplotlib colormap
+    :rtype: matplotlib.colors.LinearSegmentedColormap
+    """
+    from colour import Color
+    from matplotlib.colors import ListedColormap
+
+    ### Create a custom colormap from scratch
+    # * Create a list of colors
+    colors = list(Color("black").range_to(Color("white"), n))
+    colors = [c.rgb for c in colors]  # * Convert to RGB
+
+    ### Add a color for values under and over the range of the colormap
+    colors.append(oversat)
+    colors.insert(0, undersat)
+    custom_cmap = ListedColormap(colors, N=len(colors))
+
+    return custom_cmap
+
+
+# ! Cache it
+make_cmap_saturation = memory.cache(make_cmap_saturation)
+
+
+# %% I/O
+
+
+def copy_by_pickling(obj, plt_close=True):
+    """converts to bytes and loads it to return it"""
+
+    import pickle
+
+    # * CONVERT TO BYTE RAM
+    # with io.BytesIO() as buf: # ! 'with' statement not working with pyplot
+    buf = io.BytesIO()
+    pickle.dump(obj, buf)
+    buf.seek(0)
+
+    # * RELOAD IT
+    copy = pickle.load(buf)
+    # p2 = pickle.loads(buf.getvalue()) # THIS GETS VALUE WITHOUT RESETTING buf
+
+    # * MPL IS ANNOYING
+    # if plt_close:
+    plt.close()
+
+    return copy
+
+
+
+def is_notebook() -> bool:
+    """checks from where the script is executed. Handy if you want to print() or use HTML based outputs"""
+    try:
+        shell = get_ipython().__class__.__name__
+        if shell == "ZMQInteractiveShell":
+            return True  # Jupyter notebook or qtconsole
+        elif shell == "TerminalInteractiveShell":
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False  # Probably standard Python interpreter
+
+
+def ignore_warnings(func) -> callable:
+    """DECORATOR that ignores warnings"""
+
+    # @timeit
+    def wrapper(*args, **kwargs):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            return func(*args, **kwargs)
+
+        # warnings.filterwarnings('ignore')
+        # return func(*args, **kwargs)
+        # warnings.resetwarnings()
+
+    return wrapper
+

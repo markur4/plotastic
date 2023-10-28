@@ -12,7 +12,8 @@ import pandas as pd
 
 pd.options.mode.chained_assignment = None
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic.utils.utils as ut
 
 from plotastic.stat.posthoc import PostHoc
 from plotastic.plotting.multiplot import MultiPlot

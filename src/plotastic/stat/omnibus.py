@@ -7,7 +7,8 @@ import numpy as np
 import pandas as pd
 import pingouin as pg
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic.utils.utils as ut
 
 from plotastic.stat.assumptions import Assumptions
 

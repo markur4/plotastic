@@ -10,7 +10,8 @@ import matplotlib as mpl
 
 import pyperclip
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic.utils.utils as ut
 
 from plotastic.plotting.plotedits import PlotEdits
 
@@ -300,9 +301,6 @@ class MultiPlot(PlotEdits):
 # mpl.rc("figure", dpi=250)
 
 # # %% get data
-
-# df, dims = ut.load_dataset("tips")  # * Tips
-# # df, dims = ut.load_dataset("fmri") # * FMRI
 
 # MP = MultiPlot(data=df, dims=dims)
 

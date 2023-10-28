@@ -17,7 +17,8 @@ from matplotlib.figure import Figure
 
 from plotastic import docstrings
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic.utils.utils as ut
 from plotastic.dataanalysis.annotator import Annotator
 from plotastic.dataanalysis.filer import Filer
 
@@ -254,7 +255,7 @@ class DataAnalysis(Annotator):
 if __name__ == "__main__":
     from plotastic.example_data.load_dataset import load_dataset
 
-    DF, dims = ut.load_dataset("qpcr")
+    DF, dims = load_dataset("qpcr")
     DA = DataAnalysis(DF, dims)
 
     # %% Fill DA with stuff

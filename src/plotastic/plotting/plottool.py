@@ -19,7 +19,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic.utils.utils as ut
 
 from plotastic.dimensions.dataframetool import DataFrameTool
 

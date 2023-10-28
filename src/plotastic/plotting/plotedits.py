@@ -7,7 +7,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pyperclip
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic.utils.utils as ut
 from plotastic.plotting.plottool import PlotTool
 
 if TYPE_CHECKING:
@@ -23,7 +24,7 @@ class PlotEdits(PlotTool):
 
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
-        
+
         self._edit_y_scalechanged = False
 
     #
@@ -37,7 +38,11 @@ class PlotEdits(PlotTool):
     # * Titles of axes .........................................#
 
     @staticmethod
-    def _standard_axtitle(key: tuple[str] | str, connect="\n") -> str:
+    def _standard_axtitle(
+        key: tuple[str] | str,
+        connect="\n",
+        capitalize: bool = False,
+    ) -> str:
         """make axis title from key
 
         Args:
@@ -48,7 +53,7 @@ class PlotEdits(PlotTool):
         elif isinstance(key, tuple):
             keys = []
             for k in key:
-                if isinstance(k, str):
+                if isinstance(k, str) and capitalize:
                     keys.append(ut.capitalize(k))
                 else:
                     keys.append(str(k))  # * Can't capitalize int
@@ -203,7 +208,6 @@ class PlotEdits(PlotTool):
     def edit_y_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
     ) -> "PlotEdits | DataAnalysis":
-        
         for ax in self.axes_flat:
             ax.set_yscale(
                 value="log",  # * "symlog", "linear", "logit", ...
@@ -213,10 +217,10 @@ class PlotEdits(PlotTool):
             )
 
             # ax.yaxis.sety_ticks()
-        
+
         ### Set the scaled flag to True, to warn user that annotations should be called after NOT before
         self._edit_y_scalechanged = True
-        
+
         return self
 
     def edit_x_scale_log(
@@ -327,7 +331,7 @@ class PlotEdits(PlotTool):
         ticks = ax.get_xticks()
 
         ### If we want labels removed:
-        labels = [""] * len(ticks) if labels is "" else labels
+        labels = [""] * len(ticks) if labels == "" else labels
 
         ### Change lables independently of numbers of ticks and previous labels!
         old_labels = [item.get_text() for item in ax.get_xticklabels()]
@@ -592,5 +596,5 @@ class PlotEdits(PlotTool):
     def edit_tight_layout(self) -> "PlotEdits | DataAnalysis":
         plt.tight_layout()
         return self
-        
+
     #

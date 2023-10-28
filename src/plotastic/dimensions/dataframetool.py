@@ -14,7 +14,8 @@ import seaborn as sns
 from scipy.stats import skew as skewness
 import matplotlib.pyplot as plt
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic.utils.utils as ut
 from plotastic.dimensions.dimsandlevels import DimsAndLevels
 
 if TYPE_CHECKING:

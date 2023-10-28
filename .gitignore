@@ -1,5 +1,9 @@
-# Unprocessed Datasets should not be published
-Process_Datasets
+# joblib cache
+.joblib_cache
+joblib_cache
+
+# Folders in root that start with _
+_development
 
 # paper, publish it only when publishing
 paper.md
@@ -121,6 +125,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+_venv
 env/
 venv/
 ENV/

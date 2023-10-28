@@ -4,7 +4,8 @@
 import matplotlib as mpl
 import seaborn as sns
 
-import markurutils as ut
+# import markurutils as ut
+import plotastic.utils.utils as ut
 
 
 # %% .... Apply settings
