@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     # from matplotlib import axes
 
 
-# %% Class: PlotTool
+# %% Class: PlotToolf
 
 
 class PlotTool(DataFrameTool):

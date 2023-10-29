@@ -48,7 +48,7 @@ def catchstate(df, var_name: str = "df"):
     return df
 
 
-# %% Class Analysis ..........................................................
+# %% Class DimsAndLevels ..........................................................
 
 
 class DimsAndLevels:
