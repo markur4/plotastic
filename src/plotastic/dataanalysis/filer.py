@@ -29,7 +29,7 @@ class Filer:
     """A class to handle file operations.
     - It reads the name of the current file, and sets it as the default filename for
       saving.
-    - Provides funcrtion for overwrite protection.
+    - Provides function for overwrite protection.
     - More stuff coming..?
 
 

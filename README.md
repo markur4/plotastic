@@ -2,15 +2,18 @@
 
 **Translating `seaborn` into inferential statistics powered by `pingouin`!**
 
+[//]:<== Installation =================================================================>
 ## Installation 📦
 
 ``` bash
 pip install git+https://github.com/markur4/plotastic.git
 ```
 
+[//]:<== Information ==================================================================>
 ## Information 📚 
 *(click to unfold)*
 
+[//]:<--------------------------------------------------------------------------------->
 <details><summary> 🤔<b><i> Why use plotastic?  </i></b> </summary>
 <blockquote>
 <hr>
@@ -47,13 +50,14 @@ pip install git+https://github.com/markur4/plotastic.git
 - We provide snippets that demonstrate of what just happened under the hood, so you can
   backcheck and thoroughly document your work!
 
+[//]:<-- end of 🤔 Why use plotastic? ------------------------------------------------->
 </blockquote>
 </details>
 
 
 
 
-
+[//]:<--------------------------------------------------------------------------------->
 <details><summary> ⏳<b><i> Workflow Summary</b> </i>  </summary>
 <blockquote>
 <hr>
@@ -90,11 +94,13 @@ pip install git+https://github.com/markur4/plotastic.git
    - Use `DataAnalysis.save_statistics()` to save all results to different sheets
      collected in one .xlsx filesheet per test
 
+[//]:<-- end of ⏳ Workflow Summary --------------------------------------------------->
 </blockquote>
 </details>
 
 
 
+[//]:<--------------------------------------------------------------------------------->
 <details><summary> 📊<b><i> Translating Plots into Statistics!</i> </b> </summary>
 <blockquote>
 <hr>
@@ -144,14 +150,13 @@ pip install git+https://github.com/markur4/plotastic.git
   - Three-way ANOVAs are not possible (yet), since that would require setting e.g. ***col***
   as the third factor, or implementing another dimension (e.g. ***hue2***).
 
-[//]:<end of 📊 Translating Plots into Statistics!>
+[//]:<end of 📊 Translating Plots into Statistics! ------------------------------------>
 </blockquote>
 </details>
 
 
 
-
-
+[//]:<--------------------------------------------------------------------------------->
 <details><summary> <b>❗️<i> Disclaimer about Statistics </i></b> </summary>
 <blockquote>
 <hr>
@@ -186,7 +191,6 @@ pip install git+https://github.com/markur4/plotastic.git
   the definition of x, hue, col, etc. Hence, corrected p-values might over-estimate the
   significance of your results.
 
-
 #### 🟡 Be **critical** and **responsible** with your statistical analysis!
 
 - **Expect Errors:** Don't trust automated systems like this one!
@@ -207,15 +211,15 @@ pip install git+https://github.com/markur4/plotastic.git
   - *"Here is my data, here is my question, here is my analysis, here is my
     interpretation. What do you think?"*
 
-[//]:<end of ❗️ Disclaimer about Statistics>
+[//]:<end of ❗️ Disclaimer about Statistics-------------------------------------------->
 </blockquote>
 </details>
 
 
 
-
+[//]:<== Features =====================================================================>
 ## Features ⚙️
-*(click to unfold)*
+
 
 <details><summary>  ✅ <b><i> Feature List </i></b> </summary>
 <blockquote>
@@ -229,6 +233,7 @@ pip install git+https://github.com/markur4/plotastic.git
 - **😣: Help Please..?**
 
 
+[//]:<--------------------------------------------------------------------------------->
 <details open><summary>  <b><i>  Plotting   </i></b> </summary>
 <blockquote>
 
@@ -252,21 +257,26 @@ pip install git+https://github.com/markur4/plotastic.git
     using `inplace=True` like with `pd.DataFrames`). But I never figured out how to
     control matplotlib figure generation, even with re-drawing the figure with canvas.
     It's a mess and I wasted so much time already.*
+
+[//]:<end of Plotting ----------------------------------------------------------------->
 </blockquote>
 </details>
 
 
+
+[//]:<--------------------------------------------------------------------------------->
 <details open><summary>  <b><i>  Multi-Layered Plotting   </i></b> </summary>
 <blockquote>
 
 - ✅ Box-plot + swarm
 - 👍 Box-plot + strip
 - 📆 Violin + swarm/strip
+[//]:<end of Multi-Layered Plotting --------------------------------------------------->
 </blockquote>
 </details>
 
 
-
+[//]:<--------------------------------------------------------------------------------->
 <details open><summary>  <b><i>  Statistics   </i></b> </summary>
 <blockquote>
 
@@ -292,10 +302,13 @@ pip install git+https://github.com/markur4/plotastic.git
   - 📆 Pearson, Spearman, Kendall
 - Printable Snippets
   - 📆 Snippets for all implemented tests
+
+[//]:<end of Statistics --------------------------------------------------------------->
 </blockquote>
 </details>
 
 
+[//]:<--------------------------------------------------------------------------------->
 <details open><summary>  <b><i>   Analysis Pipelines   </i></b> </summary>
 <blockquote>
 
@@ -307,15 +320,21 @@ everything's implemented and working confidently and well!*
 - 🤷 `within_samples(parametric=True)`:      RM-ANOVA + multiple paired t-tests (if
   Normality & Sphericity are given)
 - 🤷 `within_samples(parametric=False)`:    Friedman + multiple Wilcoxon
+
+[//]:<end of Analysis Pipelines ------------------------------------------------------->
 </blockquote>
 </details>
 
-[//]:<end of ✅ Feature List>
+
+[//]:<end of ✅ Feature List ==========================================================>
 </blockquote> 
 </details>
 
 
-<details><summary>🌳 <b><i>Class Diagram (click to unfold) </b></i> </summary>
+
+
+[//]:<=================================================================================>
+<details><summary>🌳 <b><i>Class Diagram </b></i> </summary>
 <blockquote>
 <hr>
 
@@ -327,43 +346,15 @@ everything's implemented and working confidently and well!*
 ```mermaid
 classDiagram
    
-   class WorkingDirectory{
-      <<service>>
-      SCRIPT_NAME
-      SCRIPT_PATH
-      SCRIPT_EXTENSION
-      SCRIPT_FILEPATH
-      cwd
-      current_time: str = filer.IMPORTTIME
-      _current_day(property): -> str
-      _is_notebook(): -> bool
-      set_cwd(path: str)
-   }
-
-   class Filer{
-      <<service>>
-      title: str ="untitled"
-      ...
-      _path_subfolder(property)
-      _path_subsubfolder(property)
-      _parent(property)
-      _path_file(property)
-      add_to_title(to_end:str, to_start:str): -> str
-      ....()
-   }
-
-   WorkingDirectory <|-- Filer
-   Filer *-- DataAnalysis
 
 
 
-   %% ANALYSIS #......................................................................................
-
+   %% == ANALYSIS ======================================================================
+   
    class pd_DataFrame{
       ...
       ....()
    }
-
    class Dims {
       x: str 
       y: str
@@ -373,8 +364,6 @@ classDiagram
       set(**kwargs, inplace: bool =False)
       switch(*keys, **kwargs inplace: bool =False)
    }
-   click Dims href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dims.py" "Dims.py"
-
    class DimsAndLevels {
 
       data: pd.DataFrame
@@ -389,34 +378,26 @@ classDiagram
       levelkeys(property) = [(f1_l1, f2_l1), (f1_l1, f2_l2), ...]
       ....()
    }
-   click DimsAndLevels href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dimsandlevels.py" "DimsAndLevels.py"
-  
-   pd_DataFrame *-- DimsAndLevels
-   Dims *-- DimsAndLevels
-
-
-
-
    class DataFrameTool{
-      user_levels: dict =None
+      levels: list[tuple[str]] =None
       subject: str =None
       verbose: bool =False
       catplot(kind="strip") -> sns.FacetGrid
-      describe_data() -> pd.DataFrame
-      transform() -> Analysis
-      categorize() -> pd.DataFrame
+      transform_y() -> self
+      data_describe() -> pd.DataFrame
+      data_categorize() -> self
+      data_iter__key_facet(property) -> Generator
       ....()
    }
-  click DataFrameTool href "https://github.com/markur4/plotastic/blob/main/plotastic/dataframetool.py" "DimsAndLevels.py"
 
+   pd_DataFrame *-- DimsAndLevels
+   Dims *-- DimsAndLevels
    DimsAndLevels <|-- DataFrameTool
    DataFrameTool <|-- PlotTool
-   %%Analysis <|-- Assumptions
-   %%Analysis <|-- Omnibus
-   %%Analysis <|-- PostHoc
    DataFrameTool <|-- StatTest
 
-   %% STATISTICS #......................................................................................
+
+   %% == STATISTICS ====================================================================
 
    class pingouin{
       <<Statistics Library>>
@@ -425,26 +406,23 @@ classDiagram
       pairwise_tests()
       ....()
    }
-
    class StatResults{
       <<Storage>>
-      normality: pd.DataFrame = "not tested"
-      homoscedasticity: pd.DataFrame = "not tested"
-      sphericity: pd.DataFrame = "not tested"
-      posthoc: pd.DataFrame = "not tested"
-      omnibus: pd.DataFrame = "not tested"
-      bivariate: pd.DataFrame = "not tested"
+      DF_normality: pd.DataFrame = "not tested"
+      DF_homoscedasticity: pd.DataFrame = "not tested"
+      DF_sphericity: pd.DataFrame = "not tested"
+      DF_posthoc: pd.DataFrame = "not tested"
+      DF_omnibus: pd.DataFrame = "not tested"
+      DF_bivariate: pd.DataFrame = "not tested"
       ...
       normal(property):bool ="not assessed"
       homoscedastic(property):bool ="unknown"
       spherical(property):bool ="unknown"
       parametric(property):bool =None
       assess_normality()
-      assess_homoscedasticity()
-      assess_sphericity()
+      save()
       ....()
    }
-
    class StatTest{
       <<BaseObject>>
       ALPHA: float = 0.05
@@ -456,53 +434,39 @@ classDiagram
       _p_to_stars(p: float) -> str
       _effectsize_to_words(effectsize: float) -> str
       ....()
-
-
    }
-   StatResults *-- StatTest
-
-
    class Assumptions{
       ...
       check_normality()
-      check_normality_snip()
+      check_normality_SNIP()
       check_sphericity()
-      check_sphericity_snip()
       check_homoscedasticity()
-      check_homoscedasticity_snip()
-      check_all_assumptions()
-      check_all_assumptions_snip()
       ....()
    }
-   StatTest <|-- Assumptions
-
    class Omnibus{
       ...
-      significant_factors(property): dict
-      omni_anova()
-      omni_anova_snip()
-      omni_rmanova()
-      omni_rmamova_snip()
-      omni_kruskal()
-      omni_kruskal_snip()
+      omnibus_anova()
+      omnibus_anova_SNIP()
+      omnibus_rmanova()
+      omnibus_kruskal()
       ....()
    }
    class PostHoc{
       ...
-      significant_pairs(property): pd.DataFrame
       test_pairwise(paired, parametric)
       ....()
    }
    class Bivariate{
       ...
       test_pearson()
-      test_pearson_snip()
+      test_pearson_SNIP()
       test_spearman()
-      test_spearman_snip()
       test_kendall()
-      test_kendall_snip()
       ....()
    }
+
+   StatResults *-- StatTest
+   StatTest <|-- Assumptions
 
    Assumptions  <|-- PostHoc
    Assumptions  <|-- Omnibus
@@ -510,7 +474,7 @@ classDiagram
    pingouin .. Assumptions: Uses
 
 
-   %% PLOTTING #......................................................................................
+   %% == PLOTTING ======================================================================
 
    class rc{
       <<Runtime Config>>
@@ -518,8 +482,8 @@ classDiagram
       STYLE_PAPER
       STYLE_PRESENTATION
       set_style()
+      set_palette()
    }
-
    class matplotlib{
       <<Plotting Objects>>
       ...
@@ -528,63 +492,64 @@ classDiagram
       fig.legend()
       ....()
    }
-
    class PlotTool{
       fig: mpl.figure.Figure
       axes: mpl.axes.Axes
-      buffer: io.BytesIO
       ...
       subplots() -> (fig, axes)
       fillaxes(kind="strip") -> (fig, axes)
-      plot(kind="strip") -> (fig, axes)
 
       axes_nested(property) -> np.ndarray(axes).shape(1,1)
       axes_iter__key_ax(property) -> ax
       
-      save_plot_tofile() -> None
-      save_plot_tobuffer() -> io.BytesIO
-      load_plot_frombuffer() -> (fig, axes)
    }
-matplotlib *-- PlotTool
-matplotlib <.. rc: Configures
-
    class PlotEdits{
       edit_titles(titles:dict) -> None
       edit_titles_SNIP()
-      edit_labels(labels:dict) -> None
-      edit_labels_SNIP()
-      edit_ticks(ticks:dict) -> None
-      edit_ticks_SNIP()
+      edit_xy_axis_labels(labels:dict) -> None
+      edit_yticklabels_log_minor(ticks:dict) -> None
       ....()
    }
-   
-PlotTool <|-- PlotEdits
-
    class MultiPlot{
       <<Library of pre-built Plots>>
-      ...
+
       plot_box_strip()
       plot_box_strip_SNIP()
-      plot_bar_strip()
-      plot_bar_strip_SNIP()
-      plot_paired_dots()
-      plot_paired_dots_SNIP()
-      plot_scatter_with_line()
-      plot_scatter_with_line_SNIP()
+      plot_bar_swarm()
       plot_qqplot()
       ....()
    }
 
+   matplotlib *-- PlotTool
+   matplotlib <.. rc: Configures
+   PlotTool <|-- PlotEdits
    PlotEdits <|-- MultiPlot
 
 
-
-   %% DATAANALYSIS #......................................................................................
+   %% == DATAANALYSIS ==================================================================
 
    class Annotator{
+      _annotated: bool =False
       ...
-      check_pairs()
+      _check_include_exclude()
+      iter__key_df_ax(PH:pd.DataFrame) -> Generator
       annotate_pairwise()
+      ....()
+   }
+   class Filer{
+      <<service>>
+      title: str ="untitled"
+      prevent_overwrite()
+   }
+   class DataAnalysis{
+      <<Interface>>
+      %% FIGURES DON'T NEED TITLES, WE EDIT THEM AFTERWARDS
+      title = "untitled" 
+      filer: Filer 
+      ...
+      title_add()
+      save_statistics()
+      ....()
    }
 
    MultiPlot <|-- Annotator
@@ -592,29 +557,41 @@ PlotTool <|-- PlotEdits
    PostHoc <|-- Annotator
    Bivariate <|-- Annotator
 
-   class DataAnalysis{
+   Filer *-- DataAnalysis
 
-      <<Interface>>
-      %% FIGURES DON'T NEED TITLES, WE EDIT THEM AFTERWARDS
-      title = "untitled" 
-      filer: Filer 
-      ...
-      save_all_tofile()
-      save_all_tobuffer()
-      load_all_frombuffer()
+   Annotator --|> DataAnalysis
 
-      annot_stars(axes) -> (fig, axes)
 
-      ....()
-   }
-   click DataAnalysis href "https://github.com/markur4/plotastic/blob/main/plotastic/dataanalysis.py" "dataanalysis.py"
+   %% == Links =========================================================================
 
-  Annotator --|> DataAnalysis
+   %% dimensions 
+   click Dims href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dims.py" 
+   click DimsAndLevels href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dimsandlevels.py" 
+   click DataFrameTool href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dataframetool.py" 
+
+   %% stat
+   click StatResults href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/statresults.py"
+   click StatTest href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/stattest.py" 
+   click Assumptions href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/assumptions.py" 
+   click Omnibus href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/omnibus.py"
+   click PostHoc href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/posthoc.py"
+
+   %% plotting
+   click rc href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/rc.py"
+   click PlotTool href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/plottool.py"
+   click PlotEdits href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/plotedits.py"
+   click MultiPlot href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/multiplot.py"
+
+   %% dataanalysis
+   click Annotator href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dataanalysis/annotator.py"
+   click Filer href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dataanalysis/filer.py"
+   click DataAnalysis href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dataanalysis/dataanalysis.py"
+
 
 
 ```
 
-[//]:<end of 🌳 Class Diagram>
+[//]:<end of 🌳 Class Diagram =========================================================>
 </blockquote>
 </details>
 
@@ -622,14 +599,24 @@ PlotTool <|-- PlotEdits
 
 
 
-
-## Cite these papers! ✍🏻
+[//]:<=================================================================================>
+## Citations ✍🏻
+<details><summary> <i> Please cite the publications of seaborn, pingouin, etc. when using plotastic (click to unfold) </i> </summary>
+<blockquote>
+<hr>
 
 - *Vallat, R. (2018). Pingouin: statistics in Python. Journal of Open Source Software,
   3(31), 1026. <https://doi.org/10.21105/joss.01026>*
 - *Waskom, M. et al. (2021). mwaskom/seaborn: v0.11.1 (January 2021). Zenodo.
   <http://doi.org/10.5281/zenodo.4547176>*
 
+[//]:<end of Citations ================================================================>
+</blockquote>
+</details>
+
+
+
+[//]:<=================================================================================>
 ## Step by step 👈🤞👇👌
 
 ### 🧮 Prepare your data in a long-format DataFrame

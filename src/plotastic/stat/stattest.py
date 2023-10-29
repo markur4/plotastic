@@ -10,13 +10,12 @@ class StatTest(DataFrameTool):
 
     # * Alpha
     ALPHA = 0.05
+    # * Alpha Tolerance: Will still print out result if it nearly crossed alpha level.
+    ALPHA_TOLERANCE = 0.075
 
     @classmethod
     def set_alpha(cls, value: float) -> None:
         cls.ALPHA = value
-
-    # * Alpha Tolerance: Will still print out result if it nearly crossed alpha level.
-    ALPHA_TOLERANCE = 0.075
 
     @classmethod
     def set_alpha_tolerance(cls, value: float) -> None:
@@ -83,4 +82,3 @@ class StatTest(DataFrameTool):
         else:
             effectSize = float("NaN")
         return effectSize
-
