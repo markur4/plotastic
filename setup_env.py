@@ -140,6 +140,8 @@ req.to_txt(fname="_devtools.txt", requirements=DEVELOPMENT_TOOLS)
 os.remove("_devtools.txt") # * cleanup
 
 
-
+#%% install icecream to make it a builtin
+import icecream # should be part of requirements
+icecream.install()
 
 
