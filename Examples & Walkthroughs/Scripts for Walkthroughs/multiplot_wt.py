@@ -79,7 +79,7 @@ s = MP.plot_box_strip_SNIP()
 
 # ###... PLOT
 # (
-#     DA.subplots() # ! Replace DA with your instance name
+#     DA.subplots() # !! Replace DA with your instance name
 #     .fillaxes(kind='box', **box_KWS)
 #     .fillaxes(kind='strip', **strip_KWS)
 #     .edit_legend()

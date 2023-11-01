@@ -25,7 +25,7 @@ def test_omnibus_anova(DF: pd.DataFrame, dims):
     DA.omnibus_anova()
 
 
-# ! Warnings happen when groups have only one sample
+# !! Warnings happen when groups have only one sample
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
 @pytest.mark.parametrize("DF, dims", ct.zipped_noempty_PAIRED)
 def test_omnibus_rm_amova(DF, dims):

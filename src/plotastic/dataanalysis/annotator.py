@@ -37,7 +37,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         ### Inherit
         # * verbosity false, since each subclass can test its own DataFrame
         super().__init__(**dataframetool_kws)
-        
+
         ### Make an annotated flag to mark plot as annotated
         self._annotated = False
 
@@ -627,7 +627,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         :type return_ph: bool, optional
         :return: _description_
         :rtype: Annotator | DataAnalysis
-        """        
+        """
 
         ### Assert presence of a posthoc table and plot
         # * Assert presence of Posthoc
@@ -694,7 +694,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             return self
 
 
-# ! ______________________________________________________________
+# !! ______________________________________________________________
 
 
 # # %% test for FMRI
@@ -720,8 +720,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 #         # exclude=[1, "cue", {1: ("cue", "stim")}],
 #         # exclude=[1, {"stim": (0, 2)}],
 #         # exclude="__X",
-#         # exclude=[1, "cue", {"cue": ("cue", "stim")}], # ! Correct error
-#         # include_in_facet={"frontal": [0, "cue"], (0,1): [0, "cue"]}, # ! Correct error
+#         # exclude=[1, "cue", {"cue": ("cue", "stim")}], # !! Correct error
+#         # include_in_facet={"frontal": [0, "cue"], (0,1): [0, "cue"]}, # !! Correct error
 #         # include_in_facet={"frontal": [0, "cue"], "parietal": [0, "cue"]},
 #         # exclude_in_facet={"frontal": [2, "cue"], "parietal": [4, "stim"]},
 #         # include_in_facet={

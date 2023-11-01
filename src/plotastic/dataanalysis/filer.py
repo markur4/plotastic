@@ -77,7 +77,7 @@ class Filer:
         ### Define Pattern Rules:
         # * Between Start (^) and end ($) of line
         # -- fname:  Match all characters non-greedy ( .*? )
-        # ! fname: Match exact string
+        # !! fname: Match exact string
         # * index: : 1 through 3 repetitions of single digit ( \d{1,3} )
         # regex = r"^(?P<fname>.*?)_(?P<index>\d{1,2})$" # ? old one
         regex = r"^(?P<fname>" + filename + r")_(?P<index>\d{1,3})$"

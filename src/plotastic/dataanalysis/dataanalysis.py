@@ -1,11 +1,11 @@
-# !
+# !!
 
 # %% Imports
 from typing import TYPE_CHECKING
 
 from copy import deepcopy
 
-# from typing import Self # ! only for python 3.11. Not really needed, since "DataAnalysis" as typehint works with vscode
+# from typing import Self # !! only for python 3.11. Not really needed, since "DataAnalysis" as typehint works with vscode
 
 from pathlib import Path
 import pickle
@@ -42,7 +42,7 @@ class DataAnalysis(Annotator):
         verbose=True,
     ) -> "DataAnalysis":
         ### Inherit
-        # ! verbosity set to False, since each subclass shouldn't test its own DataFrame
+        # !! verbosity set to False, since each subclass shouldn't test its own DataFrame
         dataframetool_kws = dict(
             data=data, dims=dims, subject=subject, levels=levels, verbose=False
         )
@@ -129,11 +129,11 @@ class DataAnalysis(Annotator):
     #     format: str = "pdf",
     #     fig: Figure = None,
     #     overwrite: str | bool = "day",  # * Added overwrite protection
-    #     dpi: int | str = 300,  # ! mpl default is "figure"
+    #     dpi: int | str = 300,  # !! mpl default is "figure"
     #     bbox_inches: "str | Bbox" = "tight",
     #     pad_inches: float = 0.1,
-    #     facecolor: str = "none",  # ! mpl default is "auto", using current figure facecolor
-    #     edgecolor: str = "none",  # ! mpl default is "auto", using current figure edgecolor
+    #     facecolor: str = "none",  # !! mpl default is "auto", using current figure facecolor
+    #     edgecolor: str = "none",  # !! mpl default is "auto", using current figure edgecolor
     #     backend: str = None,
     #     **user_kwargs,
     # ) -> "DataAnalysis":
@@ -180,7 +180,7 @@ class DataAnalysis(Annotator):
 
     #     ### Gather arguments
     #     kwargs = dict(
-    #         # fname=self.title, # ! pass it directly
+    #         # fname=self.title, # !! pass it directly
     #         format=format,
     #         dpi=dpi,
     #         bbox_inches=bbox_inches,

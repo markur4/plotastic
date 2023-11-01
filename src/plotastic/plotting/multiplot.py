@@ -199,7 +199,7 @@ class MultiPlot(PlotEdits):
         s += "\n"
         s += "###... PLOT\n"
         s += "(\n"
-        s += "    DA.subplots() # ! Replace DA with your instance name \n"
+        s += "    DA.subplots() # !! Replace DA with your instance name \n"
         s += "    .fillaxes(kind='box', **box_KWS)\n"
         s += "    .fillaxes(kind='strip', **strip_KWS)\n"
         s += "    .edit_legend()\n"
@@ -240,7 +240,7 @@ class MultiPlot(PlotEdits):
         box_KWS = dict(
             showfliers=False,
             # * Widths of boxes
-            # ! Throws TypeError: matplotlib.axes._axes.Axes.boxplot() got multiple values for keyword argument 'widths'
+            # !! Throws TypeError: matplotlib.axes._axes.Axes.boxplot() got multiple values for keyword argument 'widths'
             # widths=0.9,
             boxprops=dict(  # * Box line and surface
                 alpha=translucent,
@@ -281,7 +281,7 @@ class MultiPlot(PlotEdits):
         swarm_KWS.update(swarm_kws)
 
         ###... PLOT
-        # ! If log y scale, you should pass y_scale = "log" in sublot_kws! Otherwise Points will not cluster in the middle!
+        # !! If log y scale, you should pass y_scale = "log" in sublot_kws! Otherwise Points will not cluster in the middle!
         (
             self.subplots(**subplot_kws)
             .fillaxes(kind="box", **box_KWS)
@@ -294,7 +294,7 @@ class MultiPlot(PlotEdits):
         return self
 
 
-## !__________________________________________________________________________
+## !!__________________________________________________________________________
 
 # # %% Matplotlib Runtime Config (RC)
 

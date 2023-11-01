@@ -26,7 +26,7 @@ DF, dims = plst.load_dataset("tips")  # * Load Data. Dims
 DIMS = dict(y="tip", x="day", hue="sex", col="smoker", row="time")
 PT = PlotTool(
     data=DF, dims=DIMS
-)  # ! We use PT, but please access these functions via the DataAnalysis class (DA)
+)  # !! We use PT, but please access these functions via the DataAnalysis class (DA)
 
 ### Test Parts
 PT.subplots()  # * Make Figure and Axes
@@ -34,7 +34,7 @@ PT.subplots()  # * Make Figure and Axes
 ### Test Interface functions
 PT = (
     PT.plot()
-)  # ! Make sure to return new instance of PlotTool, otherwise subsequent edits won't apply
+)  # !! Make sure to return new instance of PlotTool, otherwise subsequent edits won't apply
 
 ### Plot in two steps
 PT.subplots()  # * Make empty axes
@@ -73,8 +73,8 @@ for i, ax in enumerate(PT.axes.flatten()):
 
 ### Don't memorize this, just copy code to the clipboard!
 PT.subplots_SNIP(doclink=True)
-DA = PT  # ! If you use DataAnalysis of PlotTool, it makes no difference!
-# !(We use DA, since its' not intended to use PT directly)
+DA = PT  # !! If you use DataAnalysis of PlotTool, it makes no difference!
+# !!(We use DA, since its' not intended to use PT directly)
 
 ### There's a snippet for fillaxes too!
 PT.fillaxes_SNIP(kind="bar", doclink=True)
@@ -100,8 +100,8 @@ PT.edit_legend_SNIP()
 #     frameon=False, #* Remove frame around legend
 # )
 
-# ! Snippets use matplotlib functions, which don't return PlotHelper object, so they can NOT be chained!
-# ! Use them at the end of a layer chain!
+# !! Snippets use matplotlib functions, which don't return PlotHelper object, so they can NOT be chained!
+# !! Use them at the end of a layer chain!
 
 ### Try Different Dataset
 DF, dims = plst.load_dataset("fmri")

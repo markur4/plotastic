@@ -50,7 +50,7 @@ PH = PostHoc(
 PH.catplot()
 
 PH.test_pairwise(
-    paired=False,  # ! If using paired, but table is not paired, it will throw a cryptic error "AssertionError: The T-value must be a int or a float."
+    paired=False,  # !! If using paired, but table is not paired, it will throw a cryptic error "AssertionError: The T-value must be a int or a float."
     padjust="bonf",
     # subject="subject",
     return_desc=False,
@@ -59,9 +59,9 @@ PH.test_pairwise(
 
 # %%Automatic testing
 
-# ! PostHoc does not support dimensions that produce empty groups in dataframe
+# !! PostHoc does not support dimensions that produce empty groups in dataframe
 dimses_tips = [
-    # dict(y="tip", x="day", hue="sex", col="smoker", row="time"), # ! these make empty groups
+    # dict(y="tip", x="day", hue="sex", col="smoker", row="time"), # !! these make empty groups
     # dict(y="tip", x="sex", hue="day", col="smoker", row="time"),
     # dict(y="tip", x="sex", hue="day", col="time", row="smoker"),
     dict(y="tip", x="size-cut", hue="smoker", col="sex", row="time"),

@@ -1,4 +1,4 @@
-# !
+# !!
 # %% Imports
 
 
@@ -363,7 +363,7 @@ class DimsAndLevels:
     @property  # * [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]
     def levelkeys_all(
         self,
-    ) -> list[tuple]:  # ! refactored from 'levelkeys' -> 'levelkeys_all'
+    ) -> list[tuple]:  # !! refactored from 'levelkeys' -> 'levelkeys_all'
         """Contains ALL possible combinations of levels, even if they don't exist in the data.
 
         :return: [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2,
@@ -456,7 +456,7 @@ class DimsAndLevels:
             for i in range(len(level_key)):
                 for j in range(i + 1, len(level_key)):
                     ### Sort the levels in alphabetical order to count combinations regardless of order
-                    # ! can't sort tuples with different types
+                    # !! can't sort tuples with different types
                     # combination = tuple(sorted((level_key[i], level_key[j])))
                     combination = tuple(set((level_key[i], level_key[j])))  # * WORKING
                     level_combocount[combination] += 1
@@ -580,7 +580,7 @@ class DimsAndLevels:
         # * They often represent technical replicates
         # * It's more important how often the levels occur together within one element
         ### levelkeys are the same as index after setting DF.index to all factors
-        # ! keep this static, since it's useful.
+        # !! keep this static, since it's useful.
         # levelkeys = self.levelkeys if levelkeys is None else levelkeys
 
         ### Create a square distance matrix based on Jaccard similarity
@@ -683,7 +683,7 @@ class DimsAndLevels:
     # ==
     # == SETTERS =======================================================================
 
-    # !
+    # !!
     def switch(
         self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
     ) -> "DimsAndLevels | DataAnalysis":
@@ -694,7 +694,7 @@ class DimsAndLevels:
 
         return a
 
-    # !
+    # !!
     def set(
         self,
         dims: "Dims | dict" = None,
@@ -770,9 +770,9 @@ class DimsAndLevels:
         )
 
 
-# !
-# !
-# !    #* ######################################################################################
+# !!
+# !!
+# !!    #* ######################################################################################
 
 
 # %%
@@ -814,7 +814,7 @@ dimses = [
 
 
 # %% Prototypes
-# ! not working
+# !! not working
 """! I tried implementing generators that iterate through the data vy looping through the list of
 levelkeys and then picking out the datawindow using grouped.get_group(key). 
 This is cool since I can make a function that uses skip=True/False as an argument, but generators don't accept arguments that easily

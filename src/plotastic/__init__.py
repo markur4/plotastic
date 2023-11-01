@@ -46,8 +46,8 @@ __author__ = "markur4"
 # == Flatten module access and import everything =======================================
 # * take care to include parent folders of modules
 
-# ! This works, but vscode won't recognize and highlight functions and classes
-# ! Still keep it, to make sure everything is imported
+# !! This works, but vscode won't recognize and highlight functions and classes
+# !! Still keep it, to make sure everything is imported
 # for module in __all__:
 #     exec(f"from .{module} import *")
 

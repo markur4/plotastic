@@ -41,7 +41,7 @@ class Assumptions(StatTest):
         ### Gather Arguments
         kwargs = dict(
             dv=self.dims.y,
-            group=self.dims.x,  # ! pingouin crashes without group, so we iterate without x
+            group=self.dims.x,  # !! pingouin crashes without group, so we iterate without x
             method=method,
         )
         kwargs.update(user_kwargs)  # * Add user kwargs
@@ -59,7 +59,7 @@ class Assumptions(StatTest):
             )  # * -> Series with same length as normdf
 
             normDF_dict[key] = normdf
-            
+
         normDF = pd.concat(normDF_dict, keys=normDF_dict.keys(), names=self.factors_all)
 
         ### Save Results
@@ -85,7 +85,7 @@ class Assumptions(StatTest):
         ### Gather Arguments
         kwargs = dict(
             dv=self.dims.y,
-            group=self.dims.x,  # ! required, homoscedasticity is measured over a list of groups
+            group=self.dims.x,  # !! required, homoscedasticity is measured over a list of groups
             method=method,
         )
         kwargs.update(user_kwargs)  # * Add user kwargs
@@ -103,7 +103,7 @@ class Assumptions(StatTest):
             homosced["n per group"] = [self.data_count_n_per_x(df).to_list()]
 
             homosced_dict[key] = homosced
-            
+
         homoscedDF = pd.concat(
             homosced_dict, keys=homosced_dict.keys(), names=self.factors_all
         )
@@ -171,20 +171,17 @@ class Assumptions(StatTest):
 
             spher_dict[key] = spherdf
 
-        spherDF = pd.concat(
-            spher_dict, keys=spher_dict.keys(), names=self.factors_all
-        )
-        
+        spherDF = pd.concat(spher_dict, keys=spher_dict.keys(), names=self.factors_all)
+
         ### Save Results
         self.results.DF_sphericity = spherDF
-        
+
         return spherDF
 
 
-# ! end class
-# !
-# !
-
+# !! end class
+# !!
+# !!
 
 
 # #%%
@@ -220,12 +217,10 @@ class Assumptions(StatTest):
 # # %% Use different set
 
 
-# DA2 = Assumptions(data=DF, dims=dict(x="timepoint", y="signal"), 
+# DA2 = Assumptions(data=DF, dims=dict(x="timepoint", y="signal"),
 #                   subject="subject", verbose=True)
 # # DA2.catplot()
 
 # DA2.check_normality()
 # DA2.check_homoscedasticity()
 # DA2.check_sphericity()
-
-

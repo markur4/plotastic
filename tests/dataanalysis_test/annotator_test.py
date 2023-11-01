@@ -13,8 +13,8 @@ import conftest as ct
 
 # %% testing for dataset TIPS
 
-# ! Don't use with empty groups
-# ! We chose exclusions that won't show in the plot, but we need those arguments to test it
+# !! Don't use with empty groups
+# !! We chose exclusions that won't show in the plot, but we need those arguments to test it
 TIPS_annot_pairwise_kwargs = [
     dict(
         include=["Yes", {"1-2": ("Yes", "No")}],
@@ -123,7 +123,7 @@ zipped_fmri: list[tuple] = ct.add_zip_column(
 
 @pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_fmri)
 def test_pairwiseannotations_fmri(DF, dims, annot_kwargs):
-    AN = Annotator(data=DF, dims=dims, verbose=True, subject="subject")  # ! subject
+    AN = Annotator(data=DF, dims=dims, verbose=True, subject="subject")  # !! subject
     _ph = AN.test_pairwise(paired=True, padjust="bonf")
     AN = (
         AN.subplots()
@@ -193,20 +193,19 @@ def test_pairwiseannotation_qpcr(DF, dims, annot_kwargs):
     AN = (
         AN.subplots(sharey=False, figsize=(10, 10))
         .fillaxes(kind="box")
-        .transform_y("log10")  # ! log transform
-        .edit_y_scale_log(10)  # ! MUST be called before annotation!
+        .transform_y("log10")  # !! log transform
+        .edit_y_scale_log(10)  # !! MUST be called before annotation!
         .annotate_pairwise(
             # include="__HUE",
             show_ph=False,
             only_sig="tolerant",
             **annot_kwargs,
         )
-        # .edit_tight_layout() # ! just uglier
+        # .edit_tight_layout() # !! just uglier
     )
     ### Don't plot while executing pytest in terminal
     if __name__ != "__main__":
         plt.close()
-
 
 
 ### Run without pytest

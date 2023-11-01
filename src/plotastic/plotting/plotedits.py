@@ -243,7 +243,7 @@ class PlotEdits(PlotTool):
         s += "\tax.set_yscale('log',  # * 'symlog', 'linear', 'logit',  \n"
         s += "\t\tbase=10,  \n"
         s += "\t\tnonpositive='clip', # * 'mask': masked as invalid, 'clip': clipped to a very small positive number \n"
-        # ! s += "\t\tsubs=[2, 3, 4, 5], # * Where to place subticks between major ticks !! Removes both ticks and labels \n" \n"
+        # !! s += "\t\tsubs=[2, 3, 4, 5], # * Where to place subticks between major ticks !! Removes both ticks and labels \n" \n"
         s += "\t) \n"
         s += "\t# ax.set_xscale('log') # ? Rescale x-axis\n"
         pyperclip.copy(s)
@@ -521,7 +521,7 @@ class PlotEdits(PlotTool):
             bbox_to_anchor=bbox_to_anchor,
             borderaxespad=borderaxespad,
             frameon=frameon,
-            # fontsize=10, # ! overrides entry from rcParams
+            # fontsize=10, # !! overrides entry from rcParams
         )
         KWS.update(**kws)
 

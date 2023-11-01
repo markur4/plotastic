@@ -32,8 +32,8 @@ DA = ct.DA_STATISTICS
 
 funcs = [
     DA.save_statistics,
-    # DA.save_fig, # ! Not working, but let's keep it for now
-    # DA.save_all, # ! Not working
+    # DA.save_fig, # !! Not working, but let's keep it for now
+    # DA.save_all, # !! Not working
 ]
 
 
@@ -95,21 +95,20 @@ def test_save(func: Callable, lastcleanup=True):
 
 if __name__ == "__main__":
     test_save(func=DA.save_statistics, lastcleanup=False)
-    
+
     ### cleanup
     # for file in glob("plotastic_results*"):
     #     os.remove(file)
 
 # %%
 
-    # %% Test save_fig
-    # import matplotlib.pyplot as plt
-    # DA.plot_box_strip()
-    # DA.save_fig(fname="p1", overwrite=True)  # ? saves wrong fig ?
-    # DA.save_fig(fname="p2", overwrite=True, fig=DA.fig)  # ? saves wrong fig ??
-    # DA.fig.savefig("p3.pdf")  # ? saves CORRECT FIG!!
-    # plt.savefig("p4.pdf")
-
+# %% Test save_fig
+# import matplotlib.pyplot as plt
+# DA.plot_box_strip()
+# DA.save_fig(fname="p1", overwrite=True)  # ? saves wrong fig ?
+# DA.save_fig(fname="p2", overwrite=True, fig=DA.fig)  # ? saves wrong fig ??
+# DA.fig.savefig("p3.pdf")  # ? saves CORRECT FIG!!
+# plt.savefig("p4.pdf")
 
 
 # %%

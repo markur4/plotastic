@@ -242,8 +242,8 @@ class PostHoc(Assumptions):
 
 # %% Check functionality of pingouin
 
-# # ! Raises TypeError: Could not convert value 'cuestim' to numeric. This didn't happen before changing to new environment.
-# # ! Downgraded pandas from 2.0.3 (released april 2023) to 1.5.3 -> FIXED IT
+# # !! Raises TypeError: Could not convert value 'cuestim' to numeric. This didn't happen before changing to new environment.
+# # !! Downgraded pandas from 2.0.3 (released april 2023) to 1.5.3 -> FIXED IT
 # ph = pg.pairwise_tests(data=DF, dv="signal", within=["timepoint", "event"], subject="subject", parametric=True, padjust="bonf", nan_policy="pairwise")
 
 # %% test with pingouin

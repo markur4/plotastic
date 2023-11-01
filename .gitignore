@@ -11,7 +11,7 @@ joblib_cache
 # Folders in root that start with _
 _development
 
-# !! paper, publish it only when publishing
+# !!! paper, publish it only when publishing
 paper.md
 paper.bib
 

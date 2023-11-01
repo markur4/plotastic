@@ -25,8 +25,6 @@ if TYPE_CHECKING:
 
 
 class DataFrameTool(DimsAndLevels):
-    
-    
     # ==
     # == __init__ ======================================================================
 
@@ -115,7 +113,7 @@ class DataFrameTool(DimsAndLevels):
 
         ### Remove empties
         # * This ensures that we can categorize only those columns whose levels were specified in the input
-        # ! This also makes sure that those factors, that were completely mismatched, don't appear in the result
+        # !! This also makes sure that those factors, that were completely mismatched, don't appear in the result
         catdict = {k: v for k, v in catdict.items() if len(v) > 0}
         return catdict
 
@@ -160,7 +158,7 @@ class DataFrameTool(DimsAndLevels):
         for factor, LVLs_fromCOL in LVLS.items():
             matchdict[factor] = (False, LVLs_fromCOL)  # * Initialize
             if factor == "NOT_FOUND":
-                continue  # ! LVLs_fromCOL won't contain levels from data but actually from input
+                continue  # !! LVLs_fromCOL won't contain levels from data but actually from input
             for lvls in input_lvls:
                 if ut.check_unordered_identity(
                     LVLs_fromCOL, lvls, ignore_duplicates=False
@@ -183,7 +181,7 @@ class DataFrameTool(DimsAndLevels):
         # * List all unmatched levels
         problems, warnings = [], []
         if "NOT_FOUND" in matchdict.keys():
-            # ! This is treated as a warning, since it might contain levels that fully exclude a factor
+            # !! This is treated as a warning, since it might contain levels that fully exclude a factor
             mismatches = matchdict["NOT_FOUND"][1]
             warnings.append(mismatches)
             print(f"🟡 Levels mismatch:  {mismatches}")
@@ -217,7 +215,7 @@ class DataFrameTool(DimsAndLevels):
             verbose (bool, optional): _description_. Defaults to True.
         """
 
-        # ! ALWAYS VERBOSE
+        # !! ALWAYS VERBOSE
 
         RJ = 17  # * Right Justification to have everything aligned nicely
 
@@ -569,10 +567,10 @@ class DataFrameTool(DimsAndLevels):
 
         ### Max value of combocountdf should be the number of levelkeys found in Data
         len_levelcombos = df.max().max()
-        
-        # ! Not True if every level of all factors is found in every group
-        # ! See plst.load_data("tips") for example
-        # assert len_levelcombos == len( 
+
+        # !! Not True if every level of all factors is found in every group
+        # !! See plst.load_data("tips") for example
+        # assert len_levelcombos == len(
         #     self.levelkeys
         # ), "Max value of combocount_df should be the number of levelkeys"
 
@@ -694,7 +692,7 @@ class DataFrameTool(DimsAndLevels):
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ..."""
         if self.factors_is_unfacetted:
             # * If no row or col, return all axes and data
-            yield None, self.data_ensure_allgroups()  # ! Error for  df.groupby().get_group(None)
+            yield None, self.data_ensure_allgroups()  # !! Error for  df.groupby().get_group(None)
 
         else:
             # * Only fill in empty groups for row and col,
@@ -711,7 +709,7 @@ class DataFrameTool(DimsAndLevels):
         Does not contain rows from empty groups"""
         if self.factors_rowcol is None:
             # * If no row or col, return all axes and data
-            yield None, self.data  # ! Error for  df.groupby().get_group(None)
+            yield None, self.data  # !! Error for  df.groupby().get_group(None)
 
         else:
             grouped = self.data.groupby(ut.ensure_list(self.factors_rowcol))

@@ -4,6 +4,7 @@ library
 
 # %% Imports: Just the re-used ones, special ones are imported in the functions
 
+
 from typing import TYPE_CHECKING, Hashable
 from decimal import Decimal
 
@@ -14,24 +15,16 @@ import warnings
 import re
 
 from IPython.display import DisplayObject  # * For type hinting of ut.pp()
+from IPython import get_ipython
+
 
 import numpy as np
 import pandas as pd
 
+import plotastic.utils.cache as utc
+
 if TYPE_CHECKING:
     pass
-
-
-# %% Make cache dir
-
-from joblib import Memory
-
-location = "./.joblib_cache"
-memory = Memory(location, verbose=0)
-
-
-def clear_cache():
-    memory.clear(warn=False)
 
 
 # %% Types
@@ -419,8 +412,8 @@ def make_cmap_saturation(
     return custom_cmap
 
 
-# ! Cache it
-make_cmap_saturation = memory.cache(make_cmap_saturation)
+# !! Cache it
+make_cmap_saturation = utc.MEMORY.cache(make_cmap_saturation)
 
 
 # %% I/O
@@ -451,7 +444,7 @@ def copy_by_pickling(obj, plt_close=True):
     from matplotlib import pyplot as plt
 
     # * CONVERT TO BYTE RAM
-    # with io.BytesIO() as buf: # ! 'with' statement not working with pyplot
+    # with io.BytesIO() as buf: # !! 'with' statement not working with pyplot
     buf = io.BytesIO()
     pickle.dump(obj, buf)
     buf.seek(0)

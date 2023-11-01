@@ -15,7 +15,7 @@ PYTHON_VERSION = ">=3.11"  # * Used only by setup.py
 REQUIREMENTS = [
     ### Core
     "numpy",
-    "pandas==1.5.3",  # ! pingouin Not working with pandas 2.0 yet
+    "pandas==1.5.3",  # !! pingouin Not working with pandas 2.0 yet
     ### Plotting
     "matplotlib",
     "seaborn",
@@ -30,20 +30,21 @@ REQUIREMENTS = [
     "colour",  # * For custom colour maps
     "xlsxwriter",  # * For saving results to excel
     "ipynbname",  # * Used by utils
-    "openpyxl", # * optional for Pandas, but error when not installed 
+    "openpyxl",  # * optional for Pandas, but error when not installed
+    "icecream",  # * better than print
 ]
-REQUIREMENTS_EXTRA = [
-    # 
+REQUIREMENTS_EXTRA = [  # ? Only installed if needed, whatever that means
+    #
 ]
 DEVELOPMENT_TOOLS = [
-    "pytest", "ipytest"
+    "pytest",
+    "ipytest",
 ]
 
 # %% Write to .txt
 
-def to_txt(
-    fname: str = "requirements-dev.txt", requirements: list[str] = None
-) -> None:
+
+def to_txt(fname: str = "requirements-dev.txt", requirements: list[str] = None) -> None:
     """Write a requirements.txt file from a list of requirements.
 
     :param filename: Path to requirements.txt file, defaults to "requirements-dev.txt"

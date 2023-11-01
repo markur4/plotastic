@@ -1,4 +1,4 @@
-# !
+# !!
 # %% Imports
 
 from typing import TYPE_CHECKING, Callable, Generator, Tuple, Sequence
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
     # from matplotlib.figure import Figure
 
-    # from matplotlib.axes import Axes # ! Doesn't work
+    # from matplotlib.axes import Axes # !! Doesn't work
     # import pandas as pd
 
     # import io
@@ -138,9 +138,9 @@ class PlotTool(DataFrameTool):
     def axes_nested(self) -> np.ndarray[np.ndarray[matplotlib.axes.Axes]]:
         """Always returns a 2D nested array of axes, even if there is only one row or column."""
 
-        # ! subplots(square=True) returns a 2D array, so no need to reshape
-        # ! BUT that would mean I'd also have to refactor everything that needs flat.
-        # ! So let's just keep it this way
+        # !! subplots(square=True) returns a 2D array, so no need to reshape
+        # !! BUT that would mean I'd also have to refactor everything that needs flat.
+        # !! So let's just keep it this way
         # return self.axes
 
         if bool(self.dims.row and self.dims.col):  # * both row and col
@@ -153,7 +153,7 @@ class PlotTool(DataFrameTool):
     @property  # * [ax11, ax12, ax21, ax22]
     def axes_flat(self) -> Sequence[matplotlib.axes.Axes]:
         """Always returns a 1D flattened array of axes, regardless of row, column, or single figure."""
-        # ! We need self.axes_nested, since axes is not always an array
+        # !! We need self.axes_nested, since axes is not always an array
         return self.axes_nested.flatten()
 
     #
@@ -166,7 +166,7 @@ class PlotTool(DataFrameTool):
         """Returns: >> (R_lvl1, C_lvl1), ax11 >> (R_lvl1, C_lv2), ax12 >> (R_lvl2, C_lvl1), ax21 >> ..."""
         if self.factors_rowcol is None:
             # * If no row or col, return all axes and data
-            yield None, self.axes  # ! Error for  df.groupby().get_group(None)
+            yield None, self.axes  # !! Error for  df.groupby().get_group(None)
         else:
             for key, ax in zip(self.levelkeys_rowcol, self.axes.flatten()):
                 yield key, ax
@@ -206,11 +206,11 @@ class PlotTool(DataFrameTool):
         if self.factors_rowcol is None:
             yield self.axes, self.data  # * If no row or col, return all axes and data
         else:
-            # data_dict = self.data.groupby(self.factors_rowcol) # ! works too!
+            # data_dict = self.data.groupby(self.factors_rowcol) # !! works too!
             for key in self.levelkeys_rowcol:
                 ax = self.axes_dict[key]
                 df = self.data_dict_skip_empty[key]
-                # df = data_dict.get_group(key) # ! works, too!
+                # df = data_dict.get_group(key) # !! works, too!
                 # ut.pp(df)
                 # * Seaborn breaks on Dataframes that are only NaNs
                 if df[self.dims.y].isnull().all():
@@ -300,7 +300,7 @@ class PlotTool(DataFrameTool):
         self.fig: Figure
         self.axes: np.ndarray
         self.fig, self.axes = plt.subplots(
-            # squeeze=False, # ! Always return 2D array. Don't use, requires unnecessary refactoring
+            # squeeze=False, # !! Always return 2D array. Don't use, requires unnecessary refactoring
             **KWS,
         )
 
@@ -309,7 +309,7 @@ class PlotTool(DataFrameTool):
         self.edit_axtitles_reset()
 
         ### Scale
-        # ! Must sometimes be done BEFORE seaborn functions, otherwise they might look weird
+        # !! Must sometimes be done BEFORE seaborn functions, otherwise they might look weird
         if not y_scale is None:
             plt.yscale(y_scale, **y_scale_kws)
 
@@ -386,16 +386,16 @@ class PlotTool(DataFrameTool):
         ### Remove legend per axes, since we want one legend for the whole figure
         if (
             self.dims.hue
-        ):  # ! also: legend=False doesn't work with sns.barplot for some reason..
+        ):  # !! also: legend=False doesn't work with sns.barplot for some reason..
             self.remove_legend()
 
         ### todo Save current plot as attribute, so that we can save mid-plot
-        # self.fig = plt.gcf() # ! Doesn't work, seems to overwrite self.axes to list
-        # self.axes = self.fig.get_axes() # ! Doesn't work, always returns list, not 2D
+        # self.fig = plt.gcf() # !! Doesn't work, seems to overwrite self.axes to list
+        # self.axes = self.fig.get_axes() # !! Doesn't work, always returns list, not 2D
         # array
 
         ### Explicitly update the figure to include modified axes
-        # plt.figure(self.fig.number) # ! from chatgpt doesn't work
+        # plt.figure(self.fig.number) # !! from chatgpt doesn't work
 
         ### Update the figure reference
         # ax = self.axes_flat[-1]  # Select the last modified axes
@@ -437,7 +437,7 @@ class PlotTool(DataFrameTool):
                 ax.legend_.remove()
 
     # == Save =========================================================================
-    # ! NOT WORKING, just use plt.savefig() manually, I couldn't figure this out
+    # !! NOT WORKING, just use plt.savefig() manually, I couldn't figure this out
 
     # def save_fig(self, **savefig_kwargs) -> "PlotTool | DataAnalysis":
     #     """Calls plt.figure.Figure.savefig(). Overridden by DataAnalysis.save_fig(), but
@@ -445,9 +445,9 @@ class PlotTool(DataFrameTool):
 
     #     :param safefig_kwargs: kwargs passed to plt.figure.Figure.savefig()
     #     """
-    #     # ! This function is overriden by DataAnalysis.save_fig()
+    #     # !! This function is overriden by DataAnalysis.save_fig()
     #     plt.savefig(**savefig_kwargs)
-    #     # ! Not working, self.fig is Never updated during .fillaxes!
+    #     # !! Not working, self.fig is Never updated during .fillaxes!
     #     # self.fig.savefig(**savefig_kwargs)
     #     return self
 
@@ -464,7 +464,7 @@ class PlotTool(DataFrameTool):
     #     filename = Path(self.buffer + name).with_suffix(".pickle")
     #     with open(filename, "rb") as file:
     #         fig, axes = pickle.load(file)
-    #     # ! can't return the whole PlotTool object, since pyplot will mix the fig with previous objects
+    #     # !! can't return the whole PlotTool object, since pyplot will mix the fig with previous objects
     #     return fig, axes
 
     @staticmethod
@@ -480,13 +480,13 @@ class PlotTool(DataFrameTool):
         filename = Path(buffer).with_suffix(".pickle")
         with open(filename, "rb") as file:
             fig, axes = pickle.load(file)
-        # ! can't return the whole PlotTool object, since pyplot will mix the fig with previous objects
+        # !! can't return the whole PlotTool object, since pyplot will mix the fig with previous objects
         return fig, axes
 
         ### Buffer to store plot intermediates
 
 
-# ! # end class
-# !
-# !
-# !
+# !! # end class
+# !!
+# !!
+# !!

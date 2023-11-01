@@ -8,23 +8,14 @@ import os
 import warnings
 from glob import glob
 
-from joblib import Memory
-
 
 import pandas as pd
 
 import matplotlib.pyplot as plt
 
 import plotastic as plst
-
-# %% Cache all you can, otherwise everything is re-executed at every test
-
-location = "./.joblib_cache"
-memory = Memory(location, verbose=0)
-
-
-def clear_cache():
-    memory.clear(warn=False)
+import plotastic.utils.utils as ut
+import plotastic.utils.cache as utc
 
 
 # %% Datasets
@@ -35,7 +26,7 @@ def clear_cache():
 # == Load example data =================================================================
 
 ### Cache function
-load_dataset: Callable = memory.cache(plst.load_dataset)
+load_dataset: Callable = utc.MEMORY.cache(plst.load_dataset)
 
 DF_tips, dims_tips = load_dataset("tips", verbose=False)
 DF_fmri, dims_fmri = load_dataset("fmri", verbose=False)
@@ -59,7 +50,7 @@ dims_withempty_tips = [
 
 
 ### Args making sure they don't make empty groups
-# ! Don't add more, other tests assume 4 entries
+# !! Don't add more, other tests assume 4 entries
 dims_noempty_tips = [
     dict(y="tip", x="size-cut", hue="smoker", col="sex", row="time"),
     dict(y="tip", x="size-cut", hue="smoker", col="sex"),
@@ -163,9 +154,9 @@ def get_DA_all(dataset: str) -> plst.DataAnalysis:
 
 
 ### Cache results of these functions to speed up testing
-get_DA_statistics: Callable = memory.cache(get_DA_statistics)
-get_DA_plot: Callable = memory.cache(get_DA_plot)
-get_DA_all: Callable = memory.cache(get_DA_all)
+get_DA_statistics: Callable = utc.MEMORY.cache(get_DA_statistics)
+get_DA_plot: Callable = utc.MEMORY.cache(get_DA_plot)
+get_DA_all: Callable = utc.MEMORY.cache(get_DA_all)
 
 ### Make DataAnalysis objects for testing
 DA_STATISTICS: plst.DataAnalysis = get_DA_statistics("qpcr")
@@ -194,6 +185,19 @@ def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
     for tup, e in zip(zipped, column):
         zipped_with_column.append(tup + (e,))
     return zipped_with_column
+
+
+def collect_snips():
+    snips = []
+    for name in dir(plst.DataAnalysis):
+        if "SNIP" in name:
+            snips.append(name)
+    return snips
+
+
+if __name__ == "__main__":
+    snips = collect_snips()
+    print(snips)
 
 
 def cleanfiles(fname: str):

@@ -52,7 +52,7 @@ def set_palette(palette: str | list = "Paired", verbose=True):
 
             display(pal)
 
-    # sns.set_theme(palette=palette) # ! resets rcParams
+    # sns.set_theme(palette=palette) # !! resets rcParams
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=sns.color_palette(palette))
 
 
@@ -114,7 +114,7 @@ STYLE_PAPER = {
 }
 
 
-## !!
+## !!!
 
 # # %% Default Style
 

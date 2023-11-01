@@ -1,7 +1,7 @@
 #
 # %% imports
 import subprocess
-import venv
+import venv # * for creating virtual environments
 import os
 import requirements as req
 
@@ -28,15 +28,15 @@ import requirements as req
 # == 1. Base Python interpreter =========================================================
 # %% Install python
 # *  Just use a global one from `brew`!
-# ! brew install python@3.11 # !!! <-- Uncomment
+# !! brew install python@3.11 # !!!! <-- Uncomment
 
 ### VSCode will ask us to select a python interpreter: For now, use the global one we installed
 
 # %% Add base python interpreter to `PATH`? 
 # - No need to add to `PATH`, since we will use `venv` to create a virtual environment for each project
 # - Having out terminal no connection with any python interpreter will make sure that we are not using the wrong interpreter by accident
-
-# ! export PATH="/usr/local/opt/python/libexec/bin:$PATH" # !!! Don't do this
+# !!!! Don't do this, unless required
+# !! export PATH="/usr/local/opt/python/libexec/bin:$PATH" 
 
 # %% Check PATH
 PATH = subprocess.check_output(["echo $PATH"], shell=True)
@@ -44,18 +44,20 @@ PATH_list = PATH.decode("utf-8").split(":")
 print(len(PATH_list))
 for path in PATH_list:
     print(path)
+    
 
-
+# ==
+# ==
 # == 2. Setup a Virtual Environment using `venv` =======================================
 # %% Describe the folder stucture
-# !!! VScode finds this automatically ONLY if it's in the root folder of the workspace
-PROJECT_DIR = "." # !!! Don't change, or vscode won't find it
+# !!!! VScode finds this automatically ONLY if it's in the root folder of the workspace
+PROJECT_DIR = "." # !!!! Don't change, or vscode won't find it
 ENV_NAME = "venv" # 
 ENV_PATH = os.path.join(PROJECT_DIR, ENV_NAME)
 ENV_PATH
 
 # %% Create Virtual Environment
-# venv.create(env_dir=ENV_PATH, clear=True, with_pip=True) # !!! <-- Uncomment
+# venv.create(env_dir=ENV_PATH, clear=True, with_pip=True) # !!!! <-- Uncomment
 
 # %% [markdown]
 # ### Activate Environment
@@ -74,7 +76,7 @@ ENV_PATH
 #   - VScode will ask you to install the `IPython` extension, do that
 
 # %% Can environment can be activated?
-# !!! This is a notebook, manually select the interpreter for the Jupyter Kernel
+# !!!! This is a notebook, manually select the interpreter for the Jupyter Kernel
 ! source venv/bin/activate  
 
 # %% Environmant active?
@@ -108,6 +110,8 @@ req.REQUIREMENTS_EXTRA
 # %% Write requirements to file
 req.to_txt(fname="requirements-dev.txt", requirements=req.REQUIREMENTS)
 
+# %% If there is already a requirements.txt, use that instead
+
 # %% Install requirements from a file without comments
 ! pip install -r requirements-dev.txt
 
@@ -119,10 +123,10 @@ req.to_txt(fname="requirements-dev.txt", requirements=req.REQUIREMENTS)
 # == 4. Install project in editable mode ===============================================
 # %% 
 # ? This can take a while
-# ! pip install -e . # !!! <-- Uncomment
+# ! pip install -e . 
 
 # %% Package importable?
-import plotastic # !!! Need to restart kernel if freshly installed
+import plotastic # !!!! Need to restart kernel if freshly installed
 
 # %% uninstall to reinstall
 # ! pip uninstall plotastic -y
@@ -138,6 +142,34 @@ DEVELOPMENT_TOOLS
 req.to_txt(fname="_devtools.txt", requirements=DEVELOPMENT_TOOLS)
 ! pip install -r _devtools.txt
 os.remove("_devtools.txt") # * cleanup
+
+# ==
+# ==
+# == Pip slow? =========================================================================
+# %% [markdown] 
+# ## 6. Is `pip` slow?
+# - Check Cache
+#   - pip caches wheels and HTML files
+#   - without this, pip can be painfully slow (~1-2 min)
+#   - Clear cache if needed, to get up to date wheels etc.
+# - If there' already a requirements.txt, use `pip install -r requirements.txt`
+
+# %% Find pip cache directory, see if there are things inside
+! pip cache dir
+
+#%% Clear cache directory, if needed
+# - Retrieve cache directory as python variable
+pip_cache_dir = subprocess.check_output(["pip cache dir"], shell=True)
+# - Remove cache directory
+# !! rm -rf $pip_cache_dir # !!!! <-- Uncomment
+
+
+# %% Use requirements.txt to install packages if present
+if os.path.exists("requirements.txt"):
+    # - Install from requirements.txt
+    # !! pip install -r requirements.txt # <-- Uncomment
+    # - Update Packages
+
 
 
 

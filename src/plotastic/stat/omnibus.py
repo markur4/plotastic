@@ -127,8 +127,8 @@ class Omnibus(Assumptions):
         self._ensure_more_than_one_sample_per_group(df, facetkey)
 
         ### Perform RMANOVA
-        # ! Pingouin slams you with warnings in a big loop
-        # ! Trying best to redirect special cases, but still too many warnings
+        # !! Pingouin slams you with warnings in a big loop
+        # !! Trying best to redirect special cases, but still too many warnings
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             rmaov = pg.rm_anova(df, **kwargs)
@@ -225,7 +225,7 @@ class Omnibus(Assumptions):
             dv=self.dims.y,
             subject=self.subject,
             within=self.dims.x,
-            # detailed=True, # ! pg.friedman doesn't have this option
+            # detailed=True, # !! pg.friedman doesn't have this option
         )
         kwargs.update(user_kwargs)  # * Add user kwargs
 
@@ -249,8 +249,8 @@ class Omnibus(Assumptions):
         return friedman_DF
 
 
-# !
-# ! end class
+# !!
+# !! end class
 
 # %% Test Omnibus
 
