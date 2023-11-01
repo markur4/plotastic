@@ -5,7 +5,7 @@ import pytest
 
 import plotastic as plst
 
-import tests.conftest as ct
+import conftest as ct
 
 # %% Import all functions that have "SNIP" in their name from DataAnalysis
 

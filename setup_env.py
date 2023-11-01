@@ -28,15 +28,15 @@ import requirements as req
 # == 1. Base Python interpreter =========================================================
 # %% Install python
 # *  Just use a global one from `brew`!
-# !! brew install python@3.11 # !!!! <-- Uncomment
+# ! brew install python@3.11 # !!!! <-- Uncomment
 
 ### VSCode will ask us to select a python interpreter: For now, use the global one we installed
 
 # %% Add base python interpreter to `PATH`? 
 # - No need to add to `PATH`, since we will use `venv` to create a virtual environment for each project
 # - Having out terminal no connection with any python interpreter will make sure that we are not using the wrong interpreter by accident
-# !!!! Don't do this, unless required
-# !! export PATH="/usr/local/opt/python/libexec/bin:$PATH" 
+# !! Don't do this, unless required
+# ! export PATH="/usr/local/opt/python/libexec/bin:$PATH" 
 
 # %% Check PATH
 PATH = subprocess.check_output(["echo $PATH"], shell=True)
@@ -50,14 +50,14 @@ for path in PATH_list:
 # ==
 # == 2. Setup a Virtual Environment using `venv` =======================================
 # %% Describe the folder stucture
-# !!!! VScode finds this automatically ONLY if it's in the root folder of the workspace
-PROJECT_DIR = "." # !!!! Don't change, or vscode won't find it
+# !! VScode finds this automatically ONLY if it's in the root folder of the workspace
+PROJECT_DIR = "." # !! Don't change, or vscode won't find it
 ENV_NAME = "venv" # 
 ENV_PATH = os.path.join(PROJECT_DIR, ENV_NAME)
 ENV_PATH
 
 # %% Create Virtual Environment
-# venv.create(env_dir=ENV_PATH, clear=True, with_pip=True) # !!!! <-- Uncomment
+# venv.create(env_dir=ENV_PATH, clear=True, with_pip=True) # !! <-- Uncomment
 
 # %% [markdown]
 # ### Activate Environment
@@ -76,7 +76,7 @@ ENV_PATH
 #   - VScode will ask you to install the `IPython` extension, do that
 
 # %% Can environment can be activated?
-# !!!! This is a notebook, manually select the interpreter for the Jupyter Kernel
+# !! This is a notebook, manually select the interpreter for the Jupyter Kernel
 ! source venv/bin/activate  
 
 # %% Environmant active?
@@ -161,18 +161,18 @@ os.remove("_devtools.txt") # * cleanup
 # - Retrieve cache directory as python variable
 pip_cache_dir = subprocess.check_output(["pip cache dir"], shell=True)
 # - Remove cache directory
-# !! rm -rf $pip_cache_dir # !!!! <-- Uncomment
+# ! rm -rf $pip_cache_dir # <-- Uncomment
 
 
 # %% Use requirements.txt to install packages if present
 if os.path.exists("requirements.txt"):
-    # - Install from requirements.txt
-    # !! pip install -r requirements.txt # <-- Uncomment
-    # - Update Packages
+    pass
+    # * Install from requirements.txt
+    # ! pip install -r requirements.txt # <-- Uncomment
 
 
 
-#%% install icecream to make it a builtin
+#%% install icecream to make it a builtin function, no import needed
 import icecream # should be part of requirements
 icecream.install()
 
