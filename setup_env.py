@@ -172,6 +172,8 @@ if os.path.exists("requirements.txt"):
 
 
 
-
+#%% install icecream to make it a builtin
+import icecream # should be part of requirements
+icecream.install()
 
 
