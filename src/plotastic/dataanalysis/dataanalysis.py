@@ -53,8 +53,6 @@ class DataAnalysis(Annotator):
 
         if verbose:
             self.data_check_integrity()
-            if subject:
-                self._data_check_subjects_with_missing_data()
 
         # self.plot = plot
         ### statistics

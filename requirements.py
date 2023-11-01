@@ -39,6 +39,8 @@ REQUIREMENTS_EXTRA = [  # ? Only installed if needed, whatever that means
 DEVELOPMENT_TOOLS = [
     "pytest",
     "ipytest",
+    "pytest-cov", # * Displays how much of code was covered by testing
+    "nbconvert", # * For converting notebooks to markdown
 ]
 
 # %% Write to .txt

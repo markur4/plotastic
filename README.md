@@ -1,6 +1,12 @@
-# `plotastic`
+<h1 align="center">
+  <img src="Figures & Logos/plotastic_logo.png" width="400px" height="300px" alt="logo">
+</h1>
 
-**Translating `seaborn` into inferential statistics powered by `pingouin`!**
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+# `plotastic`: Plot oriented Statistics
+
+**Translating `seaborn` arguments into statistical terms used by `pingouin`!**
 
 [//]:<== Installation =================================================================>
 ## Installation 📦
@@ -225,9 +231,9 @@ pip install git+https://github.com/markur4/plotastic.git
 <blockquote>
 <hr>
 
-- **✅: Implemented and tested**
-- **👍: Implemented**
-- **📆: Planned (no date)**
+- **✅: Complete and tested**
+- **👍: Complete**
+- **📆: Planned or unfinished (no date)**
 - **🤷: Maybe..? (Rather not...)**
 - **🚫: Not planned, don't want**
 - **😣: Help Please..?**
@@ -237,7 +243,7 @@ pip install git+https://github.com/markur4/plotastic.git
 <details open><summary>  <b><i>  Plotting   </i></b> </summary>
 <blockquote>
 
-- ✅ Make and Edit Plots: *Implemented ✅*
+- 👍 Make and Edit Plots: *Implemented ✅*
   - *All (non-facetgrid) seaborn plots should work, not tested*
 - 👍 Printable Code Snippets: *Implemented ✅*
 - 📆 QQ-Plot
@@ -271,6 +277,7 @@ pip install git+https://github.com/markur4/plotastic.git
 - ✅ Box-plot + swarm
 - 👍 Box-plot + strip
 - 📆 Violin + swarm/strip
+
 [//]:<end of Multi-Layered Plotting --------------------------------------------------->
 </blockquote>
 </details>
@@ -617,70 +624,190 @@ classDiagram
 
 
 [//]:<=================================================================================>
-## Step by step 👈🤞👇👌
+[//]:<Taken from Examples & Walkthroughs/how_to_use.ipynb>
+[//]:<Converted using:>
+[//]:<jupyter nbconvert --to markdown your_notebook.ipynb>
 
-### 🧮 Prepare your data in a long-format DataFrame
+## How To Use 📖
 
-- `row`, `col` (and `x`) have to be of type `pd.Categorical`!
-
-### 🔀 Initialize `DataAnalysis`
-
-``` python
-import seaborn as sns
+```python
 import plotastic as plst
-
-DF = sns.load_dataset('tips')
-DA = plst.DataAnalysis(data = DF, x, y, hue, row, col)
 ```
 
-**Why is that useful?**
-
-- See how data is organized for each groups
-  - group = A sample with a unique combination of `x`, `hue`, `row` and `col`, that
-    shows the technical/biological distribution of a dependent variable `y`. Its
-    samplesize *n* contributes to statistical power.
-  - Show levels and n-count for each group
-  - Show mean, std, skew, etc. of numerical columns
-- Check integrity of data
-  - Check samplesize per group
-  - Detect empty groups
-  - NaN-count per group
-
-### 📊 Plot Data
-
-lorem ipsum dolor
-
-#### Initialize pyplot figure with pre-built function
-
-lorem ipsum dolor
-
-#### Fill axes with seaborn MultiPlot
-
-Use pre-built loops
-
-#### Modify figure like any pyplot figure
-
-lorem ipsum dolor
-
-### ✨ Perform Statistics
-
-lorem ipsum dolor
-
-#### Check assumptions
-
-lorem ipsum dolor
-
-#### Omnibus
-
-lorem ipsum dolor
-
-#### Post-Hoc Analysis
-
-lorem ipsum dolor
-
-#### Automated pipelines
+## Import Example Data
 
 
-lorem
+```python
+DF, dims = plst.load_dataset("qpcr")
+```
 
+    #! Imported seaborn dataset 'qpcr' 
+    	 columns:Index(['Unnamed: 0', 'gene', 'method', 'fraction', 'subject', 'donor', 'uFC',
+           'class', 'FC'],
+          dtype='object')
+    	 dimensions: {'y': 'FC', 'x': 'gene', 'hue': 'fraction', 'col': 'class', 'row': 'method'}
+
+
+
+```python
+DF.head()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Unnamed: 0</th>
+      <th>gene</th>
+      <th>method</th>
+      <th>fraction</th>
+      <th>subject</th>
+      <th>donor</th>
+      <th>uFC</th>
+      <th>class</th>
+      <th>FC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>IFNG</td>
+      <td>MACS</td>
+      <td>F1</td>
+      <td>1</td>
+      <td>3266</td>
+      <td>0.003071</td>
+      <td>ECM &amp; Adhesion</td>
+      <td>1.036131</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>IFNG</td>
+      <td>MACS</td>
+      <td>F1</td>
+      <td>3</td>
+      <td>7613</td>
+      <td>0.003005</td>
+      <td>ECM &amp; Adhesion</td>
+      <td>1.013966</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>IFNG</td>
+      <td>MACS</td>
+      <td>F1</td>
+      <td>4</td>
+      <td>9721</td>
+      <td>0.002762</td>
+      <td>ECM &amp; Adhesion</td>
+      <td>0.932101</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>IFNG</td>
+      <td>MACS</td>
+      <td>F1</td>
+      <td>5</td>
+      <td>9526</td>
+      <td>0.002922</td>
+      <td>ECM &amp; Adhesion</td>
+      <td>0.986034</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>IFNG</td>
+      <td>MACS</td>
+      <td>F2</td>
+      <td>1</td>
+      <td>3266</td>
+      <td>0.008619</td>
+      <td>ECM &amp; Adhesion</td>
+      <td>2.908520</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+dims
+```
+
+<div style="background-color: #f0f0f010; padding: 5px; border: 1px solid #ccc; font-family: 'Courier New';">
+  {'y': 'FC', 'x': 'gene', 'hue': 'fraction', 'col': 'class', 'row': 'method'}
+</div>
+
+<div style="background-color: #f0f0f010; padding: 5px; border: 1px solid #ccc;">
+hj
+</div>
+
+
+
+
+## Initialize DataAnalysis Object
+- DataAnalysis will give you feedback on missing data:
+  - NaN count
+  - Samplesize
+
+
+
+
+```python
+DA = plst.DataAnalysis(data=DF,           # Dataframe
+                       dims=dims,         # Dictionary with y, x, hue, col, row 
+                       subject="subject", # Data is paired by subject (optional)
+                       )
+```
+
+
+    ================================================================================
+    #! checking data integrity...
+    ❗️ DATA INCOMPLETE: Among all combinations of levels from selected factors ['method', 'class', 'fraction', 'gene'], groups/facets are missing in the Dataframe. 👉 Call .data_get_empty_groupkeys() to see them all.
+    ✅ GROUPS COMPLETE: No groups with NaNs.
+    🫠 GROUPS UNEQUAL: Groups (114 total) have different samplesizes (n = 5.2 ±0.89). 👉 Call .data_get_samplesizes() to see them.
+    These are the 5 groups with the smallest samplesizes:
+    method  class            fraction  gene 
+    MACS    Bone Metabolism  F1        SOST     4
+                                       FBN1     4
+            MMPs             F1        CCL20    3
+            Bone Metabolism  F1        TIMP1    3
+            MMPs             F1        IL2RG    1
+    Name: FC, dtype: int64
+     🌳 LEVELS WELL CONNECTED: These Factors have levels that are always found together: ['method', 'fraction']. Call .levels_combocount() or .levels_dendrogram() to see them all.
+    ❗️ Subjects incomplete: The largest subject contains 57 datapoints, but these subjects contain less:
+    subject
+    3     56
+    4     56
+    5     56
+    6     56
+    12    56
+    8     55
+    1     54
+    2     38
+    Name: FC, dtype: int64
+    ================================================================================
 

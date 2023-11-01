@@ -452,36 +452,23 @@ class PlotTool(DataFrameTool):
     #     return self
 
     # == Buffer =======================================================================
-    # ? Not used
+    # !! Not used, can't get full control over matplotlib hidden objects
 
-    ### Originals
-    # def save_fig_tobuffer(self, name=""):
-    #     filename = Path(self.buffer + name).with_suffix(".pickle")
+    # @staticmethod
+    # def save_fig_tobuffer(fig: Figure, axes: np.ndarray, name=""):
+    #     buffer = Path("__figcache" + name)
+    #     filename = Path(buffer).with_suffix(".pickle")
     #     with open(filename, "wb") as file:
-    #         pickle.dump((self.fig, self.axes), file)
+    #         pickle.dump((fig, axes), file)
 
-    # def load_fig_frombuffer(self, name=""):
-    #     filename = Path(self.buffer + name).with_suffix(".pickle")
+    # @staticmethod
+    # def load_fig_frombuffer(fig: Figure, axes: np.ndarray, name=""):
+    #     buffer = Path("__figcache" + name)
+    #     filename = Path(buffer).with_suffix(".pickle")
     #     with open(filename, "rb") as file:
     #         fig, axes = pickle.load(file)
     #     # !! can't return the whole PlotTool object, since pyplot will mix the fig with previous objects
     #     return fig, axes
-
-    @staticmethod
-    def save_fig_tobuffer(fig: Figure, axes: np.ndarray, name=""):
-        buffer = Path("__figcache" + name)
-        filename = Path(buffer).with_suffix(".pickle")
-        with open(filename, "wb") as file:
-            pickle.dump((fig, axes), file)
-
-    @staticmethod
-    def load_fig_frombuffer(fig: Figure, axes: np.ndarray, name=""):
-        buffer = Path("__figcache" + name)
-        filename = Path(buffer).with_suffix(".pickle")
-        with open(filename, "rb") as file:
-            fig, axes = pickle.load(file)
-        # !! can't return the whole PlotTool object, since pyplot will mix the fig with previous objects
-        return fig, axes
 
         ### Buffer to store plot intermediates
 
