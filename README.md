@@ -630,7 +630,7 @@ classDiagram
 
 ## How To Use 📖
 
-<details open><summary> <i> Quick Start </i> </summary>
+<details open><summary> <i><b> Quick Start </b></i> </summary>
 <blockquote>
 <hr>
 
@@ -642,98 +642,13 @@ import plotastic as plst
 
 # Import Example Data
 DF, _ = plst.load_dataset("fmri", verbose = False)
-```
-
-
-```python
-# Show Data. It must be in long format! 
 DF.head()
 ```
 
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Unnamed: 0</th>
-      <th>subject</th>
-      <th>timepoint</th>
-      <th>event</th>
-      <th>region</th>
-      <th>signal</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>17</td>
-      <td>s7</td>
-      <td>9</td>
-      <td>stim</td>
-      <td>parietal</td>
-      <td>0.058897</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>36</td>
-      <td>s8</td>
-      <td>9</td>
-      <td>stim</td>
-      <td>parietal</td>
-      <td>0.170227</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>67</td>
-      <td>s0</td>
-      <td>0</td>
-      <td>stim</td>
-      <td>frontal</td>
-      <td>-0.021452</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>84</td>
-      <td>s1</td>
-      <td>0</td>
-      <td>stim</td>
-      <td>parietal</td>
-      <td>-0.064454</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>127</td>
-      <td>s13</td>
-      <td>9</td>
-      <td>stim</td>
-      <td>parietal</td>
-      <td>0.013245</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
+#### Assign each column to a dimension (y, x, hue, col, row)
 
 
 ```python
-# Assign each column to a dimension (y, x, hue, col, row)
 dims = dict(
     y= 'signal', 
     x= 'timepoint',
@@ -764,15 +679,16 @@ DA = plst.DataAnalysis(data=DF,           # Dataframe
     ================================================================================
 
 
+#### Quick Preview Plot
+
 
 ```python
-# Preview The Plot 
 DA.catplot(alpha=0.3) # Works with *kwargs of seaborn.catplot()
 ```
 
 
     
-![png](how_to_use_files/how_to_use_6_0.png)
+![png](quick_example_fmri_files/quick_example_fmri_7_0.png)
     
 
 
@@ -785,10 +701,11 @@ DA.catplot(alpha=0.3) # Works with *kwargs of seaborn.catplot()
 
 ### Perform Statistics
 
+#### Check Normality
+
 
 ```python
-# Check Normality
-DA.check_normality()
+DA.check_normality().head(20)
 ```
 
 
@@ -973,158 +890,16 @@ DA.check_normality()
       <td>True</td>
       <td>14</td>
     </tr>
-    <tr>
-      <th rowspan="20" valign="top">parietal</th>
-      <th rowspan="10" valign="top">cue</th>
-      <th>4</th>
-      <td>0.896279</td>
-      <td>0.099608</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>0.851847</td>
-      <td>0.023533</td>
-      <td>False</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>0.952486</td>
-      <td>0.599934</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>0.865379</td>
-      <td>0.036157</td>
-      <td>False</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>0.968272</td>
-      <td>0.852717</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0.968046</td>
-      <td>0.849483</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>0.938542</td>
-      <td>0.399966</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>0.971709</td>
-      <td>0.898652</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>0.895757</td>
-      <td>0.097892</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>0.871159</td>
-      <td>0.043563</td>
-      <td>False</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th rowspan="10" valign="top">stim</th>
-      <th>9</th>
-      <td>0.932267</td>
-      <td>0.328219</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>0.898726</td>
-      <td>0.108084</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0.971349</td>
-      <td>0.894172</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>0.935205</td>
-      <td>0.360343</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>0.924955</td>
-      <td>0.258925</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>0.973674</td>
-      <td>0.921559</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>0.915324</td>
-      <td>0.188243</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>0.784337</td>
-      <td>0.003216</td>
-      <td>False</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>0.953032</td>
-      <td>0.608699</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>0.926060</td>
-      <td>0.268468</td>
-      <td>True</td>
-      <td>14</td>
-    </tr>
   </tbody>
 </table>
 </div>
 
 
 
+#### Check Sphericity
+
 
 ```python
-# Check Sphericity
 DA.check_sphericity()
 ```
 
@@ -1225,9 +1000,10 @@ DA.check_sphericity()
 
 
 
+#### Repeated Measures ANOVA
+
 
 ```python
-# Perform Repeated Measures ANOVA
 DA.omnibus_rm_anova()
 ```
 
@@ -1374,9 +1150,10 @@ DA.omnibus_rm_anova()
 
 
 
+#### Post-hoc t-tests
+
 
 ```python
-# Run PostHoc Tests
 DA.test_pairwise()
 ```
 
@@ -1704,21 +1481,33 @@ DA.test_pairwise()
 
 
 
-### Make a pretty and annotated plot
+#### Save Results
+Output is one excel file containing results of all performed tests (normality, anova,
+t-tests, etc.) in different sheets
 
 
 ```python
-# Use matplotlib styles
-from matplotlib import pyplot as plt
-plt.rcdefaults() # reset rc to default
-plt.style.use('ggplot')
+DA.save_statistics("example.xlsx")
 ```
 
+### Make a Pretty Plot with Statistical Annotations in Few Lines!
+
+
+#### Use matplotlib styles (optional)
+
 
 ```python
-# Chained commands
+from matplotlib import pyplot as plt
+plt.rcdefaults()        # Reset rc to default
+plt.style.use('ggplot') # Set styles as you're used to'
+```
+
+#### Chain multiple commands for plotting:
+
+
+```python
 (DA
- .plot_box_strip()   # Use a pre-built plotting function
+ .plot_box_strip()   # Use a pre-built plotting function to initialize and draw the plot
  .annotate_pairwise( # Place results calculated previously (DA.test_pairwise()) on the plot
      include="__HUE" # Only annotate significant pairs across each hue, not within hue
      ) 
@@ -1730,15 +1519,9 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
     
-![png](how_to_use_files/how_to_use_14_0.png)
+![png](quick_example_fmri_files/quick_example_fmri_23_0.png)
     
 
-
-
-```python
-# save statistical results 
-DA.save_statistics("example.xlsx")
-```
 
 
 ```python
