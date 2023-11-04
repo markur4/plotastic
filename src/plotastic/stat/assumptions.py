@@ -171,7 +171,7 @@ class Assumptions(StatTest):
 
             spher_dict[key] = spherdf
 
-        spherDF = pd.concat(spher_dict, keys=spher_dict.keys(), names=self.factors_all)
+        spherDF = pd.concat(spher_dict, keys=spher_dict.keys(), names=self.factors_all_without_x)
 
         ### Save Results
         self.results.DF_sphericity = spherDF
