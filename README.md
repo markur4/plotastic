@@ -623,16 +623,25 @@ classDiagram
 
 
 
-[//]:<=================================================================================>
-[//]:<Taken from Examples & Walkthroughs/how_to_use.ipynb>
-[//]:<Converted using:>
-[//]:<jupyter nbconvert --to markdown your_notebook.ipynb>
 
 ## How To Use 📖
 
-<details open><summary> <i><b> Quick Start </b></i> </summary>
+[//]:<=================================================================================>
+
+### Notebooks
+1. [Quick Example: FMRI Dataset](How_To_Use/quick_example_fmri.ipynb)
+2. [Switch Dimensions](How_To_Use/dims_walkthrough.ipynb)
+   
+
+[//]:<=================================================================================>
+[//]:<.ipynb Notebooks taken from How_To_Use.ipynb>
+[//]:<Converted using:>
+[//]:<jupyter nbconvert --to markdown your_notebook.ipynb>
+<details open><summary> <i><b> Quick Example: FMRI Dataset </b></i> </summary>
 <blockquote>
+
 <hr>
+
 
 ### Import plotastic and example Data
 
@@ -645,7 +654,7 @@ DF, _ = plst.load_dataset("fmri", verbose = False)
 DF.head()
 ```
 
-#### Assign each column to a dimension (y, x, hue, col, row)
+#### Assign each column to a dimension (y, x, hue, col, row):
 
 
 ```python
@@ -680,7 +689,7 @@ DA = plst.DataAnalysis(data=DF,           # Dataframe
     ================================================================================
 
 
-#### Quick Preview Plot
+#### Quick Preview Plot:
 
 
 ```python
@@ -696,13 +705,9 @@ DA.catplot(alpha=0.3) # Works with *kwargs of seaborn.catplot()
 
 
 
-
-
-
-
 ### Perform Statistics
 
-#### Check Normality
+#### Check Normality:
 
 
 ```python
@@ -710,7 +715,7 @@ DA.check_normality() # Results not shown here, table too long
 ```
 
 
-#### Check Sphericity
+#### Check Sphericity:
 
 
 ```python
@@ -756,7 +761,7 @@ DA.check_sphericity()
       <td>44</td>
       <td>1.0</td>
       <td>10</td>
-      <td>[14, 14, ...]</td>
+      <td>[14, ...]</td>
     </tr>
     <tr>
       <th>stim</th>
@@ -766,7 +771,7 @@ DA.check_sphericity()
       <td>44</td>
       <td>1.0</td>
       <td>10</td>
-      <td>[14, 14, ...]</td>
+      <td>[14, ...]</td>
     </tr>
     <tr>
       <th rowspan="2" valign="top">parietal</th>
@@ -777,7 +782,7 @@ DA.check_sphericity()
       <td>44</td>
       <td>1.0</td>
       <td>10</td>
-      <td>[14, 14, ...]</td>
+      <td>[14, ...]</td>
     </tr>
     <tr>
       <th>stim</th>
@@ -787,7 +792,7 @@ DA.check_sphericity()
       <td>44</td>
       <td>1.0</td>
       <td>10</td>
-      <td>[14, 14, ...]</td>
+      <td>[14, ...]</td>
     </tr>
   </tbody>
 </table>
@@ -795,7 +800,7 @@ DA.check_sphericity()
 
 
 
-#### Repeated Measures ANOVA
+#### Repeated Measures ANOVA:
 
 
 ```python
@@ -930,7 +935,7 @@ DA.omnibus_rm_anova()
 
 
 
-#### Post-hoc t-tests
+#### Post-hoc t-tests:
 
 
 ```python
@@ -939,7 +944,7 @@ DA.test_pairwise() # Results not shown here, table too long
 
 
 
-#### Save Results
+#### Save Results:
 Output is one excel file containing results of all performed tests (normality, anova,
 t-tests, etc.) in different sheets
 
@@ -951,7 +956,7 @@ DA.save_statistics("example.xlsx")
 ### Make a Pretty Plot with Statistical Annotations in Few Lines!
 
 
-#### Use matplotlib styles (optional)
+#### OPTIONAL! Use matplotlib styles:
 
 
 ```python
@@ -977,14 +982,11 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
     
-![png](quick_example_fmri_files/quick_example_fmri_23_0.png)
+![png](How_to_use/quick_example_fmri_files/quick_example_fmri_23_0.png)
     
 
 
+[//]:<end of Citations ================================================================>
+</blockquote>
+</details>
 
-```python
-
-```
-
-
-[quickstart]("Examples & Walkthroughs/quick_example_fmri.ipynb")
