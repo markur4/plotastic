@@ -15,8 +15,8 @@ def wrap_descr(string: str, width: int = 76, width_first_line: int = 58) -> str:
     :type string: str
     :param width: Width of characters to wrap to, defaults to 72
     :type width: int, optional
-    :param width_first_line: Width of characters to remove from first line, defaults to
-        18
+    :param width_first_line: Width of characters first line, defaults to 58 because of
+        that's how much space declaring the :param param: takes
     :type width_first_line: int, optional
     :return: Wrapped string
     :rtype: str
@@ -92,7 +92,10 @@ def param(
         descr = descr[1:]
 
     ### First line, (no tabstop needed)
-    S = f":param {param}: {wrap_descr(descr)}"
+    # * Don't include :param: in docstring, add that manually always, so vscode at least
+    # * shows the parameter in the intellisense
+    # S = f":param {param}: {wrap_descr(descr)}"
+    S = f" {wrap_descr(descr)}" 
 
     ### Add default value to first line
     if default:
@@ -148,10 +151,10 @@ def subst(*args, **kwargs):
 
 
 if __name__ == "__main__":
-    p = """:param verbose: Set to False to not print stuff, defaults to False"""
-    p += "\n\t:type verbose: bool"
+    # p = """:param verbose: Set to False to not print stuff, defaults to False"""
+    # p += "\n\t:type verbose: bool"
     p = param(
-        param="return_stuff",
+        param="verbose",
         descr="Ladidah awesome parameter if you know what I mean. Makes makes and does does stuffystuff",
         default="ja!",
         typ="str",
@@ -161,7 +164,7 @@ if __name__ == "__main__":
     def bla(verbose: False):
         """this is a docstring with {} and {var2},
 
-        {var3}
+        :param verbose: {var3}
         """
         if verbose:
             print("jo!")

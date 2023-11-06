@@ -108,7 +108,7 @@ class DataAnalysis(Annotator):
         """Exports all statistics to one excel file. Different sheets for different
         tests
 
-        {param_overwrite}
+        :param overwrite: {param_overwrite}
         :param out: Path to save excel file, optional (default="")
         :type out: str, optional
         """

@@ -104,7 +104,7 @@ class Filer:
 
         :param fname: filename to be protected from overwriting
         :type fname: str | Path
-        {param_overwrite}
+        :param overwrite: {param_overwrite}
         :return: filename that is protected from overwriting by adding either number or
             the current date at its end
         :rtype: str
