@@ -4,7 +4,7 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-# `plotastic`: Plot Oriented Statistics
+# `plotastic`: Bridging Plotting and Statistics
 
 **Translating `seaborn` arguments into statistical terms used by `pingouin`!**
 
@@ -956,7 +956,7 @@ t-tests, etc.) in different sheets
 DA.save_statistics("example.xlsx")
 ```
 
-### Make a Pretty Plot with Statistical Annotations in Few Lines!
+### Plot with Statistical Annotations in Few Lines!
 
 
 #### OPTIONAL! Use matplotlib styles:
@@ -973,9 +973,9 @@ plt.style.use('ggplot') # Set styles as you're used to'
 
 ```python
 (DA
- .plot_box_strip()   # Use a pre-built plotting function to initialize and draw the plot
- .annotate_pairwise( # Place results calculated previously (DA.test_pairwise()) on the plot
-     include="__HUE" # Only annotate significant pairs across each hue, not within hue
+ .plot_box_strip()   # Pre-built plotting function initializes plot
+ .annotate_pairwise( # Annotate results from DA.test_pairwise()
+     include="__HUE" # Use only significant pairs across each hue
      ) 
 )
 
