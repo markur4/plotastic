@@ -32,6 +32,7 @@ REQUIREMENTS = [
     "ipynbname",  # * Used by utils
     "openpyxl",  # * optional for Pandas, but error when not installed
     "icecream",  # * better than print
+    # "tabulate", # * For printing tables, use .to_markdown() instead
 ]
 REQUIREMENTS_EXTRA = [  # ? Only installed if needed, whatever that means
     #

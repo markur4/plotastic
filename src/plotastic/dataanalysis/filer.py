@@ -75,13 +75,12 @@ class Filer:
         )
 
         ### Define Pattern Rules:
-        # * Between Start (^) and end ($) of line
+        #' Between Start (^) and end ($) of line
         # -- fname:  Match all characters non-greedy ( .*? )
         # !! fname: Match exact string
         # * index: : 1 through 3 repetitions of single digit ( \d{1,3} )
         # regex = r"^(?P<fname>.*?)_(?P<index>\d{1,2})$" # ? old one
         regex = r"^(?P<fname>" + filename + r")_(?P<index>\d{1,3})$"
-
         ### Get matches
         pattern = re.compile(regex, flags=re.MULTILINE)
         matches: list[dict] = ut.re_matchgroups(pattern=pattern, string=files)
@@ -125,3 +124,4 @@ class Filer:
             fname = self._prevent_overwrite_all(filename=fname)
 
         return fname
+

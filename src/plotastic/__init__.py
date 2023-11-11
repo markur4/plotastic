@@ -1,57 +1,21 @@
 from importlib import metadata
 
-# import glob
-from pathlib import Path
+# == Add Icecream to builtins# =================================================
+try:
+    from icecream import ic, install
+
+    install()
+except ImportError:  # # Graceful fallback if IceCream isn't installed.
+    ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 
 
-# from os.path import dirname, basename, isfile, join
-# import os
-
-# from markurutils.enviroments import check_dependencies
-
-# == Metadata ==========================================================================
-__name__ = "plotastic"
+# == Metadata ==================================================================
 __version__ = metadata.version(__name__)
 __author__ = "markur4"
 
-# == Automated imports =================================================================
-# https://stackoverflow.com/questions/1057431/how-to-load-all-modules-in-a-folder
-### Get subdirectories that store all .py Files. Exclude hidden folders
-# cwd = Path(__file__).parent
-# directories = [
-#     f for f in cwd.iterdir() if f.is_dir() and not f.name.startswith(("_", "."))
-# ]
-# ### Get all .py files in subdirectories
-# module_paths = []
-# for dir in directories:
-#     module_paths += glob.glob(str(dir / "*.py"))
-
-# ### Put all modules in __all__. Take care to include parent folders of modules
-# __all__ = []
-# for f in module_paths:
-#     if "__init__" in f:
-#         continue
-#     else:
-#         module = f"{Path(f).parent.stem}.{Path(f).stem}"
-#         __all__.append(module)
-
-# ### cleanup
-# del cwd, module_paths
 
 #
-# == Check Dependencies ================================================================
-# missing_hard = check_dependencies(deps=requirements, hard=True)
-
-#
-# == Flatten module access and import everything =======================================
-# * take care to include parent folders of modules
-
-# !! This works, but vscode won't recognize and highlight functions and classes
-# !! Still keep it, to make sure everything is imported
-# for module in __all__:
-#     exec(f"from .{module} import *")
-
-### Vscode requires explicit imports for syntax highlighting
+# == Flatten module access and import everything ===============================
 
 # from .dimensions.dims import Dims
 # from .dimensions.dimsandlevels import DimsAndLevels
@@ -77,7 +41,7 @@ from .dataanalysis.dataanalysis import DataAnalysis
 
 from .example_data.load_dataset import load_dataset
 
-### Use __all__ to let type checkers know what's available
+# == __all__ ===================================================================
 __all__ = [
     DataAnalysis,
     set_style,
@@ -98,6 +62,3 @@ __all__ = [
     # Annotator,
     # Filer,
 ]
-
-# == Cleanup Namespace ....................................................... """
-# del requirements, missing_hard, #tobe_linked, source, path

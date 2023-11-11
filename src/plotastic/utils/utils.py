@@ -53,12 +53,13 @@ def get_terminal_width():
         return 80  # Default value
 
 
-def print_separator(char="="):
+def print_separator(char="=", length=None):
     # Get the terminal width
-    terminal_width = get_terminal_width()
+    if length is None:
+        length = get_terminal_width()
 
     # Calculate the number of characters required
-    num_chars = terminal_width // len(char)
+    num_chars = length // len(char)
 
     # Print the separator line
     print(char * num_chars)
@@ -124,15 +125,15 @@ def capitalize(s: str) -> str:
 
 
 def re_matchgroups(pattern, string: str, flags=None) -> list[dict]:
-    """
-    Takes a regular expression searchpattern that includes group names (?P<name>...)
-    and returns a list of dictionaries with groupnames as keys and matched strings as values
+    """Takes a regular expression searchpattern that includes group
+    names (?P<name>...) and returns a list of dictionaries with
+    groupnames as keys and matched strings as values
+
     :param pattern: compiled re searchpattern, e.g. from re.compile(".*")
     :param string: str,
-    :param flags: e.g. re.MULTILINE or re.DOTALL
-    :returns dict
+    :param flags: e.g. re.MULTILINE or re.DOTALL :returns dict
 
-    :Example:
+    :example:
 
     >>> string = "abc abc2 abc3"
     >>> pattern = re.compile(r'(?P<WORD>abc)(?P<INDEX>\d)')
@@ -141,17 +142,131 @@ def re_matchgroups(pattern, string: str, flags=None) -> list[dict]:
     [{'WORD': 'abc', 'INDEX': '2'},
     {'WORD': 'abc', 'INDEX': '3'}]
     """
+
     return [
         match.groupdict()
         for match in re.finditer(pattern=pattern, string=string, flags=flags)
     ]
+
+#%%
+
+def print_indented(s:str, indent:str='\t'):
+     """Print a string `s` indented with `n` tabs at each newline"""
+     for x in s.split('\n'):
+         print (indent + x)
+
+def string_to_words(s: str) -> list[str]:
+    """Splits a string into words, removing all newlines and tabs
+    e.g. 'conc.: 1 mL'-> ['conc.:', '1', 'mL']"""
+    
+
+    ### Remove any newline and tabs
+    s = s.replace("\t", " ").replace("\n", " ")
+
+    ### Split into words
+    words = s.split(" ")
+    # from icecream import ic
+    # ic(words)
+
+    ### Remove empty words and strip whitespace
+    words = [w.strip() for w in words if len(w.strip()) > 0]
+    
+    return words
+
+
+if __name__ == "__main__":
+    descr =                 """These are the 5 groups with the largest
+                    samplesizes:"""
+    w = string_to_words(descr)
+    print(w)
+
+# %%
+
+def wrap_text(
+    string: str,
+    width: int = 72,
+    width_first_line: int = None,
+    indent: str = None,
+) -> str:
+    """Wraps a multiline string into a certain width. If first_line is
+    specified, it will remove those characters from the first line
+    before wrapping.
+
+    :param string: A multiline string
+    :type string: str
+    :param width: Width of characters to wrap to, defaults to 72
+    :type width: int, optional
+    :param width_first_line: Width of characters first line, defaults to
+        None because of that's how much space declaring the :param param:
+        takes
+    :type width_first_line: int, optional
+    :param indent: Indentation to add to each line, defaults to None
+    :type indent: str, optional
+    :return: Wrapped string
+    :rtype: str
+    """
+    ### Remove all previous formatting, newlines, tabs, spaces etc.
+    words = string_to_words(string)
+    
+    ### Return if string is already short enough
+    if len(" ".join(words)) <= width:
+        TEXT = " ".join(words)
+        return TEXT
+
+    # == Wrap text ==#
+    TEXT = ""
+
+    ### Wrap first line.
+    # # Not indented
+    if not width_first_line is None:
+        while len(TEXT + words[0]) < width_first_line:
+            TEXT += words.pop(0) + " "
+            if not words:
+                break  # # If there are words left
+        TEXT = TEXT[:-1]  # # Remove last space
+        TEXT += "\n"
+
+    ### Wrap remaining lines
+    lines = []
+    init_line = lambda: indent if not indent is None else ""
+    line = init_line()
+    while words:
+        if len(line + words[0]) <= width:
+            line += words.pop(0) + " "
+            if not words:
+                break  # # If there are words left
+        else:
+            lines.append(line.rstrip())
+            line = init_line()
+    if line:
+        lines.append(line.rstrip())
+
+    ### Join lines, add e.g. 12 spaces as indent
+    TEXT += "\n".join(lines)
+
+    return TEXT
+
+
+if __name__ == "__main__":
+    descr = """
+    Mode of overwrite protection. If "day", it simply adds the current
+    date at the end of the filename, causing every output on the same
+    day to overwrite itself. If "nothing" ["day", "nothing"], files with
+    the same filename will be detected in the current work directory and
+    a number will be added to the filename. If True, everything will be
+    overwritten.
+    """
+    w = wrap_text(descr)
+    print(w)
 
 
 # %% Builtins: Lists
 
 
 def ensure_list(
-    s: str | list | tuple | str | Hashable | None, allow_none=True, convert_none=False
+    s: str | list | tuple | str | Hashable | None,
+    allow_none=True,
+    convert_none=False,
 ) -> list | None:
     """Converts Element into a list, even if it's just one"""
     if s is None:
@@ -162,7 +277,9 @@ def ensure_list(
         elif allow_none:
             return None
         else:
-            raise TypeError(f"#! Must pass tuple, None not allowed. ({s} was passed)")
+            raise TypeError(
+                f"#! Must pass tuple, None not allowed. ({s} was passed)"
+            )
     elif isinstance(s, list):
         return s
     elif isinstance(s, (tuple, set)):
@@ -188,7 +305,9 @@ def flatten(s: list | tuple, np=False) -> list:
 
 
 def get_duplicate(s: list | tuple):
-    result = [item for item, count in collections.Counter(s).items() if count > 1]
+    result = [
+        item for item, count in collections.Counter(s).items() if count > 1
+    ]
     if len(result):
         return result[0]
     else:
