@@ -630,7 +630,7 @@ classDiagram
 
 ### Notebooks
 1. [Quick Example: FMRI Dataset](How_To_Use/quick_example_fmri.ipynb)
-2. [Switch Dimensions](How_To_Use/dims_walkthrough.ipynb)
+2. [Switch Dimensions](How_To_Use/dimensions.ipynb)
    
 
 [//]:<=================================================================================>
@@ -680,14 +680,16 @@ DA = plst.DataAnalysis(data=DF,           # Dataframe
 ```
 *prints:*
 
-    ================================================================================
-    #! checking data integrity...
-    ✅ DATA COMPLETE: All combinations of levels from selected factors are present in the Dataframe, including x.
+    ===============================================================================
+    #! Checking data integrity...
+    ✅ DATA COMPLETE: All combinations of levels from selected factors are present
+      in the Dataframe, including x.
     ✅ GROUPS COMPLETE: No groups with NaNs.
     ✅ GROUPS EQUAL: All groups (40 total) have the same samplesize n = 14.0.
-     🌳 LEVELS WELL CONNECTED: These Factors have levels that are always found together: ['region', 'event']. Call .levels_combocount() or .levels_dendrogram() to see them all.
-    ✅ Subjects complete: No subjects with missing data
-    ================================================================================
+    🌳 LEVELS WELL CONNECTED: These Factors have levels that are always found
+      together: ['region', 'event'].
+      👉 Call .levels_combocount() or .levels_dendrogram() to see them all.
+    ===============================================================================
 
 
 #### Quick Preview Plot:
@@ -699,7 +701,7 @@ DA.catplot(alpha=0.3) # Works with *kwargs of seaborn.catplot()
 
 
     
-![png](quick_example_fmri_files/quick_example_fmri_7_0.png)
+![png](How_To_Use/quick_example_fmri_files/quick_example_fmri_7_0.png)
     
 
 
@@ -983,7 +985,7 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
     
-![png](How_to_use/quick_example_fmri_files/quick_example_fmri_23_0.png)
+![png](How_To_Use/quick_example_fmri_files/example.png)
     
 
 

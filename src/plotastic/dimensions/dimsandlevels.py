@@ -742,32 +742,32 @@ class DimsAndLevels:
             a.title = title
         return a
 
-    def update_dims(
-        self,
-        y=None,
-        x=None,
-        hue=None,
-        row=None,
-        col=None,
-        data: "pd.DataFrame" = None,
-        # transform: str | Callable = None,
-        title: str = None,
-        inplace=False,
-        verbose=True,
-    ) -> "DimsAndLevels | DataAnalysis":
-        """Same as `self.update_analysis`, just with inplace=True"""
+    # def update_dims(
+    #     self,
+    #     y=None,
+    #     x=None,
+    #     hue=None,
+    #     row=None,
+    #     col=None,
+    #     data: "pd.DataFrame" = None,
+    #     # transform: str | Callable = None,
+    #     title: str = None,
+    #     inplace=False,
+    #     verbose=True,
+    # ) -> "DimsAndLevels | DataAnalysis":
+    #     """Same as `self.update_analysis`, just with inplace=True"""
 
-        return self.set(
-            y=y,
-            x=x,
-            hue=hue,
-            row=row,
-            col=col,
-            data=data,
-            title=title,
-            inplace=inplace,
-            verbose=verbose,
-        )
+    #     return self.set(
+    #         y=y,
+    #         x=x,
+    #         hue=hue,
+    #         row=row,
+    #         col=col,
+    #         data=data,
+    #         title=title,
+    #         inplace=inplace,
+    #         verbose=verbose,
+    #     )
 
 
 # !!

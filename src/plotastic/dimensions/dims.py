@@ -86,6 +86,10 @@ class Dims:
     #
     #
     #
+    
+    def __repr__(self) -> str:
+        return self.asdict().__repr__()
+    
     # == Properties ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     # @property
