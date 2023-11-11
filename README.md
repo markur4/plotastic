@@ -675,6 +675,7 @@ dims = dict(
 DA = plst.DataAnalysis(data=DF,           # Dataframe
                        dims=dims,         # Dictionary with y, x, hue, col, row 
                        subject="subject", # Data is paired by subject (optional)
+                       verbose=True,      # Print out Info about the Data
                        )
 ```
 *prints:*

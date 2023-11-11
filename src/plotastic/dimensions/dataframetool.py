@@ -548,7 +548,7 @@ class DataFrameTool(DimsAndLevels):
         samplesize_df = self.data_get_samplesizes()
         groupcount = self.data_count_groups()
         ss_avg = round(samplesize_df.mean(), 1)
-        ss_std = round(samplesize_df.std(), 2)
+        ss_std = round(samplesize_df.std(), 1)
 
         M = []
         df = pd.DataFrame()
@@ -556,7 +556,7 @@ class DataFrameTool(DimsAndLevels):
         if samplesize_df.nunique() > 1:
             M.append(
                 f"""🫠 GROUPS UNEQUAL: Groups ({groupcount} total) have
-                    different samplesizes (n = {ss_avg}±{ss_std})."""
+                    different samplesizes (n = {ss_avg} ±{ss_std})."""
             )
             M.append("""👉 Call .data_get_samplesizes() to see them.""")
             M.append(
@@ -645,7 +645,7 @@ class DataFrameTool(DimsAndLevels):
     @staticmethod
     def _print_messages(
         messages: [list[str] | Tuple[list[str], pd.DataFrame]],
-        width=79,
+        width=80,
         indent="   ",
     ) -> None:
         """Prints a list of messages, where each element is either a
