@@ -6,7 +6,6 @@
 
 # `plotastic`: Bridging Plotting and Statistics
 
-**Translating `seaborn` arguments into statistical terms used by `pingouin`!**
 
 [//]:<== Installation =================================================================>
 ## Installation 📦
