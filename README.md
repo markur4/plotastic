@@ -653,13 +653,13 @@ DF, _dims = plst.load_dataset("fmri", verbose = False)
 DF.head()
 ```
 
-|    |   Unnamed: 0 | subject   |   timepoint | event   | region   |   signal |
-|---:|-------------:|:----------|------------:|:--------|:---------|---------:|
-|  0 |           17 | s7        |           9 | stim    | parietal |    0.059 |
-|  1 |           36 | s8        |           9 | stim    | parietal |    0.17  |
-|  2 |           67 | s0        |           0 | stim    | frontal  |   -0.021 |
-|  3 |           84 | s1        |           0 | stim    | parietal |   -0.064 |
-|  4 |          127 | s13       |           9 | stim    | parietal |    0.013 |
+|    | subject   |   timepoint | event   | region   |   signal |
+|---:|:----------|------------:|:--------|:---------|---------:|
+|  0 |  s7       |           9 | stim    | parietal |    0.059 |
+|  1 |  s8       |           9 | stim    | parietal |    0.17  |
+|  2 |  s0       |           0 | stim    | frontal  |   -0.021 |
+|  3 |  s1       |           0 | stim    | parietal |   -0.064 |
+|  4 |  s13      |           9 | stim    | parietal |    0.013 |
 
 #### Assign each column to a dimension (y, x, hue, col, row):
 
