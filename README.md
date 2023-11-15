@@ -658,10 +658,10 @@ DF.head()
 
 ```python
 dims = dict(
-    y= 'signal', 
-    x= 'timepoint',
-    hue= 'event', 
-    col= 'region',
+    y = "signal",    # y-axis, dependent variable
+    x = "timepoint", # x-axis, independent variable & within-subject factor
+    hue = "event",   # color,  grouping variable & within-subject factor
+    col = "region"   # axes,   grouping variable
 )
 ```
 

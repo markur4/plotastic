@@ -48,7 +48,7 @@ def catchstate(df, var_name: str = "df"):
     return df
 
 
-# %% Class DimsAndLevels ..........................................................
+# %% Class DimsAndLevels =======================================================
 
 
 class DimsAndLevels:
@@ -81,7 +81,7 @@ class DimsAndLevels:
         return ut.printable_dict(D=D, start_message=f"{type(self)}: ")
 
     # ==
-    # == INIT ==========================================================================
+    # == INIT ==================================================================
 
     def __init__(
         self,
@@ -123,7 +123,7 @@ class DimsAndLevels:
 
     # ==
     # ==
-    # == List FACTORS ==================================================================
+    # == List FACTORS ==========================================================
 
     @property  # * [row, col, hue, x] (dims may be missing)
     def factors_all(self) -> list[str]:
@@ -215,7 +215,7 @@ class DimsAndLevels:
             rowcol = [""]
         return rowcol
 
-    # == Properties of FACTORS  ========================================================
+    # == Properties of FACTORS  ================================================
 
     @property  # * no hue, row or col
     def factors_is_just_x(self) -> bool:
@@ -257,7 +257,7 @@ class DimsAndLevels:
         raise NotImplementedError
 
     #
-    # == Retrieve FACTORS ==============================================================
+    # == Retrieve FACTORS ======================================================
 
     # * input: Hue -> "smoke"
     def getfactors_from_dim(
@@ -304,7 +304,7 @@ class DimsAndLevels:
     #             return rank
 
     #
-    # == LEVELS ========================================================================
+    # == LEVELS ================================================================
 
     def get_levels_from_column(self, colname: str) -> list[str]:
         """Returns: [lvl1, lvl2]"""
@@ -420,7 +420,7 @@ class DimsAndLevels:
         return tuple(l)
 
     # ==
-    # == Properties of Levels ==========================================================
+    # == Properties of Levels ==================================================
 
     @property
     def len_rowlevels(self) -> int:
@@ -437,7 +437,7 @@ class DimsAndLevels:
             return 1  # * Used by subplots, we need minimum of one col
 
     # ==
-    # == COUNT FULLY CONNECTED LEVELS ==================================================
+    # == COUNT FULLY CONNECTED LEVELS ==========================================
 
     def _count_levelcombos(self) -> defaultdict:
         """For each level of each factor count how often it appears together with another
@@ -531,7 +531,7 @@ class DimsAndLevels:
         return df
 
     # ==
-    # == Dendrogramm ===================================================================
+    # == Dendrogramm ===========================================================
 
     @staticmethod
     def _jaccard_similarity(
@@ -681,7 +681,7 @@ class DimsAndLevels:
             return dendro
 
     # ==
-    # == SETTERS =======================================================================
+    # == SETTERS ===============================================================
 
     # !!
     def switch(
@@ -772,7 +772,7 @@ class DimsAndLevels:
 
 # !!
 # !!
-# !!    #* ######################################################################################
+# !!    #* #####################################################################
 
 
 # %%

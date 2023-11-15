@@ -12,8 +12,8 @@ joblib_cache
 _development
 
 # !!! paper, publish it only when publishing
-paper.md
-paper.bib
+paper*
+
 
 # vscode
 .vscode
