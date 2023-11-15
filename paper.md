@@ -234,7 +234,7 @@ Use this information to write the overview section:
     settings. Figures are exported by calling `plt.savefig()`.
 
 
-- At version 0.1, `plotastic` supports the pingoun implementation of
+- At version 0.1, `plotastic` supports the pingouin implementation of
   classical assumption and hypothesis testing, including their
   parametric/non-parametric and paired/non-paired variants.
   - Assumptions: Normality, Homoscedasticity, Sphericity
@@ -273,7 +273,7 @@ decides to arrange the data in a plot. This approach also prevents code
 repetition and streamlines statistical analysis. For example, the
 subject keyword is specified only once during `DataAnalysis`
 initialisation, and `plotastic` selects the appropriate paired or
-unpaired version of the test. Using `pingoun` alone requires the user to
+unpaired version of the test. Using `pingouin` alone requires the user to
 manually pick the correct test and to repeatedly specify the subject
 keyword in each testing function.
 
