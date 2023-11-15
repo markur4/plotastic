@@ -130,28 +130,28 @@ pip install git+https://github.com/markur4/plotastic.git
   - Hence, this data has 4 categorical dimensions, each with 2 or more *levels*:
     - ***day***: 4 levels (*monday*, *tuesday*, *wednesday*, *Thursday*)
     - ***gender***: 2 levels (*male*, *female*)
-    - ***age-group***: 2 levels (*young*, *old*)
     - ***smoker***: 2 levels (*yes*, *no*)
+    - ***age-group***: 2 levels (*young*, *old*)
 - Each category is assigned to a place of a plot, and when calling statistical tests, we
   assign them to statistical terms (in comments):
   - ```python
       # dims is short for dimensions
       dims = dict(         # STATISTICAL TERM:
-         y = "tip",        # -> dependent variable
-         x = "day",        # -> independent variable (within/between factor)
-         hue = "gender",   # -> independent variable (within/between factor)
-         row = "smoker",   # -> grouping variable
-         col = "age-group" # -> grouping variable
+          y = "tip",     # y-axis, dependent variable
+          x = "day",  # x-axis, independent variable (within-subject factor)
+          hue = "gender",    # color,  independent variable (within-subject factor)
+          col = "smoker",   # axes,   grouping variable
+          row = "age-group"       # axes,   grouping variable
       )
       ```
 - We perform statistical testing groupwise:
   - For each level-combinations of ***smoker*** and ***age-group***, a two-way ANOVA
     will be performed (with ***day*** and ***gender*** as ***between*** factors for each
     datagroup):
-    - 1st ANOVA includes datapoints where ***smoker**=yes* AND ***age-group**=young*
-    - 2nd ANOVA includes datapoints where ***smoker**=yes* AND ***age-group**=old*
-    - 3rd ANOVA includes datapoints where ***smoker**=no* AND ***age-group**=young*
-    - 4th ANOVA includes datapoints where ***smoker**=no* AND ***age-group**=old*
+    - 1st ANOVA assesses datapoints where ***smoker**=yes* AND ***age-group**=young*
+    - 2nd ANOVA assesses datapoints where ***smoker**=yes* AND ***age-group**=old*
+    - 3rd ANOVA assesses datapoints where ***smoker**=no* AND ***age-group**=young*
+    - 4th ANOVA assesses datapoints where ***smoker**=no* AND ***age-group**=old*
   - Three-way ANOVAs are not possible (yet), since that would require setting e.g. ***col***
   as the third factor, or implementing another dimension (e.g. ***hue2***).
 
