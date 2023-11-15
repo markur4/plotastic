@@ -649,7 +649,7 @@ classDiagram
 import plotastic as plst
 
 # Import Example Data
-DF, _ = plst.load_dataset("fmri", verbose = False)
+DF, _dims = plst.load_dataset("fmri", verbose = False)
 DF.head()
 ```
 
