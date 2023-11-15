@@ -666,8 +666,8 @@ dims = dict(
 ```
 
 ### Initialize DataAnalysis Object
-- DataAnalysis will give you feedback on data
-- This iobject contains every tool you need, from plotting to statistics!
+- `DataAnalysis` will give you feedback on data
+- The `DataAnalysis` object contains every tool you need, from plotting to statistics!
 
 
 ```python
