@@ -51,9 +51,9 @@ pip install git+https://github.com/markur4/plotastic.git
   you can use all their options!
 
 
-#### Reviewable:
+<!-- #### Reviewable:
 - We provide snippets that demonstrate of what just happened under the hood, so you can
-  backcheck and thoroughly document your work!
+  backcheck and thoroughly document your work! -->
 
 [//]:<-- end of 🤔 Why use plotastic? ------------------------------------------------->
 </blockquote>
