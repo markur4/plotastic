@@ -671,11 +671,12 @@ dims = dict(
 
 
 ```python
-DA = plst.DataAnalysis(data=DF,           # Dataframe
-                       dims=dims,         # Dictionary with y, x, hue, col, row 
-                       subject="subject", # Data is paired by subject (optional)
-                       verbose=True,      # Print out Info about the Data
-                       )
+DA = plst.DataAnalysis(
+    data=DF,           # Dataframe, long format
+    dims=dims,         # Dictionary with y, x, hue, col, row 
+    subject="subject", # Datapoints are paired by subject (optional)
+    verbose=False,     # Print out info about the Data (optional)
+)
 ```
 *prints:*
 
