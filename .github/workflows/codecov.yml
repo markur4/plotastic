@@ -1,5 +1,5 @@
 name: Codecov
-run-name: ${{ github.actor }} used Codecov
+run-name: ${{ github.actor }} uploaded coverage reports to Codecov
 
 on: [push, pull_request]
 
