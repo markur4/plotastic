@@ -167,11 +167,10 @@ req.to_txt(fname="_devtools.txt", requirements=DEVELOPMENT_TOOLS)
 os.system("! pip install -r _devtools.txt")
 os.remove("_devtools.txt") # * cleanup
 
-# %%
-# ## == Pip slow? ======================================================
+
 
 # %% [markdown]
-# ## 6. Is `pip` slow?
+# ## 6. == Pip slow? ======================================================
 # - Check Cache
 #   - pip caches wheels and HTML files
 #   - without this, pip can be painfully slow (~1-2 min)
