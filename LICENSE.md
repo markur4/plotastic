@@ -1,3 +1,7 @@
+Copyright (c) 2023 Martin Kuric
+Licensed under the GNU General Public License v3.0
+
+
 GNU GENERAL PUBLIC LICENSE
   Version 3, 29 June 2007
 
