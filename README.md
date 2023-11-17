@@ -12,62 +12,64 @@ black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://gith
 # `plotastic`: Bridging Plotting and Statistics
 
 
-[//]:<== Installation =================================================================>
+[//]:<== Installation =========================================================>
 ## Installation 📦
 
 ``` bash
 pip install git+https://github.com/markur4/plotastic.git
 ```
 
-[//]:<== Information ==================================================================>
+[//]:<== Information ==========================================================>
 ## Information 📚 
 *(click to unfold)*
 
-[//]:<--------------------------------------------------------------------------------->
+[//]:<------------------------------------------------------------------------->
 <details><summary> 🤔<b><i> Why use plotastic?  </i></b> </summary>
 <blockquote>
 <hr>
 
 #### Statistics made Posssible for EVERYONE:
-- Well-known and intuitive parameters used in `seaborn` (***x***, ***y***, ***hue***, ***row***, ***col***)
-   are 'translated' into terms used for inferential statistics (*between*, *within*,
-  *dv*, etc.) 
-  - **-> *If you know how to plot with seaborn, you can apply basic statistical
-    analyses!***
-- No need need to retype the same arguments of column names into all different tests!
+- Well-known and intuitive parameters used in `seaborn` (***x***,
+   ***y***, ***hue***, ***row***, ***col***) are 'translated' into terms
+  used for inferential statistics (*between*, *within*, *dv*, etc.) 
+  - **-> *If you know how to plot with seaborn, you can apply basic
+    statistical analyses!***
+- No need need to retype the same arguments of column names into all
+  different tests!
 
 #### Optimized Plotting with `matplotlib`:
 - Make multi-layered pre-configured plots in just one line!
-- Don't google/remember code, print out pre-built snippets of complex multi-layered
-  plots and modify them!
+- Don't google/remember code, print out pre-built snippets of complex
+  multi-layered plots and modify them!
 
 #### Sturdy:
-- plotastic doesn't re-invent the wheel: It's focused on using well established classes,
-  functions and libraries (`pd.DataFrame`, `plt.subplots`, `sns.catplot`, pingouin,
-  statannotations, etc). It's just a wrapper that makes it easier to use them together!
-- plotastic provides feedback on how each step of data import, transformation, formatting or
-  categorization has affected your table, giving beginners the confidence of knowing
-  what they're doing!
+- plotastic doesn't re-invent the wheel: It's focused on using well
+  established classes, functions and libraries (`pd.DataFrame`,
+  `plt.subplots`, `sns.catplot`, pingouin, statannotations, etc). It's
+  just a wrapper that makes it easier to use them together!
+- plotastic provides feedback on how each step of data import,
+  transformation, formatting or categorization has affected your table,
+  giving beginners the confidence of knowing what they're doing!
   
 #### Controllable:
-- plotastic outputs common matplotlib figures (`ax`, `fig`). You can modify them like
-  any other!
-- User keyword arguments are passed through plotastic to `seaborn` and `pingouin`, so
-  you can use all their options!
+- plotastic outputs common matplotlib figures (`ax`, `fig`). You can
+  modify them like any other!
+- User keyword arguments are passed through plotastic to `seaborn` and
+  `pingouin`, so you can use all their options!
 
 
 <!-- #### Reviewable:
 - We provide snippets that demonstrate of what just happened under the hood, so you can
   backcheck and thoroughly document your work! -->
 
-[//]:<-- end of 🤔 Why use plotastic? ------------------------------------------------->
+[//]:<-- end of 🤔 Why use plotastic? ----------------------------------------->
 </blockquote>
 </details>
 
 
 
 
-[//]:<--------------------------------------------------------------------------------->
+[//]:<------------------------------------------------------------------------->
 <details><summary> ⏳<b><i> Workflow Summary</b> </i>  </summary>
 <blockquote>
 <hr>
@@ -77,7 +79,8 @@ pip install git+https://github.com/markur4/plotastic.git
    - If it works with seaborn, it works with plotastic!
 2. **🔀 Make a DataAnalysis Object**
    - `DataAnalysis(DataFrame, dims={x, y, hue, row, col})`
-   - Check for empty data groups, differing samplesizes, NaN-count, etc. automatically
+   - Check for empty data groups, differing samplesizes, NaN-count, etc.
+     automatically
 3. **✅ Explore Data**
    - Check Data integrity, unequal samplesizes, empty groups, etc.
    - Quick preliminary plotting with e.g. `DataAnalysis.catplot()`
@@ -89,145 +92,164 @@ pip install git+https://github.com/markur4/plotastic.git
 5. **✨ Perform Statistical Tests** ✨
    - Check Normality, Homoscedasticity, Sphericity
    - Perform Omnibus tests (ANOVA, RMANOVA, Kruskal-Wallis, Friedman)
-   - Perform PostHoc tests (Tukey, Dunn, Wilcoxon, etc.) based on `pg.pairwise_tests()`
+   - Perform PostHoc tests (Tukey, Dunn, Wilcoxon, etc.) based on
+     `pg.pairwise_tests()`
 6. **📊 Plot figure**
-   - Use pre-defined and optimized multi-layered plots with one line (e.g. strip over
-     box)!
-   - Print ready to use matplotlib snippets (kinda like Copilot, but tested!) ...
-   - Annotate statistical results (\*, \*\*, \*\*\*, etc.) with full control over which
-     data to include or exclude!
+   - Use pre-defined and optimized multi-layered plots with one line
+     (e.g. strip over box)!
+   - Print ready to use matplotlib snippets (kinda like Copilot, but
+     tested!) ...
+   - Annotate statistical results (\*, \*\*, \*\*\*, etc.) with full
+     control over which data to include or exclude!
 7. **💿 Save all results at once!**
    - One DataAnalysis object holds: 
      - One DataFrame in `self.data`
      - One Figure in `self.fig`, `self.axes`
      - Multiple statistical results: `self.results`
-   - Use `DataAnalysis.save_statistics()` to save all results to different sheets
-     collected in one .xlsx filesheet per test
+   - Use `DataAnalysis.save_statistics()` to save all results to
+     different sheets collected in one .xlsx filesheet per test
 
-[//]:<-- end of ⏳ Workflow Summary --------------------------------------------------->
+[//]:<-- end of ⏳ Workflow Summary -------------------------------------------->
 </blockquote>
 </details>
 
 
 
-[//]:<--------------------------------------------------------------------------------->
+[//]:<------------------------------------------------------------------------->
 <details><summary> 📊<b><i> Translating Plots into Statistics!</i> </b> </summary>
 <blockquote>
 <hr>
 
 ### In Principle:
-- Categorical data is separable into `seaborn`'s categorization parameters: ***x***,
-  ***y***, ***hue***, ***row***, ***col***. We call those *"dimensions"*.
+- Categorical data is separable into `seaborn`'s categorization
+  parameters: ***x***, ***y***, ***hue***, ***row***, ***col***. We call
+  those *"dimensions"*.
 - These dimensions are assigned to statistical terms:
   - ***y*** is the ***dependent variable*** (***DV***)
-  - ***x*** and ***hue*** are ***independent variables*** (***IV***) and are treated as
-    ***within/between factors*** (categorical variables)
-  - ***row*** and ***col*** are ***grouping variables*** (categorical variables)
-  - A ***subject*** may be specified for within/paired study designs (categorical variable)
-- For each level of ***row*** or ***col*** (or for each combination of ***row***- and ***col*** levels),
-  statistical tests will be performed with regards to the two-factors ***x*** and ***hue***
+  - ***x*** and ***hue*** are ***independent variables*** (***IV***) and
+    are treated as ***within/between factors*** (categorical variables)
+  - ***row*** and ***col*** are ***grouping variables*** (categorical
+    variables)
+  - A ***subject*** may be specified for within/paired study designs
+    (categorical variable)
+- For each level of ***row*** or ***col*** (or for each combination of
+  ***row***- and ***col*** levels), statistical tests will be performed
+  with regards to the two-factors ***x*** and ***hue***
 
 ### Example with ANOVA:
 - Imagine this example data: 
   - Each day you measure the tip of a group of people. 
-  - For each tip, you note down the ***day***, ***gender***, ***age-group*** and whether they ***smoke*** or
-    not. 
-  - Hence, this data has 4 categorical dimensions, each with 2 or more *levels*:
+  - For each tip, you note down the ***day***, ***gender***,
+    ***age-group*** and whether they ***smoke*** or not. 
+  - Hence, this data has 4 categorical dimensions, each with 2 or more
+    *levels*:
     - ***day***: 4 levels (*monday*, *tuesday*, *wednesday*, *Thursday*)
     - ***gender***: 2 levels (*male*, *female*)
     - ***smoker***: 2 levels (*yes*, *no*)
     - ***age-group***: 2 levels (*young*, *old*)
-- Each category is assigned to a place of a plot, and when calling statistical tests, we
-  assign them to statistical terms (in comments):
+- Each category is assigned to a place of a plot, and when calling
+  statistical tests, we assign them to statistical terms (in comments):
   - ```python
       # dims is short for dimensions
-      dims = dict(         # STATISTICAL TERM:
-          y = "tip",     # y-axis, dependent variable
-          x = "day",  # x-axis, independent variable (within-subject factor)
-          hue = "gender",    # color,  independent variable (within-subject factor)
+      dims = dict(          # STATISTICAL TERM:
+          y = "tip",        # y-axis, dependent variable
+          x = "day",        # x-axis, independent variable (within-subject factor)
+          hue = "gender",   # color,  independent variable (within-subject factor)
           col = "smoker",   # axes,   grouping variable
-          row = "age-group"       # axes,   grouping variable
+          row = "age-group" # axes,   grouping variable
       )
       ```
 - We perform statistical testing groupwise:
-  - For each level-combinations of ***smoker*** and ***age-group***, a two-way ANOVA
-    will be performed (with ***day*** and ***gender*** as ***between*** factors for each
-    datagroup):
-    - 1st ANOVA assesses datapoints where ***smoker**=yes* AND ***age-group**=young*
-    - 2nd ANOVA assesses datapoints where ***smoker**=yes* AND ***age-group**=old*
-    - 3rd ANOVA assesses datapoints where ***smoker**=no* AND ***age-group**=young*
-    - 4th ANOVA assesses datapoints where ***smoker**=no* AND ***age-group**=old*
-  - Three-way ANOVAs are not possible (yet), since that would require setting e.g. ***col***
-  as the third factor, or implementing another dimension (e.g. ***hue2***).
+  - For each level-combinations of ***smoker*** and ***age-group***, a
+    two-way ANOVA will be performed (with ***day*** and ***gender*** as
+    ***between*** factors for each datagroup):
+    - 1st ANOVA assesses datapoints where ***smoker**=yes* AND
+      ***age-group**=young*
+    - 2nd ANOVA assesses datapoints where ***smoker**=yes* AND
+      ***age-group**=old*
+    - 3rd ANOVA assesses datapoints where ***smoker**=no* AND
+      ***age-group**=young*
+    - 4th ANOVA assesses datapoints where ***smoker**=no* AND
+      ***age-group**=old*
+  - Three-way ANOVAs are not possible (yet), since that would require
+  setting e.g. ***col*** as the third factor, or implementing another
+  dimension (e.g. ***hue2***).
 
-[//]:<end of 📊 Translating Plots into Statistics! ------------------------------------>
+[//]:<end of 📊 Translating Plots into Statistics! ---------------------------->
 </blockquote>
 </details>
 
 
 
-[//]:<--------------------------------------------------------------------------------->
+[//]:<------------------------------------------------------------------------->
 <details><summary> <b>❗️<i> Disclaimer about Statistics </i></b> </summary>
 <blockquote>
 <hr>
 
 ### This software was inspired by ...
 
-- ... ***Intuitive Biostatistics*** - Fourth Edition (2017); Harvey Motulsky
-- ... ***Introduction to Statistical Learning with applications in Python*** - First
-  Edition (2023); Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani,
-  Jonathan Taylor
+- ... ***Intuitive Biostatistics*** - Fourth Edition (2017); Harvey
+  Motulsky
+- ... ***Introduction to Statistical Learning with applications in
+  Python*** - First Edition (2023); Gareth James, Daniela Witten, Trevor
+  Hastie, Robert Tibshirani, Jonathan Taylor
 - ... talking to other scientists struggling with statistics
 
 #### ✅ `plotastic` can help you with...
 
 - ... gaining some practical experience when learning statistics
-- ... quickly gain statistical implications about your data without switching to another
-  software
+- ... quickly gain statistical implications about your data without
+  switching to another software
 - ... making first steps towards a full statistical analysis
-- ... plotting publication grade figures (check statistics results with other software)
-- ... publication grade statistical analysis **IF** you really know what you're doing OR
-  you have back-checked your results by a professional statistician
+- ... plotting publication grade figures (check statistics results with
+  other software)
+- ... publication grade statistical analysis **IF** you really know what
+  you're doing OR you have back-checked your results by a professional
+  statistician
 - ... quickly test data transformations (log)
 
 #### 🚫 `plotastic` can NOT ...
 
 - ... replace a professional statistician
-- ... teach you statistics, you need some basic knowledge (but is awesome for
-  practicing!)
-- ... test for multicolinearity (Absence of multicolinearity is required by ANOVA!)
-- ... perform stringent correction for multiple testing (e.g. bonferoni), as statistical
-  tests are applied to sub-facets of the whole dataframe for each axes, which depends on
-  the definition of x, hue, col, etc. Hence, corrected p-values might over-estimate the
+- ... teach you statistics, you need some basic knowledge (but is
+  awesome for practicing!)
+- ... test for multicolinearity (Absence of multicolinearity is required
+  by ANOVA!)
+- ... perform stringent correction for multiple testing (e.g.
+  bonferoni), as statistical tests are applied to sub-facets of the
+  whole dataframe for each axes, which depends on the definition of x,
+  hue, col, etc. Hence, corrected p-values might over-estimate the
   significance of your results.
 
 #### 🟡 Be **critical** and **responsible** with your statistical analysis!
 
 - **Expect Errors:** Don't trust automated systems like this one!
 - **Document your work in *ridiculous detail***:
-  - Include the applied tests, the number of technical replicates and the number of
-    biological/independent in each figure legend
+  - Include the applied tests, the number of technical replicates and
+    the number of biological/independent in each figure legend
   - State explicitly what each datapoint represents:
     - 1 datapoint = 1 Technical replicate?  
     - 1 datapoint = The mean of all technical replicate per independent
       replicate/subject?
-  - State explicitly what the error-bars mean: Standard deviation? Confidence interval?
+  - State explicitly what the error-bars mean: Standard deviation?
+    Confidence interval?
   - (Don't mix technical with biological/independent variance)
   - Report if/how you removed outliers
-  - Report if you did or did not apply correction methods (multiple comparisons,
-    Greenhouse Geyser, etc.) and what your rationale is (exploratory vs. confirmatory
-    study? Validation through other methods to reduce Type I error?)
+  - Report if you did or did not apply correction methods (multiple
+    comparisons, Greenhouse Geyser, etc.) and what your rationale is
+    (exploratory vs. confirmatory study? Validation through other
+    methods to reduce Type I error?)
 - **Check results with professionnals:**
-  - *"Here is my data, here is my question, here is my analysis, here is my
-    interpretation. What do you think?"*
+  - *"Here is my data, here is my question, here is my analysis, here is
+    my interpretation. What do you think?"*
 
-[//]:<end of ❗️ Disclaimer about Statistics-------------------------------------------->
+[//]:<end of ❗️ Disclaimer about Statistics------------------------------------>
 </blockquote>
 </details>
 
 
 
-[//]:<== Features =====================================================================>
+[//]:<== Features =============================================================>
 ## Features ⚙️
 
 
@@ -243,7 +265,7 @@ pip install git+https://github.com/markur4/plotastic.git
 - **😣: Help Please..?**
 
 
-[//]:<--------------------------------------------------------------------------------->
+[//]:<------------------------------------------------------------------------->
 <details open><summary>  <b><i>  Plotting   </i></b> </summary>
 <blockquote>
 
@@ -255,26 +277,30 @@ pip install git+https://github.com/markur4/plotastic.git
 - 🤷 Interactive Plots (where you click stuff and adjust scale etc.)
   - *That's gonna be alot of work!*
 - 🚫 Support for `seaborn.FacetGrid`
-  - *Why not? - `plotastic` uses matplotlib figures and fills its axes with seaborn plot
-    functions. In my opinion, that's the best solution that offers the best adaptibility
-    of every plot detail while bieng easy to maintain*
+  - *Why not? - `plotastic` uses matplotlib figures and fills its axes
+    with seaborn plot functions. In my opinion, that's the best solution
+    that offers the best adaptibility of every plot detail while bieng
+    easy to maintain*
 - 🚫 Support for `seaborn.objects` (same as Facetgrid)
   - *Why not? - I don't see the need to refactor the code*
-- 😣 **NEED HELP WITH:** The hidden state of `matplotlib` figures/plots/stuff that gets drawn:
-  - *I want to save the figure in `DataAnalysis.fig` attribute. As simple as that sounds,
-    matplotlib does weird stuff, not applying changes after editing the plot.* 
-  - *It'd be cool if I could control the changes to a DataAnalysis object better (e.g.
-    using `inplace=True` like with `pd.DataFrames`). But I never figured out how to
-    control matplotlib figure generation, even with re-drawing the figure with canvas.
-    It's a mess and I wasted so much time already.*
+- 😣 **NEED HELP WITH:** The hidden state of `matplotlib`
+  figures/plots/stuff that gets drawn:
+  - *I want to save the figure in `DataAnalysis.fig` attribute. As
+    simple as that sounds, matplotlib does weird stuff, not applying
+    changes after editing the plot.* 
+  - *It'd be cool if I could control the changes to a DataAnalysis
+    object better (e.g. using `inplace=True` like with `pd.DataFrames`).
+    But I never figured out how to control matplotlib figure generation,
+    even with re-drawing the figure with canvas. It's a mess and I
+    wasted so much time already.*
 
-[//]:<end of Plotting ----------------------------------------------------------------->
+[//]:<end of Plotting --------------------------------------------------------->
 </blockquote>
 </details>
 
 
 
-[//]:<--------------------------------------------------------------------------------->
+[//]:<------------------------------------------------------------------------->
 <details open><summary>  <b><i>  Multi-Layered Plotting   </i></b> </summary>
 <blockquote>
 
@@ -282,12 +308,12 @@ pip install git+https://github.com/markur4/plotastic.git
 - 👍 Box-plot + strip
 - 📆 Violin + swarm/strip
 
-[//]:<end of Multi-Layered Plotting --------------------------------------------------->
+[//]:<end of Multi-Layered Plotting ------------------------------------------->
 </blockquote>
 </details>
 
 
-[//]:<--------------------------------------------------------------------------------->
+[//]:<------------------------------------------------------------------------->
 <details open><summary>  <b><i>  Statistics   </i></b> </summary>
 <blockquote>
 
@@ -302,55 +328,60 @@ pip install git+https://github.com/markur4/plotastic.git
 - PostHoc
   - ✅ `pg.pairwise_tests()`
     - *Works with all primary options. That includes all parametric,
-    non-parametric, paired, unpaired, etc. tests (t-test, paired t-test, MWU, Wilcoxon,
-    etc.)*
+    non-parametric, paired, unpaired, etc. tests (t-test, paired t-test,
+    MWU, Wilcoxon, etc.)*
   - ✅ Annotate Stars into plots (\*, \*\*, etc.)
     - *Specific pairs can be included/excluded from annotation*
-  - 📆 Make correction for multiple testing go over complete DataFrame and not Facet-wise: 
+  - 📆 Make correction for multiple testing go over complete DataFrame
+    and not Facet-wise: 
 - Bivariate
-  - 📆 Find and Implement system to switch between numerical and categorical x-axis
-    - *Function to convert numerical data into categorical data by binning?*
+  - 📆 Find and Implement system to switch between numerical and
+    categorical x-axis
+    - *Function to convert numerical data into categorical data by
+      binning?*
   - 📆 Pearson, Spearman, Kendall
 - Printable Snippets
   - 📆 Snippets for all implemented tests
 
-[//]:<end of Statistics --------------------------------------------------------------->
+[//]:<end of Statistics ------------------------------------------------------->
 </blockquote>
 </details>
 
 
-[//]:<--------------------------------------------------------------------------------->
+[//]:<------------------------------------------------------------------------->
 <details open><summary>  <b><i>   Analysis Pipelines   </i></b> </summary>
 <blockquote>
 
-*Idea: Put all those statistical tests into one line. I might work on this only after
-everything's implemented and working confidently and well!*
-- 🤷 `between_samples(parametric=True)`:    ANOVA + Tukey (if Normality &
-  Homoscedasticity are given)
+*Idea: Put all those statistical tests into one line. I might work on
+this only after everything's implemented and working confidently and
+well!*
+- 🤷 `between_samples(parametric=True)`:    ANOVA + Tukey (if Normality
+  & Homoscedasticity are given)
 - 🤷 `between_samples(parametric=False)`:  Kruskal-Wallis + Dunn
-- 🤷 `within_samples(parametric=True)`:      RM-ANOVA + multiple paired t-tests (if
-  Normality & Sphericity are given)
+- 🤷 `within_samples(parametric=True)`:      RM-ANOVA + multiple paired
+  t-tests (if Normality & Sphericity are given)
 - 🤷 `within_samples(parametric=False)`:    Friedman + multiple Wilcoxon
 
-[//]:<end of Analysis Pipelines ------------------------------------------------------->
+[//]:<end of Analysis Pipelines ----------------------------------------------->
 </blockquote>
 </details>
 
 
-[//]:<end of ✅ Feature List ==========================================================>
+[//]:<end of ✅ Feature List ==================================================>
 </blockquote> 
 </details>
 
 
 
 
-[//]:<=================================================================================>
+[//]:<=========================================================================>
 <details><summary>🌳 <b><i>Class Diagram </b></i> </summary>
 <blockquote>
 <hr>
 
 
-- 🛑 Not everything shown here is implemented and not everything that's implemented is shown here!
+- 🛑 Not everything shown here is implemented and not everything that's
+  implemented is shown here!
 - 🖱️ **Click** on a class to see its source code!
 
 
@@ -360,7 +391,7 @@ classDiagram
 
 
 
-   %% == ANALYSIS ======================================================================
+   %% == ANALYSIS ==============================================================
    
    class pd_DataFrame{
       ...
@@ -408,7 +439,7 @@ classDiagram
    DataFrameTool <|-- StatTest
 
 
-   %% == STATISTICS ====================================================================
+   %% == STATISTICS ============================================================
 
    class pingouin{
       <<Statistics Library>>
@@ -485,7 +516,7 @@ classDiagram
    pingouin .. Assumptions: Uses
 
 
-   %% == PLOTTING ======================================================================
+   %% == PLOTTING ==============================================================
 
    class rc{
       <<Runtime Config>>
@@ -537,7 +568,7 @@ classDiagram
    PlotEdits <|-- MultiPlot
 
 
-   %% == DATAANALYSIS ==================================================================
+   %% == DATAANALYSIS ==========================================================
 
    class Annotator{
       _annotated: bool =False
@@ -573,7 +604,7 @@ classDiagram
    Annotator --|> DataAnalysis
 
 
-   %% == Links =========================================================================
+   %% == Links =================================================================
 
    %% dimensions 
    click Dims href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dims.py" 
@@ -602,7 +633,7 @@ classDiagram
 
 ```
 
-[//]:<end of 🌳 Class Diagram =========================================================>
+[//]:<end of 🌳 Class Diagram =================================================>
 </blockquote>
 </details>
 
@@ -610,18 +641,18 @@ classDiagram
 
 
 
-[//]:<=================================================================================>
-## Citations ✍🏻
+[//]:<=========================================================================>
+## Cite this! ✍🏻
 <details><summary> <i> Please cite the publications of seaborn, pingouin, etc. when using plotastic (click to unfold) </i> </summary>
 <blockquote>
 <hr>
 
-- *Vallat, R. (2018). Pingouin: statistics in Python. Journal of Open Source Software,
-  3(31), 1026. <https://doi.org/10.21105/joss.01026>*
-- *Waskom, M. et al. (2021). mwaskom/seaborn: v0.11.1 (January 2021). Zenodo.
-  <http://doi.org/10.5281/zenodo.4547176>*
+- *Vallat, R. (2018). Pingouin: statistics in Python. Journal of Open
+  Source Software, 3(31), 1026. <https://doi.org/10.21105/joss.01026>*
+- *Waskom, M. et al. (2021). mwaskom/seaborn: v0.11.1 (January 2021).
+  Zenodo. <http://doi.org/10.5281/zenodo.4547176>*
 
-[//]:<end of Citations ================================================================>
+[//]:<end Cite this! ✍🏻 =======================================================>
 </blockquote>
 </details>
 
@@ -630,14 +661,14 @@ classDiagram
 
 ## How To Use 📖
 
-[//]:<=================================================================================>
+[//]:<=========================================================================>
 
 ### Notebooks
 1. [Quick Example: FMRI Dataset](How_To_Use/quick_example_fmri.ipynb)
 2. [Switch Dimensions](How_To_Use/dimensions.ipynb)
    
 
-[//]:<=================================================================================>
+[//]:<=========================================================================>
 [//]:<.ipynb Notebooks taken from How_To_Use.ipynb>
 [//]:<Converted using:>
 [//]:<jupyter nbconvert --to markdown your_notebook.ipynb>
@@ -680,7 +711,8 @@ dims = dict(
 
 ### Initialize DataAnalysis Object
 - `DataAnalysis` will give you feedback on data
-- The `DataAnalysis` object contains every tool you need, from plotting to statistics!
+- The `DataAnalysis` object contains every tool you need, from plotting
+  to statistics!
 
 
 ```python
@@ -961,8 +993,8 @@ DA.test_pairwise() # Results not shown here, table too long
 
 
 #### Save Results:
-Output is one excel file containing results of all performed tests (normality, anova,
-t-tests, etc.) in different sheets
+Output is one excel file containing results of all performed tests
+(normality, anova, t-tests, etc.) in different sheets
 
 
 ```python
@@ -1002,7 +1034,7 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
     
 
 
-[//]:<end of Citations ================================================================>
+[//]:<end of Citations ========================================================>
 </blockquote>
 </details>
 
