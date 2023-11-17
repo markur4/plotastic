@@ -54,11 +54,14 @@ requiring users to switch between libraries and adapt to different
 syntaxes.
 
 `seaborn` has become a popular choice for plotting in Python, offering
-an intuitive interface. Its statistical functionality is limited to
-descriptive plots and bootstrapped confidence intervals
+an intuitive interface. Its statistical functionality focuses on
+descriptive plots and bootstrapped confidence intervals.
 [@waskomSeabornStatisticalData2021]. The library `pingouin` offers an
 extensive set of statistical tests, but it lacks integration with common
 plotting capabilities [@vallatPingouinStatisticsPython2018].
+`statannotations` integrates statistical testing with plot annotations, but
+ uses a complex interface and is limited to pairwise comparisons.
+ [@charlierTrevismdStatannotationsV02022].
 
 `plotastic` addresses this gap by offering a unified environment for
 plotting and statistical analysis. With an emphasis on user-friendly
@@ -155,12 +158,13 @@ two-factor RM-ANOVAs. Within-factors are "timepoint" (x) and "event"
 
 The functionality of `plotastic` revolves around a seamless integration
 of statistical analysis and plotting, leveraging the capabilities of
-`pingouin`, `seaborn` and `matplotlib`
+`pingouin`, `seaborn`, `matplotlib` and `statannotations`.
 [@vallatPingouinStatisticsPython2018; @waskomSeabornStatisticalData2021;
-@hunterMatplotlib2DGraphics2007]. It utilizes long-format `pandas`
-`DataFrames` as its primary input, aligning with the conventions of
-`seaborn` and ensuring compatibility with existing data structures
-[@wickhamTidyData2014a; @mckinneyPandasFoundationalPython2011].
+@hunterMatplotlib2DGraphics2007, @charlierTrevismdStatannotationsV02022
+]. It utilizes long-format `pandas` `DataFrames` as its primary input,
+aligning with the conventions of `seaborn` and ensuring compatibility
+with existing data structures [@wickhamTidyData2014a;
+@mckinneyPandasFoundationalPython2011].
 
 `plotastic` was inspired by `seaborn`'s intuitive and consistent usage
 of the same set of parameters (y, x, hue, row, col) found in each of its
@@ -211,9 +215,22 @@ populated by `seaborn` plotting functions (e.g., `sns.boxplot()`),
 leveraging automated aggregation and error bar displays. Keyword
 arguments are passed to these `seaborn` functions, ensuring the same
 degree of customization as in seaborn. Users can further customize plots
-by chaining DataAnalysis methods or by applying common `matplotlib` code
+by chaining `DataAnalysis` methods or by applying common `matplotlib` code
 to override plotastic settings. Figures are exported using
-`plt.savefig()`.
+`plt.savefig()`. 
+
+`plotastic` also focuses on in annotating statistical information within
+plots, seamlessly incorporating p-values from pairwise comparisons using
+`statannotations` [@charlierTrevismdStatannotationsV02022]. This
+integration simplifies the interface and expands options for pair
+selection in multidimensional plots, enhancing both user experience and
+interpretability.
+
+`plotastic` also focuses on annotating statistical inside the plot. It integrates `statannotations` for annotating p-values
+ from pairwise comparisons inside the plot
+ [@charlierTrevismdStatannotationsV02022], and simplifies the interface
+ and offering further options for pair selection in multidimensional
+ plots.
 
 For statistics, `plotastic` integrates with the `pingouin` library to
 support classical assumption and hypothesis testing, covering
