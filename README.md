@@ -6,6 +6,7 @@
 
 [![Code style:
 black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![codecov](https://codecov.io/gh/markur4/plotastic/graph/badge.svg?token=4L98QSPCU3)](https://codecov.io/gh/markur4/plotastic)
 
 </h1>
 
