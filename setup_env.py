@@ -142,8 +142,9 @@ else:
 # ## == 5. Install project in editable mode ============================
 
 # %% 
-# ? This can take a while
 os.system("pip install -e .")
+
+# %%
 
 # %% 
 ### Package importable?

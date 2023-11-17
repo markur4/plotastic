@@ -44,7 +44,8 @@ setup(
     packages=find_packages(where="src", include=[NAME]),
     ### Define location of all packages.
     package_dir={
-        "": "src",  # * "" is the package root (where setup.py is)
+        NAME: "src/" + NAME,
+        # "": "src",  # * "" is the package root (where setup.py is)
         # NAME: f"src/{NAME}",
         # "dataanalysis": "src/plotastic/dataanalysis",
     },
