@@ -41,12 +41,11 @@ setup(
     # == Package Structure =============================================
     ### Automatically find all packages in src
     # * Those that have an __init__.py AND match the name of the package
-    packages=find_packages(where="src", include=[NAME]),
+    packages=find_packages(where="src", include=[NAME, NAME + ".*"]),
     ### Define location of all packages.
     package_dir={
-        NAME: "src/" + NAME,
-        # "": "src",  # * "" is the package root (where setup.py is)
-        # NAME: f"src/{NAME}",
+        "": "src",  # * "" is the package root (where setup.py is)
+        # NAME: "src/" + NAME,
         # "dataanalysis": "src/plotastic/dataanalysis",
     },
     # == Non .py Files =================================================
