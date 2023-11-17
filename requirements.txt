@@ -35,7 +35,7 @@ pickleshare==0.7.5
 Pillow==10.1.0
 pingouin==0.5.3
 platformdirs==3.11.0
--e git+https://github.com/markur4/plotastic.git@949180c29913e8e8093b0c4272f3d7a3e82ddfda#egg=plotastic
+git+https://github.com/markur4/plotastic.git@949180c29913e8e8093b0c4272f3d7a3e82ddfda#egg=plotastic
 prompt-toolkit==3.0.39
 psutil==5.9.6
 ptyprocess==0.7.0
