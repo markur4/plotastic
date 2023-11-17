@@ -41,7 +41,13 @@ setup(
     # == Package Structure =============================================
     ### Automatically find all packages in src
     # * Those that have an __init__.py AND match the name of the package
-    packages=find_packages(where="src", include=[NAME, NAME + ".*"]),
+    packages=find_packages(
+        where="src",
+        include=[
+            NAME,         #- src/plotastic
+            NAME + ".*",  #- src/plotastic.* (subpackages)
+        ],
+    ),
     ### Define location of all packages.
     package_dir={
         "": "src",  # * "" is the package root (where setup.py is)
@@ -49,7 +55,7 @@ setup(
         # "dataanalysis": "src/plotastic/dataanalysis",
     },
     # == Non .py Files =================================================
-    include_package_data=True # * Include non .py files specified in MANIFEST.in
+    include_package_data=True  # * Include non .py files specified in MANIFEST.in
     ### Required files (e.g. py.typed, documentation...)
     # package_data={
     #     "": [f"py.typed"],  # * "" is the package root (where setup.py is)
