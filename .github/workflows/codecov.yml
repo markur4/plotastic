@@ -1,7 +1,7 @@
 name: Codecov
 run-name: ${{ github.actor }} used Codecov
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
