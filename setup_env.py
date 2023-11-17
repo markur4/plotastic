@@ -156,7 +156,7 @@ import plotastic # !!!! Need to restart kernel if freshly installed
 # os.system("pip uninstall plotastic -y")
 
 # %% [markdown]
-# ## == 5. Install Development Tools ======================================
+# ## == 5. Install Development Tools ===================================
 
 # %% Check devtools
 DEVELOPMENT_TOOLS = req.DEVELOPMENT_TOOLS
@@ -168,7 +168,7 @@ os.system("! pip install -r _devtools.txt")
 os.remove("_devtools.txt") # * cleanup
 
 # %%
-# ## == Pip slow? =========================================================
+# ## == Pip slow? ======================================================
 
 # %% [markdown]
 # ## 6. Is `pip` slow?

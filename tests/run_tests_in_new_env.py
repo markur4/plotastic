@@ -1,6 +1,13 @@
 #
 # %%
+import os
+import shutil
 import venv
+
+#%% 
+### Delete environment if present
+if os.path.exists("../venv_not_e"):
+    shutil.rmtree("../venv_not_e")
 
 # %%
 ### Create virtual environment
@@ -14,7 +21,7 @@ venv.create(env_dir="../venv_not_e", clear=True, with_pip=True)
 ### Install non editable for testing
 ! pip install -r requirements.txt
 ! pip install git+https://github.com/markur4/plotastic.git
-! pip install pytest pytest-cov 
+! pip install pytest pytest-cov ipytest
 
 # %%
 ! pytest --cov=src/plotastic --cov-report=xml

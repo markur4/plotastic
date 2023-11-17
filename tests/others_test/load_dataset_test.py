@@ -2,7 +2,6 @@
 # %% Imports
 
 import pytest
-import ipytest
 
 import plotastic as plst
 from plotastic.example_data.load_dataset import FILES
@@ -21,4 +20,5 @@ def test_load_dataset(name):
 # %%
 
 if __name__ == "__main__":
+    import ipytest
     ipytest.run()
