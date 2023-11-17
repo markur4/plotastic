@@ -24,6 +24,9 @@ venv.create(env_dir="../venv_not_e", clear=True, with_pip=True)
 ! pip install pytest pytest-cov ipytest
 
 # %%
-! pytest --cov --cov-report=xml
+# !! Coverage requires editable mode
+! pytest
+
+# # ! pytest --cov --cov-report=xml
 
 # %%

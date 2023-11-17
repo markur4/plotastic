@@ -14,8 +14,8 @@ jobs:
         python-version: '3.11'
     - name: Install requirements
       run: pip install -r requirements.txt
-    - name: Install plotastic
-      run: pip install git+https://github.com/markur4/plotastic.git
+    - name: Install plotastic (in editable mode! Otherwise 0% coverage)
+      run: pip install -e .
     - name: Install development tools
       run: pip install pytest pytest-cov 
     - name: Run tests and collect coverage
