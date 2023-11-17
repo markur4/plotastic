@@ -134,6 +134,9 @@ else:
 # ## == 4. Export Requirements =========================================
 # - Do this before installing further tools so that requirements.txt represents the software needed for plotastic
 
+# %% 
+### Export requirements to be used by the publix
+# os.system("! pip freeze > ../requirements.txt")
 
 #%% [markdown]
 # ## == 5. Install project in editable mode ============================
@@ -146,9 +149,6 @@ os.system("pip install -e .")
 ### Package importable?
 import plotastic # !!!! Need to restart kernel if freshly installed
 
-# %% 
-### Export requirements to be used by the publix
-# os.system("! pip freeze > ../requirements.txt")
 
 # %%
 ### Uninstall to reinstall

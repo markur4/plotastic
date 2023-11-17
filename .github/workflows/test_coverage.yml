@@ -1,12 +1,12 @@
 name: test coverage
-run-name: ${{ github.actor }} ${{ github.event_name }}. Tests run, coverage uploaded to Codecov
+run-name: ${{ github.actor }} ${{ github.event_name }}; Setup env, run tests, upload coverage
 
 on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Test python API
+    name: Setup environment, run tests, upload coverage  
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v2
@@ -14,6 +14,10 @@ jobs:
         python-version: '3.11'
     - name: Install requirements
       run: pip install -r requirements.txt
+    - name: Install plotastic
+      run: pip install git+https://github.com/markur4/plotastic.git
+    - name: Install development tools
+      run: pip install pytest pytest-cov 
     - name: Run tests and collect coverage
       run: pytest tests --cov=src/plotastic --cov-report=xml
     - name: Upload coverage reports to Codecov with GitHub Action
