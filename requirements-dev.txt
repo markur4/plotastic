@@ -11,3 +11,4 @@ colour
 xlsxwriter
 ipynbname
 openpyxl
+icecream

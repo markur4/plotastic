@@ -1,8 +1,13 @@
 <h1 align="center">
-  <img src="Figures & Logos/plotastic_logo.png" width="400px" height="300px" alt="logo">
+  <img src="Logo/plotastic_logo.png" width="400px" height="300px" alt="logo">
 </h1>
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+<h1 align="center">
+
+[![Code style:
+black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+</h1>
 
 # `plotastic`: Bridging Plotting and Statistics
 

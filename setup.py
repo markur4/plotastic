@@ -2,15 +2,6 @@ from setuptools import setup, find_packages
 
 import requirements as req
 
-# requirements_file = "_setup_env/requirements-dev.txt"
-
-NAME = "plotastic"
-# PYTHON_VERSION = eu.parse_requirements(fname=requirements_file, ret_pyversion=True)
-# REQUIREMENTS = eu.parse_requirements(fname=requirements_file)
-PYTHON_VERSION = req.PYTHON_VERSION
-REQUIREMENTS = req.REQUIREMENTS
-REQUIREMENTS_EXTRA = req.REQUIREMENTS_EXTRA
-
 # https://setuptools.pypa.io/en/latest/references/keywords.html
 ### LAYOUT:
 # * project_root/                 # Project root: 'plotastic'
@@ -31,18 +22,23 @@ REQUIREMENTS_EXTRA = req.REQUIREMENTS_EXTRA
 # *            ├── ...
 # *            └── module2.py
 
+NAME = "plotastic"
+PYTHON_VERSION = req.PYTHON_VERSION
+REQUIREMENTS = req.REQUIREMENTS
+REQUIREMENTS_EXTRA = req.REQUIREMENTS_EXTRA
+
 setup(
-    # == Metadata ======================================================================
+    # == Metadata ======================================================
     name=NAME,
-    version="0.0.1",
+    version="0.1.0",
     author="markur4",
-    description="A wrapper for seaborn plotters for convenient statistics powered by pingouin!",
+    description="Streamlining statistical analysis by using plotting keywords in Python.",
     python_requires=PYTHON_VERSION,
     install_requires=REQUIREMENTS,
     extras_requires=REQUIREMENTS_EXTRA,
     url="https://github.com/markur4/plotastic",
-    license="MIT",
-    # == Package Structure =============================================================
+    license="GPLv3",
+    # == Package Structure =============================================
     ### Automatically find all packages in src
     # * Those that have an __init__.py AND match the name of the package
     packages=find_packages(where="src", include=[NAME]),
@@ -52,7 +48,7 @@ setup(
         # NAME: f"src/{NAME}",
         # "dataanalysis": "src/plotastic/dataanalysis",
     },
-    # == Non .py Files =================================================================
+    # == Non .py Files =================================================
     ### Required files (e.g. py.typed, documentation...)
     package_data={
         "": [f"py.typed"],  # * "" is the package root (where setup.py is)
