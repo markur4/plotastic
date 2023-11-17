@@ -49,14 +49,15 @@ setup(
         # "dataanalysis": "src/plotastic/dataanalysis",
     },
     # == Non .py Files =================================================
+    include_package_data=True # * Include non .py files specified in MANIFEST.in
     ### Required files (e.g. py.typed, documentation...)
-    package_data={
-        "": [f"py.typed"],  # * "" is the package root (where setup.py is)
-        "dataanalysis": [f"py.typed"],
-        "example_data": ["data/*.xlsx"],
-    },
-    ### Extra Files to be installed with the package (e.g. useful .gif .txt, ...)
-    data_files={},
+    # package_data={
+    #     "": [f"py.typed"],  # * "" is the package root (where setup.py is)
+    #     "dataanalysis": [f"py.typed"],
+    #     "example_data": ["data/*.xlsx"],
+    # },
+    # ### Extra Files to be installed with the package (e.g. useful .gif .txt, ...)
+    # data_files={},
 )
 
 ### CHECK IF THIS PACKAGE IS INSTALLABLE:

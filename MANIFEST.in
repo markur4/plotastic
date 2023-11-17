@@ -1,0 +1,3 @@
+include src/plotastic/py.typed
+include src/plotastic/dataanalysis/py.typed
+include src/plotastic/example_data/data/*xlsx
