@@ -40,8 +40,6 @@ pip install git+https://github.com/markur4/plotastic.git
 
 #### Optimized Plotting with `matplotlib`:
 - Make multi-layered pre-configured plots in just one line!
-- Don't google/remember code, print out pre-built snippets of complex
-  multi-layered plots and modify them!
 
 #### Sturdy:
 - plotastic doesn't re-invent the wheel: It's focused on using well
@@ -98,10 +96,8 @@ pip install git+https://github.com/markur4/plotastic.git
 6. **📊 Plot figure**
    - Use pre-defined and optimized multi-layered plots with one line
      (e.g. strip over box)!
-   - Print ready to use matplotlib snippets (kinda like Copilot, but
-     tested!) ...
-   - Annotate statistical results (\*, \*\*, \*\*\*, etc.) with full
-     control over which data to include or exclude!
+   - Annotate statistical results (p-values as \*, \*\*, \*\*\*, etc.)
+     with full control over which data to include or exclude!
 7. **💿 Save all results at once!**
    - One DataAnalysis object holds: 
      - One DataFrame in `self.data`
@@ -272,7 +268,7 @@ pip install git+https://github.com/markur4/plotastic.git
 
 - 👍 Make and Edit Plots: *Implemented ✅*
   - *All (non-facetgrid) seaborn plots should work, not tested*
-- 👍 Printable Code Snippets: *Implemented ✅*
+<!-- - 👍 Printable Code Snippets: *Implemented ✅* -->
 - 📆 QQ-Plot
 - 📆 Kaplan-Meyer-Plot
 - 🤷 Interactive Plots (where you click stuff and adjust scale etc.)
@@ -341,8 +337,6 @@ pip install git+https://github.com/markur4/plotastic.git
     - *Function to convert numerical data into categorical data by
       binning?*
   - 📆 Pearson, Spearman, Kendall
-- Printable Snippets
-  - 📆 Snippets for all implemented tests
 
 [//]:<end of Statistics ------------------------------------------------------->
 </blockquote>
@@ -481,7 +475,6 @@ classDiagram
    class Assumptions{
       ...
       check_normality()
-      check_normality_SNIP()
       check_sphericity()
       check_homoscedasticity()
       ....()
@@ -489,7 +482,6 @@ classDiagram
    class Omnibus{
       ...
       omnibus_anova()
-      omnibus_anova_SNIP()
       omnibus_rmanova()
       omnibus_kruskal()
       ....()
@@ -502,7 +494,6 @@ classDiagram
    class Bivariate{
       ...
       test_pearson()
-      test_pearson_SNIP()
       test_spearman()
       test_kendall()
       ....()
@@ -548,7 +539,6 @@ classDiagram
    }
    class PlotEdits{
       edit_titles(titles:dict) -> None
-      edit_titles_SNIP()
       edit_xy_axis_labels(labels:dict) -> None
       edit_yticklabels_log_minor(ticks:dict) -> None
       ....()
@@ -557,7 +547,6 @@ classDiagram
       <<Library of pre-built Plots>>
 
       plot_box_strip()
-      plot_box_strip_SNIP()
       plot_bar_swarm()
       plot_qqplot()
       ....()

@@ -187,17 +187,6 @@ def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
     return zipped_with_column
 
 
-def collect_snips():
-    snips = []
-    for name in dir(plst.DataAnalysis):
-        if "SNIP" in name:
-            snips.append(name)
-    return snips
-
-
-if __name__ == "__main__":
-    snips = collect_snips()
-    print(snips)
 
 
 def cleanfiles(fname: str):

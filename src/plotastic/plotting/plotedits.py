@@ -77,7 +77,8 @@ class PlotEdits(PlotTool):
         col_func: Callable = None,
         connect="\n",
     ) -> "PlotEdits | DataAnalysis":
-        """Applies formatting functions (e.g. lambda x: x.upper()) to row and col titles)"""
+        """Applies formatting functions (e.g. lambda x: x.upper()) to
+        row and col titles)"""
         row_func = row_func or (lambda x: x)
         col_func = col_func or (lambda x: x)
 
@@ -91,28 +92,15 @@ class PlotEdits(PlotTool):
                 ax.set_title(title)
         return self
 
-    def edit_titles_with_func_SNIP(self) -> str:
-        s = ""
-        s += "row_format = lambda x: x #* e.g. try lambda x: x.upper() \n"
-        s += "col_format = lambda x: x \n"
-        s += "connect = '\\n' #* newline. Try ' | ' as a separator in the same line\n"
-        s += "for rowkey, axes in DA.axes_iter__row_axes: \n"
-        s += "\tfor ax in axes: \n"
-        s += "\t\ttitle = row_format(rowkey) \n"
-        s += "\t\tax.set_title(title) \n"
-        s += "for colkey, axes in DA.axes_iter__col_axes: \n"
-        s += "\tfor ax in axes: \n"
-        s += "\t\ttitle = ax.get_title() + connect + col_format(colkey) \n"
-        s += "\t\tax.set_title(title) \n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
 
     def edit_title_replace(self, titles: list) -> "PlotEdits | DataAnalysis":
-        """Edits axes titles. If list is longer than axes, the remaining titles are ignored
+        """Edits axes titles. If list is longer than axes, the remaining
+        titles are ignored
 
         Args:
-            titles (list): Titles to be set. The order of the titles should be the same as the order of the axes, which is from left to right for row after row (like reading).
+            titles (list): Titles to be set. The order of the titles
+            should be the same as the order of the axes, which is from
+            left to right for row after row (like reading).
 
         Returns:
             PlotTool: The object itselt
@@ -121,15 +109,6 @@ class PlotEdits(PlotTool):
         for ax, title in zip(self.axes_flat, titles):
             ax.set_title(title)
         return self
-
-    def edit_title_replace_SNIP(self):
-        s = ""
-        s += f"titles = {[ax.get_title() for ax in self.axes.flatten()]} \n"
-        s += "for ax, title in zip(DA.axes.flatten(), titles): \n"
-        s += "\tax.set_title(title) \n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
 
     #
     # * Labels of x- & y-axis  .................................#
@@ -186,22 +165,6 @@ class PlotEdits(PlotTool):
                 ax.set_xlabel(x_notlowest_row)
         return self
 
-    def edit_xy_axis_labels_SNIP(self) -> str:
-        s = ""
-        s += "### y-axis labels \n"
-        s += "for ax in DA.axes_iter_leftmost: \n"
-        s += f"\tax.set_ylabel('{self.dims.y}') \n"
-        s += "for ax in DA.axes_iter_notleftmost: \n"
-        s += "\tax.set_ylabel('') \n"
-        s += "### x-axis labels \n"
-        s += "for ax in DA.axes_iter_lowerrow: \n"
-        s += f"\tax.set_xlabel('{self.dims.x}') \n"
-        s += "for ax in DA.axes_iter_notlowerrow: \n"
-        s += "\tax.set_xlabel('') \n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
-
     #
     # * Scale of x- & y-axis  ..................................#
 
@@ -235,20 +198,6 @@ class PlotEdits(PlotTool):
             )
         return self
 
-    def edit_xy_scale_SNIP(self, doclink=True) -> str:
-        s = ""
-        if doclink:
-            s += f"# . . . {self._DOCS['set_xscale']} #\n"
-        s += "for ax in DA.axes.flatten(): \n"
-        s += "\tax.set_yscale('log',  # * 'symlog', 'linear', 'logit',  \n"
-        s += "\t\tbase=10,  \n"
-        s += "\t\tnonpositive='clip', # * 'mask': masked as invalid, 'clip': clipped to a very small positive number \n"
-        # !! s += "\t\tsubs=[2, 3, 4, 5], # * Where to place subticks between major ticks !! Removes both ticks and labels \n" \n"
-        s += "\t) \n"
-        s += "\t# ax.set_xscale('log') # ? Rescale x-axis\n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
 
     #
     # * Ticks and their Labels .................................#
@@ -265,17 +214,7 @@ class PlotEdits(PlotTool):
             )
         return self
 
-    def edit_y_ticklabel_percentage_SNIP(self, doclink=True) -> str:
-        s = ""
-        if doclink:
-            s += f"# . . . {self._DOCS['percent_formatter']} #\n"
-        s += "for ax in DA.axes.flatten(): \n"
-        s += "\tax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(xmax=1, decimals=0)) \n"
-        s += "\tax.yaxis.set_minor_formatter(mpl.ticker.PercentFormatter(xmax=1, decimals=1)) \n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
-
+  
     def edit_y_ticklabels_log_minor(self, subs: list = [2, 3, 5, 7]):
         """Displays minor ticklabels for log-scales. Only shows those ticks whose rounded mantissa (the digits from a float) is in subs
 
@@ -299,24 +238,11 @@ class PlotEdits(PlotTool):
                     round(ut.mantissa_from_float(label_f))
                 )  # * Calculate mantissa
                 if not mantissa in subs:
-                    label.set_visible(False)  # * Set those not in subs to invisible
+                    label.set_visible(
+                        False
+                    )  # * Set those not in subs to invisible
         return self
 
-    def edit_y_ticklabels_log_minor_SNIP(self) -> str:
-        s = ""
-        s += "for ax in DA.axes.flatten(): \n"
-        s += "\t#* Set minor ticks, we need ScalarFormatter, others can't get casted into float \n"
-        s += "\tax.yaxis.set_minor_formatter(mpl.ticker.ScalarFormatter(useOffset=0, useMathText=False)) \n"
-        s += "\t#* Iterate through labels \n"
-        s += "\tfor label in ax.yaxis.get_ticklabels(which='minor'): \n"
-        s += "\t\t# ? How else to cast float from mpl.text.Text ??? \n"
-        s += "\t\tlabel_f = float(str(label).split(', ')[1])  #* Cast to float \n"
-        s += "\t\tmantissa = int(round(ut.mantissa_from_float(label_f))) #* Calculate mantissa \n"
-        s += "\t\tif not mantissa in [2, 3, 5, 7]: \n"
-        s += "\t\t\tlabel.set_visible(False) # * Set those not in subs to invisible \n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
 
     @staticmethod
     def _exchange_ticklabels(ax, labels: list | str) -> None:
@@ -374,25 +300,6 @@ class PlotEdits(PlotTool):
 
         return self
 
-    def edit_x_ticklabels_SNIP(self) -> str:
-        s = ""
-        s += f"notlowerrow = {self.levels_dict_dim['x']} \n"
-        s += f"lowerrow = {self.levels_dict_dim['x']} \n"
-        s += "kws = dict( \n"
-        s += "\trotation=0, #* Rotation in degrees \n"
-        s += "\tha='center', #* Horizontal alignment [ 'center' | 'right' | 'left' ] \n"
-        s += "\tva='top', #* Vertical Alignment   [ 'center' | 'top' | 'bottom' | 'baseline' ] \n"
-        s += ") \n"
-        s += f"ticks = {[i for i in range(len(self.levels_dict_dim['x']))]} \n"
-        s += "for ax in DA.axes_iter_notlowerrow: \n"
-        s += "\tax.set_xticks(ticks=ticks, labels=notlowerrow, **kws) \n"
-        s += "\tax.tick_params(axis='x', pad=1) #* Sets distance to figure \n"
-        s += "for ax in DA.axes_iter_lowerrow: \n"
-        s += "\tax.set_xticks(ticks=ticks, labels=lowerrow, **kws) \n"
-        s += "\tax.tick_params(axis='x', pad=1) #* Sets distance to figure \n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
 
     def edit_x_ticklabels_rotate(
         self,
@@ -464,16 +371,6 @@ class PlotEdits(PlotTool):
             ax.xaxis.grid(True, which="major", ls="-", linewidth=0.3, c="grey")
         return self
 
-    def edit_grid_SNIP(self) -> str:
-        s = ""
-        s += "for ax in DA.axes.flatten(): \n"
-        s += "\tax.yaxis.grid(True, which='major', ls='-', linewidth=0.5, c='grey') \n"
-        s += "\tax.yaxis.grid(True, which='minor', ls='-', linewidth=0.2, c='grey') \n"
-        s += "\tax.xaxis.grid(True, which='major', ls='-', linewidth=0.3, c='grey') \n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
-
     #
     # * Legend .................................................#
 
@@ -515,8 +412,12 @@ class PlotEdits(PlotTool):
 
         KWS = dict(
             title=ut.capitalize(self.dims.hue) if title is None else title,
-            handles=self.legend_handles_and_labels[0] if handles is None else handles,
-            labels=self.legend_handles_and_labels[1] if labels is None else labels,
+            handles=self.legend_handles_and_labels[0]
+            if handles is None
+            else handles,
+            labels=self.legend_handles_and_labels[1]
+            if labels is None
+            else labels,
             loc=loc,
             bbox_to_anchor=bbox_to_anchor,
             borderaxespad=borderaxespad,
@@ -529,25 +430,6 @@ class PlotEdits(PlotTool):
         self.fig.legend(**KWS)
         return self
 
-    def edit_legend_SNIP(self, doclink=True) -> str:
-        s = ""
-        if doclink:
-            s += f"# . . . {self._DOCS['legend']} #\n"
-        s += "DA.fig.legend( \n"
-        s += f"\ttitle='{self.dims.hue}', #* Hue factor \n"
-        s += "\thandles=DA.legend_handles_and_labels[0], #* If single axes, remove square brackets\n"
-        s += "\tlabels=DA.legend_handles_and_labels[1], \n"
-        s += "\tloc='center right', #* Rough location \n"
-        s += "\tbbox_to_anchor=(1.15, 0.50), #* Exact location in width, height relative to complete figure \n"
-        s += "\tncols=1, #* If >1, labels are displayed next to each other \n"
-        s += "\tborderaxespad=3, #* Padding around axes, (pushing legend away) \n"
-        s += "\tmarkerscale=1.5, #* Marker size relative to plotted datapoint \n"
-        s += "\tframeon=False, #* Remove frame around legend \n"
-        s += "\t# fontsize=10, #* Fontsize of legend labels \n"
-        s += ")\n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
 
     #
     # * fontsizes ..............................................#
@@ -578,20 +460,6 @@ class PlotEdits(PlotTool):
             ax.title.set_fontsize(axis_titles)  # * Title
         return self
 
-    def edit_fontsizes_SNIP(self) -> str:
-        s = ""
-        s = "ticklabels, xylabels, axis_titles = 9, 10, 11 ### <--- CHANGE THIS [pt]\n"
-        s += "for ax in DA.axes.flatten(): \n"
-        s += "\tax.tick_params(axis='y', which='major', labelsize=ticklabels) # * Ticklabels \n"
-        s += "\tax.tick_params(axis='y', which='minor', labelsize=ticklabels-.5) \n"
-        s += "\tax.tick_params(axis='x', which='major', labelsize=ticklabels) \n"
-        s += "\tax.tick_params(axis='x', which='minor', labelsize=ticklabels-.5) \n"
-        s += "\tax.yaxis.get_label().set_fontsize(xylabels) # * xy-axis labels\n"
-        s += "\tax.xaxis.get_label().set_fontsize(xylabels) \n"
-        s += "\tax.title.set_fontsize(axis_titles) # * Title\n"
-        pyperclip.copy(s)
-        print("#! Code copied to clipboard, press Ctrl+V to paste:")
-        return s
 
     def edit_tight_layout(self) -> "PlotEdits | DataAnalysis":
         plt.tight_layout()
