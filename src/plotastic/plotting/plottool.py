@@ -12,7 +12,7 @@ from typing import (
 )
 
 
-import pyperclip
+# import pyperclip
 
 # import pickle
 from pathlib import Path

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Callable
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import pyperclip
+# import pyperclip
 
 # import markurutils as ut
 import plotastic.utils.utils as ut

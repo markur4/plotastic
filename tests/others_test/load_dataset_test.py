@@ -12,7 +12,7 @@ parameters = [name for name in FILES.keys()]
 
 
 @pytest.mark.parametrize("name", parameters)
-def test_load_dataset(name):
+def test_load_dataset(name: str):
     """simply checks, if it's executable, after correct packaging in setup.py and all."""
     df, dims = plst.load_dataset(name, verbose=True)
 

@@ -1,9 +1,13 @@
-include LICENSE
-include README.md
-include How_To_Use/*.ipynb
-include tests/pytest.ini
-include tests/*.py
-include tests/*_test/*.py
-include src/plotastic/py.typed
-include src/plotastic/dataanalysis/py.typed
-include src/plotastic/example_data/data/*xlsx
+exclude \
+    .vscode
+
+# include \
+#     LICENSE \
+#     README.md \
+#     How_To_Use/*.ipynb \
+#     tests/pytest.ini \
+#     tests/*.py \
+#     tests/*_test/*.py \
+#     src/plotastic/py.typed \
+#     src/plotastic/dataanalysis/py.typed \
+#     src/plotastic/example_data/data/*.xlsx

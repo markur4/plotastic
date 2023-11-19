@@ -1,0 +1,88 @@
+# * https://setuptools.readthedocs.io/en/latest/setuptools.html#metadata
+
+[build-system] # =======================================================
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+
+[project] # ============================================================
+name = "plotastic"
+version = "0.1.0" # ' <major>.<minor>.<patch>
+authors = [{ name = "Martin Kuric", email = "martin.kur4@gmail.com" }]
+description = "Streamlining statistical analysis by using plotting keywords in Python."
+readme = "README.md"
+license = { file = "LICENSE" } # ' or { text = "GPLv3" }
+keywords = [
+    "plotting",
+    "statistics",
+    "data analysis",
+    "data visualization",
+    "data science",
+    "data",
+    "science",
+    "visualization",
+]
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: IPython",
+    "Framework :: Jupyter",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.11"
+dependencies = [
+    ### Core
+    "numpy",
+    "pandas==1.5.3", # !! pingouin Not working with pandas 2.0 yet
+    ### Plotting
+    "matplotlib",
+    "seaborn",
+    ### Statistics
+    "scipy",
+    # "statannot",   # * Superseded by statannotations
+    "statannotations",
+    "pingouin",
+    ### Excel
+    "xlsxwriter", # * For saving results to excel
+    "openpyxl",   # * Optional for Pandas, but error when not installed
+    ### Misc
+    "joblib",    # * Caching
+    "colour",    # * For custom colour maps
+    "ipynbname", # * Used by utils
+    "icecream",  # * Better than print
+]
+
+### Dynamic fields
+# dynamic = ["version"]
+
+
+[project.optional-dependencies] # ======================================
+### Install with:
+# '   $ pip install sampleproject[dev]
+dev = [
+    "pytest",
+    "ipytest",
+    "pytest-cov", # * Displays how much of code was covered by testing
+    "nbconvert",  # * For converting notebooks to markdown
+]
+
+
+[project.urls] # =======================================================
+"Homepage" = "https://github.com/markur4/plotastic"
+"Documentation" = "https://github.com/markur4/plotastic"
+"Source Code" = "https://github.com/markur4/plotastic"
+"Bug Reports" = "https://github.com/markur4/plotastic/issues"
+# "Funding" = "https://donate.pypi.org"
+
+
+[tool.setuptools] # ====================================================
+### Package-data handled in MANIFEST.in
+# package-data = { "example_data" = ["*.xlsx"]}

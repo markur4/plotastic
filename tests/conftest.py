@@ -152,6 +152,19 @@ def get_DA_all(dataset: str) -> plst.DataAnalysis:
         plt.close()
         return DA
 
+#%% 
+#!%%timeit
+get_DA_statistics()
+
+#%% 
+#!%%timeit
+get_DA_plot()
+
+#%%
+#!%%timeit
+get_DA_all(dataset="qpcr")
+
+#%%
 
 ### Cache results of these functions to speed up testing
 get_DA_statistics: Callable = utc.MEMORY.cache(get_DA_statistics)

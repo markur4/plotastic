@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-import pyperclip
+# import pyperclip
 
 # import markurutils as ut
 import plotastic.utils.utils as ut
