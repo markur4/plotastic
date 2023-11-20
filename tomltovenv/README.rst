@@ -13,8 +13,3 @@
 **... all in one command.**
 
 
-
-.. Todo codecov
-.. todo MANIFEST.in exclude
-.. todo pypi
-.. todo submit paper + Cover Letter! (friendly honest, but professional)

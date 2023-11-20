@@ -157,7 +157,7 @@ assert os.path.exists(
 
 ### Tests without devtools
 assert not (
-    test_dir != "Don't test" and not INSTALL_DEVTOOLS
+    test_dir and not INSTALL_DEVTOOLS
 ), "Cannot run tests without installing devtools, use -d / --install-devtools"
 
 ### Tests without specifying directory
@@ -246,3 +246,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    print("\n\nDONE\n\n")
+    print("To activate the virtual environment, run:")
+    print(f"source {os.path.join(PROJECT_ROOT, VENV_NAME, 'bin', 'activate')}")
