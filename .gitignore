@@ -9,7 +9,7 @@ setup_env.ipynb
 joblib_cache
 
 # Folders in root that start with _
-_development
+DEVELOPMENT
 
 # !!! paper, publish it only when publishing
 paper.docx
