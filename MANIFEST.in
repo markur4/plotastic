@@ -1,8 +1,8 @@
 exclude \
-    .vscode
+    src/plotastic/.vscode/*.json \
 
-# include \
-#     LICENSE \
+include \
+    # LICENSE \
 #     README.md \
 #     How_To_Use/*.ipynb \
 #     tests/pytest.ini \

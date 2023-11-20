@@ -44,16 +44,16 @@ def install(
     # %%
     ### Check python venv
     python = ut.make_python_path(project_root, venv_name)
-    print("Python executable: ", python)
+    # print("Python executable: ", python)
 
     # %%
     ### Install Dependencies
     #' Not providing requirements.txt will pip re-solve the environment
     if do_req:
-        print("Installing from \tdependency list from pyproject.toml")
+        print("Installing from: \tdependency list from pyproject.toml")
         ut.install_deps(packages=deps, python=python)
     else:
-        print("Installing from \trequirements.txt")
+        print("Installing from: \trequirements.txt")
         ut.install_deps(requirements_txt=requirements_txt, python=python)
 
     # %%

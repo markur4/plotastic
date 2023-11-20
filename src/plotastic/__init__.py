@@ -3,8 +3,9 @@
 from importlib import metadata
 # ? https://packaging.python.org/guides/single-sourcing-package-version/
 # ? Do we need this?
-# __version__ = metadata.version(__name__)
-# __author__ = "markur4"
+__version__ = metadata.version(__name__)
+__author__ = "markur4"
+
 
 
 # == Flatten module access  ============================================

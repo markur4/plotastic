@@ -18,6 +18,7 @@
 # * └── src/                      # Source root
 # *    └── package/               # Package root: 'plotastic'
 # *        ├── __init__.py
+# *        ├── .vscode
 # *        ├── py.typed
 # *        ├── ...
 # *        ├── (module.py)
@@ -116,5 +117,16 @@ dev = [
 
 
 [tool.setuptools] # ====================================================
-### Package-data handled in MANIFEST.in
 # package-data = { "example_data" = ["*.xlsx"]}
+include-package-data = true # ? Defaults to true, should I keep this?
+
+[tool.setuptools.packages.find]
+where = ["src"] # ? it also worked without this..? 
+
+### Package-data handled in MANIFEST.in
+# [tool.setuptools.exclude-package-data]
+# plotastic = [".vscode"]
+
+# [tool.setuptools.package-data]
+# "*" = ["LICENSE"]
+# plotastic = ["example_data/*.xlsx"]
