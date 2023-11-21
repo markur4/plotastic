@@ -41,9 +41,10 @@ intelligently pass parameters to `pingouin` statistical functions. The
 library systematically groups the data according to the needs of
 statistical tests and plots, conducts visualisation, analyses and
 supports extensive customization options. In essence, `plotastic`
-streamlines the process, translating `seaborn` parameters into
-statistical terms, providing researchers and data scientists with a
-cohesive and user-friendly solution in Python.
+establishes a protocol for configuring statical analyses through
+plotting parameters. This approach streamlines the process, translating
+`seaborn` parameters into statistical terms, providing researchers and
+data scientists with a cohesive and user-friendly solution in python.
 
 # Statement of need
 
@@ -142,7 +143,7 @@ two-factor RM-ANOVAs. Within-factors are "timepoint" (x) and "event"
 []{label="tab:RMANOVA"} \label{tab:RMANOVA}
 
 |     'region'          | Source                   |       SS | ddof1 | ddof2 |        MS |       F |       p-unc     | stars     |
-|:----------------------|:-------------------------|---------:|------:|------:|----------:|--------:|----------------:|:-----------|------------:|
+|:----------------------|:-------------------------|---------:|------:|------:|----------:|--------:|----------------:|:-----------|
 | 'parietal' | timepoint         | 1.583  |       9 |     117 | 0.175  | 26.20 | 3.40e-24 | ****    |
 | 'parietal' | event             | 0.770 |       1 |      13 | 0.770  | 85.31 | 4.48e-07 | ****    |
 | 'parietal' | timepoint * event | 0.623 |       9 |     117 | 0.069 | 29.54 | 3.26e-26 | ****     |
