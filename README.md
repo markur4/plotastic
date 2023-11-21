@@ -762,7 +762,7 @@ DA.check_sphericity()
 
 
 
-
+<sub><sup>
 <div>
 <table border="1" class="dataframe" style="font-size: 12px;">
   <thead>
@@ -835,7 +835,7 @@ DA.check_sphericity()
   </tbody>
 </table>
 </div>
-
+</sup></sub>
 
 
 #### Repeated Measures ANOVA:
@@ -845,7 +845,7 @@ DA.check_sphericity()
 DA.omnibus_rm_anova()
 ```
 
-
+<sub><sup>
 <div>
 <table border="1" class="dataframe" style="font-size: 12px;">
   <thead>
@@ -970,7 +970,7 @@ DA.omnibus_rm_anova()
   </tbody>
 </table>
 </div>
-
+</sup></sub>
 
 
 #### Post-hoc t-tests:
