@@ -14,14 +14,14 @@ black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://gith
 
 
 [//]:<== Installation =========================================================>
-## Installation 📦
+# Installation 📦
 
 ``` bash
 pip install git+https://github.com/markur4/plotastic.git
 ```
 
 [//]:<== Information ==========================================================>
-## Information 📚 
+# Information 📚 
 *(click to unfold)*
 
 [//]:<------------------------------------------------------------------------->
@@ -649,14 +649,16 @@ classDiagram
 
 
 
-## How To Use 📖
+# Documentation 📔
 
 [//]:<=========================================================================>
 
-### Notebooks
+
 1. [Quick Example: FMRI Dataset](How_To_Use/quick_example_fmri.ipynb)
-2. [Switch Dimensions](How_To_Use/dimensions.ipynb)
+2. Dimensions
+   1. [Switch Dimensions](How_To_Use/dimensions.ipynb)
    
+## Quick Example 💨
 
 [//]:<=========================================================================>
 [//]:<.ipynb Notebooks taken from How_To_Use.ipynb>
