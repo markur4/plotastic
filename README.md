@@ -764,7 +764,7 @@ DA.check_sphericity()
 
 
 <div>
-<table border="1" class="dataframe">
+<table border="1" class="dataframe" style="font-size: 12px;">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -847,7 +847,7 @@ DA.omnibus_rm_anova()
 
 
 <div>
-<table border="1" class="dataframe">
+<table border="1" class="dataframe" style="font-size: 12px;">
   <thead>
     <tr style="text-align: right;">
       <th></th>
