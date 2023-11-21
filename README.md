@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="Logo/plotastic_logo.png" width="400px" height="300px" alt="logo">
+  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/Logo/plotastic_logo.png" width="400px" height="300px" alt="logo">
 </h1>
 
 <h1 align="center">
@@ -653,10 +653,9 @@ classDiagram
 
 [//]:<=========================================================================>
 
-
-1. [Quick Example: FMRI Dataset](How_To_Use/quick_example_fmri.ipynb)
-2. Dimensions
-   1. [Switch Dimensions](How_To_Use/dimensions.ipynb)
+## Docs 💡
+1. [Quick Example: FMRI Dataset](https://github.com/markur4/plotastic/blob/main/How_To_Use/quick_example_fmri.ipynb)
+2. [Switch Dimensions](https://github.com/markur4/plotastic/blob/main/How_To_Use/dimensions.ipynb)
    
 ## Quick Example 💨
 
@@ -664,10 +663,9 @@ classDiagram
 [//]:<.ipynb Notebooks taken from How_To_Use.ipynb>
 [//]:<Converted using:>
 [//]:<jupyter nbconvert --to markdown your_notebook.ipynb>
-<details open><summary> <i><b> Quick Example: FMRI Dataset </b></i> </summary>
-<blockquote>
 
-<hr>
+
+
 
 
 ### Import plotastic and example Data
@@ -738,7 +736,7 @@ DA.catplot(alpha=0.3) # Works with *kwargs of seaborn.catplot()
 
 
     
-![png](How_To_Use/quick_example_fmri_files/quick_example_fmri_7_0.png)
+![How_To_Use/quick_example_fmri_files/quick_example_fmri_7_0.png](https://raw.githubusercontent.com/markur4/plotastic/main/How_To_Use/quick_example_fmri_files/quick_example_fmri_7_0.png)
     
 
 
@@ -1022,11 +1020,9 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
     
-![png](How_To_Use/quick_example_fmri_files/example.png)
+![How_To_Use/quick_example_fmri_files/example.png](https://raw.githubusercontent.com/markur4/plotastic/main/How_To_Use/quick_example_fmri_files/example.png)
     
 
 
-[//]:<end of Citations ========================================================>
-</blockquote>
-</details>
+
 
