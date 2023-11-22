@@ -21,7 +21,7 @@ from IPython import get_ipython
 import numpy as np
 import pandas as pd
 
-import plotastic.utils.cache as utc
+import plotastic.caches as caches
 
 if TYPE_CHECKING:
     pass
@@ -148,17 +148,19 @@ def re_matchgroups(pattern, string: str, flags=None) -> list[dict]:
         for match in re.finditer(pattern=pattern, string=string, flags=flags)
     ]
 
-#%%
 
-def print_indented(s:str, indent:str='\t'):
-     """Print a string `s` indented with `n` tabs at each newline"""
-     for x in s.split('\n'):
-         print (indent + x)
+# %%
+
+
+def print_indented(s: str, indent: str = "\t"):
+    """Print a string `s` indented with `n` tabs at each newline"""
+    for x in s.split("\n"):
+        print(indent + x)
+
 
 def string_to_words(s: str) -> list[str]:
     """Splits a string into words, removing all newlines and tabs
     e.g. 'conc.: 1 mL'-> ['conc.:', '1', 'mL']"""
-    
 
     ### Remove any newline and tabs
     s = s.replace("\t", " ").replace("\n", " ")
@@ -170,17 +172,18 @@ def string_to_words(s: str) -> list[str]:
 
     ### Remove empty words and strip whitespace
     words = [w.strip() for w in words if len(w.strip()) > 0]
-    
+
     return words
 
 
 if __name__ == "__main__":
-    descr =                 """These are the 5 groups with the largest
+    descr = """These are the 5 groups with the largest
                     samplesizes:"""
     w = string_to_words(descr)
     print(w)
 
 # %%
+
 
 def wrap_text(
     string: str,
@@ -207,7 +210,7 @@ def wrap_text(
     """
     ### Remove all previous formatting, newlines, tabs, spaces etc.
     words = string_to_words(string)
-    
+
     ### Return if string is already short enough
     if len(" ".join(words)) <= width:
         TEXT = " ".join(words)
@@ -532,7 +535,7 @@ def make_cmap_saturation(
 
 
 # !! Cache it
-make_cmap_saturation = utc.MEMORY.cache(make_cmap_saturation)
+make_cmap_saturation = caches.MEMORY_UTILS.subcache(make_cmap_saturation)
 
 
 # %% I/O

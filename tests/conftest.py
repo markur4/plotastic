@@ -14,8 +14,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import plotastic as plst
-import plotastic.utils.utils as ut
-import plotastic.utils.cache as utc
+
+# import plotastic.utils.utils as ut
+# import plotastic.utils.cache as utc
+from plotastic.utils.subcache import SubCache
+
+# %% 
+### Cache it to speed up
+MEMORY_TESTCONFIGS = SubCache(
+    location="./tests",
+    verbose=True,
+    subcache_dir="testconfigs",
+    assert_parent="tests",
+)
+### Clear cache if needed
+# MEMORY_TESTCONFIGS.clear()
 
 
 # %% Datasets
@@ -26,7 +39,7 @@ import plotastic.utils.cache as utc
 # == Load example data =================================================================
 
 ### Cache function
-load_dataset: Callable = utc.MEMORY.cache(plst.load_dataset)
+load_dataset = MEMORY_TESTCONFIGS.subcache(plst.load_dataset)
 
 DF_tips, dims_tips = load_dataset("tips", verbose=False)
 DF_fmri, dims_fmri = load_dataset("fmri", verbose=False)
@@ -85,7 +98,9 @@ zipped_noempty_qpcr = [(DF_qpcr, dim) for dim in dims_noempty_qpcr]
 zipped_noempty_PAIRED = zipped_noempty_fmri + zipped_noempty_qpcr
 
 ### All should make 14 test
-zipped_noempty_ALL = zipped_noempty_tips + zipped_noempty_fmri + zipped_noempty_qpcr
+zipped_noempty_ALL = (
+    zipped_noempty_tips + zipped_noempty_fmri + zipped_noempty_qpcr
+)
 # len(zipped_noempty_ALL) # * -> 14 total tests
 
 
@@ -152,24 +167,28 @@ def get_DA_all(dataset: str) -> plst.DataAnalysis:
         plt.close()
         return DA
 
-#%% 
-#!%%timeit
-get_DA_statistics()
 
-#%% 
-#!%%timeit
-get_DA_plot()
+# %%
+if __name__ == "__main__":
+    pass
+    # %%
+    #!%%timeit
+    # get_DA_statistics()
 
-#%%
-#!%%timeit
-get_DA_all(dataset="qpcr")
+    # %%
+    #!%%timeit
+    # get_DA_plot()
 
-#%%
+    # %%
+    #!%%timeit
+    # get_DA_all(dataset="qpcr")
+
+# %%
 
 ### Cache results of these functions to speed up testing
-get_DA_statistics: Callable = utc.MEMORY.cache(get_DA_statistics)
-get_DA_plot: Callable = utc.MEMORY.cache(get_DA_plot)
-get_DA_all: Callable = utc.MEMORY.cache(get_DA_all)
+get_DA_statistics = MEMORY_TESTCONFIGS.cache(get_DA_statistics)
+get_DA_plot = MEMORY_TESTCONFIGS.cache(get_DA_plot)
+get_DA_all = MEMORY_TESTCONFIGS.cache(get_DA_all)
 
 ### Make DataAnalysis objects for testing
 DA_STATISTICS: plst.DataAnalysis = get_DA_statistics("qpcr")
@@ -198,8 +217,6 @@ def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
     for tup, e in zip(zipped, column):
         zipped_with_column.append(tup + (e,))
     return zipped_with_column
-
-
 
 
 def cleanfiles(fname: str):
