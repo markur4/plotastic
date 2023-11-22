@@ -18,6 +18,11 @@ MEMORY_UTILS = SubCache(
     subcache_dir="plotastic_utils",
     assert_parent=".cache",
 )
+# MEMORY_PLOTTING = SubCache(
+#     location=home,
+#     subcache_dir="plotastic_plotting",
+#     assert_parent=".cache",
+# )
 
 ### Cache like this:
 # def sleep(seconds):

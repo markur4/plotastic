@@ -26,7 +26,7 @@ from icecream import ic  # * For Testing these functions
 ### For testing purposes, define location of pyproject.toml
 if __name__ == "__main__":
     project_root = ".."
-    pyproject_toml = os.path.join(PROJECT_ROOT, "pyproject.toml")
+    pyproject_toml = os.path.join(project_root, "pyproject.toml")
 
 
 # %%
