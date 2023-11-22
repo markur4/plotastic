@@ -186,9 +186,9 @@ if __name__ == "__main__":
 # %%
 
 ### Cache results of these functions to speed up testing
-get_DA_statistics = MEMORY_TESTCONFIGS.cache(get_DA_statistics)
-get_DA_plot = MEMORY_TESTCONFIGS.cache(get_DA_plot)
-get_DA_all = MEMORY_TESTCONFIGS.cache(get_DA_all)
+get_DA_statistics = MEMORY_TESTCONFIGS.subcache(get_DA_statistics)
+get_DA_plot = MEMORY_TESTCONFIGS.subcache(get_DA_plot)
+get_DA_all = MEMORY_TESTCONFIGS.subcache(get_DA_all)
 
 ### Make DataAnalysis objects for testing
 DA_STATISTICS: plst.DataAnalysis = get_DA_statistics("qpcr")
