@@ -370,7 +370,8 @@ well!*
 
 
 
-
+<!-- REMOVE FOR PYPI -->
+<!-- REMOVESTART -->
 [//]:<=========================================================================>
 <details><summary>🌳 <b><i>Class Diagram </b></i> </summary>
 <blockquote>
@@ -628,7 +629,7 @@ classDiagram
 [//]:<end of 🌳 Class Diagram =================================================>
 </blockquote>
 </details>
-
+<!-- REMOVE FOR PYPI -->
 
 
 
@@ -681,6 +682,9 @@ DF, _dims = plst.load_dataset("fmri", verbose = False)
 DF.head()
 ```
 
+<!-- REMOVE FOR PYPI -->
+<!-- REMOVESTART -->
+
 |    | subject   |   timepoint | event   | region   |   signal |
 |---:|:----------|------------:|:--------|:---------|---------:|
 |  0 |  s7       |           9 | stim    | parietal |    0.059 |
@@ -688,6 +692,8 @@ DF.head()
 |  2 |  s0       |           0 | stim    | frontal  |   -0.021 |
 |  3 |  s1       |           0 | stim    | parietal |   -0.064 |
 |  4 |  s13      |           9 | stim    | parietal |    0.013 |
+
+<!-- REMOVE FOR PYPI -->
 
 #### Assign each column to a dimension (y, x, hue, col, row):
 
@@ -763,7 +769,8 @@ DA.check_sphericity()
 ```
 
 
-
+<!-- REMOVE FOR PYPI -->
+<!-- REMOVESTART -->
 <sub><sup>
 <div>
 <table border="1" class="dataframe" style="font-size: 12px;">
@@ -838,6 +845,7 @@ DA.check_sphericity()
 </table>
 </div>
 </sup></sub>
+<!-- REMOVE FOR PYPI -->
 
 
 #### Repeated Measures ANOVA:
@@ -847,6 +855,8 @@ DA.check_sphericity()
 DA.omnibus_rm_anova()
 ```
 
+<!-- REMOVE FOR PYPI -->
+<!-- REMOVESTART -->
 <sub><sup>
 <div>
 <table border="1" class="dataframe" style="font-size: 12px;">
@@ -973,6 +983,7 @@ DA.omnibus_rm_anova()
 </table>
 </div>
 </sup></sub>
+<!-- REMOVE FOR PYPI -->
 
 
 #### Post-hoc t-tests:

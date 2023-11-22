@@ -41,7 +41,7 @@ name = "plotastic"
 version = "0.1.0" # ' <major>.<minor>.<patch>.<build_number>
 authors = [{ name = "Martin Kuric", email = "martin.kur4@gmail.com" }]
 description = "Streamlining statistical analysis by using plotting keywords in Python."
-readme = "README.md"
+readme = "README_pypi.md"
 license = { file = "LICENSE" } # ' or { text = "GPLv3" }
 keywords = [
     "plotting",
@@ -106,7 +106,7 @@ dev = [
     "pytest-cov", # * Displays how much of code was covered by testing
     "nbconvert",  # * For converting notebooks to markdown
     "build",      # * For building the package into dist
-    "twine",     # * For uploading to PyPI
+    "twine",      # * For uploading to PyPI
 ]
 
 
