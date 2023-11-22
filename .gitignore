@@ -8,7 +8,8 @@ setup_env.ipynb
 .joblib_cache
 joblib_cache
 
-# Folders in root that start with _
+# Folder for storing not to publish things
+Dont_Publish
 DEVELOPMENT
 
 # !!! paper, publish it only when publishing

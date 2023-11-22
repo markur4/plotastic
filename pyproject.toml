@@ -38,7 +38,7 @@ build-backend = "setuptools.build_meta"
 
 [project] # ============================================================
 name = "plotastic"
-version = "0.1.0" # ' <major>.<minor>.<patch>
+version = "0.1.0" # ' <major>.<minor>.<patch>.<build_number>
 authors = [{ name = "Martin Kuric", email = "martin.kur4@gmail.com" }]
 description = "Streamlining statistical analysis by using plotting keywords in Python."
 readme = "README.md"
