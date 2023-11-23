@@ -11,6 +11,7 @@ authors:
     affiliation: 1 # (Multiple affiliations must be quoted)
     # equal-contrib: true # (Multiple authors must be indicated this way)    
     corresponding: true # (This is how to denote the corresponding author)
+    orcid: 0009-0009-7292-7714
   - name: Regina Ebert
     affiliation: 1
     orcid: 0000-0002-8192-869X
