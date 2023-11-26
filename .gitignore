@@ -1,6 +1,3 @@
-# devtools
-devtools/_experimental
-
 # Readme for Pypi
 README_pypi.md
 
@@ -15,6 +12,7 @@ setup_env.ipynb
 joblib_cache
 
 # Folder for storing not to publish things
+_experimental
 GITIGNORE
 GIT_IGNORE
 Dont_Publish
