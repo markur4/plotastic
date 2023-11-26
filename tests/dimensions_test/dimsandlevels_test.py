@@ -19,7 +19,7 @@ def test_levels_dendrogram(DF, dims):
     if __name__ != "__main__":
         plt.close()
     else:
-        plt.show()  # * show plot, otherwise too many figures
+        plt.show()  #' show plot, otherwise too many figures
 
 
 # %% test combocounts
@@ -36,7 +36,7 @@ def test_levels_combocounts(DF, dims):
     if __name__ != "__main__":
         plt.close()
     else:
-        plt.show()  # * show plot, otherwise too many figures
+        plt.show()  #' show plot, otherwise too many figures
 
 
 if __name__ == "__main__":

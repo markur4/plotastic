@@ -30,9 +30,6 @@ DA_COMPLETE = ct.DA_STATISTICS
 # %% Test prevent_overwrite
 
 
-
-    
-
 def test_prevent_overwrite():
     ### Define a name
     testfile_name = "_FILE_123"
@@ -42,8 +39,6 @@ def test_prevent_overwrite():
         "_FILE_12",
         "_FIL_12",
     ]
-
-        
 
     def mk_testfiles(testfile_name) -> str:
         ### Make a testfile excel
@@ -84,17 +79,23 @@ def test_prevent_overwrite():
     ### If a file EXISTS, it should return the same name with _0
     tested = mk_testfiles(testfile_name)
     new = DA.filer.prevent_overwrite(testfile_name, **kws)
-    assert new == testfile_name + "_0", f"new_name = {new}, testfile_name = {tested}"
+    assert (
+        new == testfile_name + "_0"
+    ), f"new_name = {new}, testfile_name = {tested}"
 
     ### If a file with _0 exists, it should return a new name with _1
-    tested = mk_testfiles(new)  # * "testfile_name_0"
+    tested = mk_testfiles(new)  #' "testfile_name_0"
     new = DA.filer.prevent_overwrite(testfile_name, **kws)
-    assert new == testfile_name + "_1", f"new_name = {new}, testfile_name = {tested}"
+    assert (
+        new == testfile_name + "_1"
+    ), f"new_name = {new}, testfile_name = {tested}"
 
     ### If a file with _1 exists, it should return a new name with _2
-    tested = mk_testfiles(new)  # * "testfile_name_1"
+    tested = mk_testfiles(new)  #' "testfile_name_1"
     new = DA.filer.prevent_overwrite(testfile_name, **kws)
-    assert new == testfile_name + "_2", f"new_name = {new}, testfile_name = {tested}"
+    assert (
+        new == testfile_name + "_2"
+    ), f"new_name = {new}, testfile_name = {tested}"
 
     # == Cleanup
     ct.cleanfiles(testfile_name)

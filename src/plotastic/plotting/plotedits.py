@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Callable
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+
 # import pyperclip
 
 # import markurutils as ut
@@ -31,11 +32,11 @@ class PlotEdits(PlotTool):
     # == EDIT .........................................................................
 
     #
-    # * Shapes & Sizes ........................................#
+    #' Shapes & Sizes ........................................#
     # TODO: Until now, stick with the arguments supplied to self.subplots
 
     #
-    # * Titles of axes .........................................#
+    #' Titles of axes .........................................#
 
     @staticmethod
     def _standard_axtitle(
@@ -56,7 +57,7 @@ class PlotEdits(PlotTool):
                 if isinstance(k, str) and capitalize:
                     keys.append(ut.capitalize(k))
                 else:
-                    keys.append(str(k))  # * Can't capitalize int
+                    keys.append(str(k))  #' Can't capitalize int
             return connect.join(keys)
 
     def edit_titles(
@@ -92,7 +93,6 @@ class PlotEdits(PlotTool):
                 ax.set_title(title)
         return self
 
-
     def edit_title_replace(self, titles: list) -> "PlotEdits | DataAnalysis":
         """Edits axes titles. If list is longer than axes, the remaining
         titles are ignored
@@ -111,7 +111,7 @@ class PlotEdits(PlotTool):
         return self
 
     #
-    # * Labels of x- & y-axis  .................................#
+    #' Labels of x- & y-axis  .................................#
 
     def edit_xy_axis_labels(
         self,
@@ -166,17 +166,17 @@ class PlotEdits(PlotTool):
         return self
 
     #
-    # * Scale of x- & y-axis  ..................................#
+    #' Scale of x- & y-axis  ..................................#
 
     def edit_y_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
     ) -> "PlotEdits | DataAnalysis":
         for ax in self.axes_flat:
             ax.set_yscale(
-                value="log",  # * "symlog", "linear", "logit", ...
-                base=base,  # * Base of the logarithm
-                nonpositive=nonpositive,  # * "mask": masked as invalid, "clip": clipped to a very small positive number
-                subs=subs,  # * Where to place subticks between major ticks ! not working
+                value="log",  #' "symlog", "linear", "logit", ...
+                base=base,  #' Base of the logarithm
+                nonpositive=nonpositive,  #' "mask": masked as invalid, "clip": clipped to a very small positive number
+                subs=subs,  #' Where to place subticks between major ticks ! not working
             )
 
             # ax.yaxis.sety_ticks()
@@ -191,16 +191,15 @@ class PlotEdits(PlotTool):
     ) -> "PlotEdits | DataAnalysis":
         for ax in self.axes_flat:
             ax.set_xscale(
-                value="log",  # * "symlog", "linear", "logit", ...
-                base=base,  # * Base of the logarithm
-                nonpositive=nonpositive,  # * "mask": masked as invalid, "clip": clipped to a very small positive number
-                subs=subs,  # * Where to place subticks between major ticks ! not working
+                value="log",  #' "symlog", "linear", "logit", ...
+                base=base,  #' Base of the logarithm
+                nonpositive=nonpositive,  #' "mask": masked as invalid, "clip": clipped to a very small positive number
+                subs=subs,  #' Where to place subticks between major ticks ! not working
             )
         return self
 
-
     #
-    # * Ticks and their Labels .................................#
+    #' Ticks and their Labels .................................#
 
     def edit_y_ticklabel_percentage(
         self, decimals_major: int = 0, decimals_minor: int = 0
@@ -214,7 +213,6 @@ class PlotEdits(PlotTool):
             )
         return self
 
-  
     def edit_y_ticklabels_log_minor(self, subs: list = [2, 3, 5, 7]):
         """Displays minor ticklabels for log-scales. Only shows those ticks whose rounded mantissa (the digits from a float) is in subs
 
@@ -225,24 +223,23 @@ class PlotEdits(PlotTool):
             _type_: _description_
         """
         for ax in self.axes_flat:
-            # * Set minor ticks, we need ScalarFormatter, others can't get casted into float
+            #' Set minor ticks, we need ScalarFormatter, others can't get casted into float
             ax.yaxis.set_minor_formatter(
                 mpl.ticker.ScalarFormatter(useOffset=0, useMathText=False)
             )
 
-            # * Iterate through labels
+            #' Iterate through labels
             for label in ax.yaxis.get_ticklabels(which="minor"):
                 # ? How else to cast float from mpl.text.Text ???
-                label_f = float(str(label).split(", ")[1])  # * Cast to float
+                label_f = float(str(label).split(", ")[1])  #' Cast to float
                 mantissa = int(
                     round(ut.mantissa_from_float(label_f))
-                )  # * Calculate mantissa
+                )  #' Calculate mantissa
                 if not mantissa in subs:
                     label.set_visible(
                         False
-                    )  # * Set those not in subs to invisible
+                    )  #' Set those not in subs to invisible
         return self
-
 
     @staticmethod
     def _exchange_ticklabels(ax, labels: list | str) -> None:
@@ -300,7 +297,6 @@ class PlotEdits(PlotTool):
 
         return self
 
-
     def edit_x_ticklabels_rotate(
         self,
         rotation: int = 0,
@@ -355,14 +351,14 @@ class PlotEdits(PlotTool):
 
         # == Rotate
         for ax in self.axes.flatten():
-            obj = ax.get_xticklabels()  # * Retrieve ticks
+            obj = ax.get_xticklabels()  #' Retrieve ticks
             plt.setp(obj, **ticklabel_KWS)
             ax.tick_params(axis="x", **params_KWS)
 
         return self
 
     #
-    # * Grid ...................................................#
+    #' Grid ...................................................#
 
     def edit_grid(self) -> "PlotEdits | DataAnalysis":
         for ax in self.axes_flat:
@@ -372,13 +368,13 @@ class PlotEdits(PlotTool):
         return self
 
     #
-    # * Legend .................................................#
+    #' Legend .................................................#
 
     @property
     def legend_handles_and_labels(self):
         if (
             self.factors_rowcol
-        ):  # * If we have row and col factors, we need to get the legend from the first axes
+        ):  #' If we have row and col factors, we need to get the legend from the first axes
             handles, labels = self.axes.flatten()[0].get_legend_handles_labels()
         else:
             handles, labels = self.axes.get_legend_handles_labels()
@@ -430,9 +426,8 @@ class PlotEdits(PlotTool):
         self.fig.legend(**KWS)
         return self
 
-
     #
-    # * fontsizes ..............................................#
+    #' fontsizes ..............................................#
 
     def edit_fontsizes(
         self, ticklabels=10, xylabels=10, axis_titles=10
@@ -451,15 +446,14 @@ class PlotEdits(PlotTool):
         for ax in self.axes_flat:
             ax.tick_params(
                 axis="y", which="major", labelsize=ticklabels
-            )  # * Ticklabels
+            )  #' Ticklabels
             ax.tick_params(axis="y", which="minor", labelsize=ticklabels - 1)
             ax.tick_params(axis="x", which="major", labelsize=ticklabels)
             ax.tick_params(axis="x", which="minor", labelsize=ticklabels - 1)
-            ax.yaxis.get_label().set_fontsize(xylabels)  # * xy-axis labels
+            ax.yaxis.get_label().set_fontsize(xylabels)  #' xy-axis labels
             ax.xaxis.get_label().set_fontsize(xylabels)
-            ax.title.set_fontsize(axis_titles)  # * Title
+            ax.title.set_fontsize(axis_titles)  #' Title
         return self
-
 
     def edit_tight_layout(self) -> "PlotEdits | DataAnalysis":
         plt.tight_layout()

@@ -8,9 +8,9 @@ from plotastic.stat.statresults import StatResults
 class StatTest(DataFrameTool):
     # == Class Attribute ===============================================================
 
-    # * Alpha
+    #' Alpha
     ALPHA = 0.05
-    # * Alpha Tolerance: Will still print out result if it nearly crossed alpha level.
+    #' Alpha Tolerance: Will still print out result if it nearly crossed alpha level.
     ALPHA_TOLERANCE = 0.075
 
     @classmethod

@@ -60,9 +60,9 @@ class DataFrameTool(DimsAndLevels):
         super().__init__(**dims_data_kws)
 
         ### Attributes
-        # * to make columns categorical (and exclude levels, if unspecified)
+        #' to make columns categorical (and exclude levels, if unspecified)
         self.user_levels = levels
-        # * for paired analysis
+        #' for paired analysis
         self.subject = subject
         if not subject is None:
             assert (
@@ -74,8 +74,8 @@ class DataFrameTool(DimsAndLevels):
 
         ### Transformations
         self.transformed = False
-        self.transform_history = []  # * HISTORY OF TRANSFORMATIONS
-        # * Store y so we can reset it after transformations
+        self.transform_history = []  #' HISTORY OF TRANSFORMATIONS
+        #' Store y so we can reset it after transformations
         self._y_untransformed = self.dims.y
 
         ### Check for empties or missing group combinations
@@ -119,7 +119,7 @@ class DataFrameTool(DimsAndLevels):
                     catdict["NOT_FOUND"].append(input_lvl)
 
         ### Remove empties
-        # * This ensures that we can categorize only those columns whose levels were specified in the input
+        #' This ensures that we can categorize only those columns whose levels were specified in the input
         # !! This also makes sure that those factors, that were completely mismatched, don't appear in the result
         catdict = {k: v for k, v in catdict.items() if len(v) > 0}
         return catdict
@@ -144,13 +144,13 @@ class DataFrameTool(DimsAndLevels):
         """
 
         ### Compare with Dict:
-        # * Keys:   Factors that have levels that match with INPUT
-        # * Values: Levels from DATA
-        # * -> {f1: [input_lvl1, input_lvl2], f2: [input_lvl1, input_lvl2], ...}
-        # * This ensures that we can categorize only those columns whose levels were specified in the input
+        #' Keys:   Factors that have levels that match with INPUT
+        #' Values: Levels from DATA
+        #' -> {f1: [input_lvl1, input_lvl2], f2: [input_lvl1, input_lvl2], ...}
+        #' This ensures that we can categorize only those columns whose levels were specified in the input
         catdict = self._make_catdict_from_input(
             input_lvls, skip_notfound=False
-        )  # * dsfaadsf
+        )  #' dsfaadsf
         LVLS = {}
         for factor_from_input, lvls_from_input in catdict.items():
             if factor_from_input == "NOT_FOUND":
@@ -165,7 +165,7 @@ class DataFrameTool(DimsAndLevels):
         ### Scan for Matches and Mismatches
         matchdict = {}
         for factor, LVLs_fromCOL in LVLS.items():
-            matchdict[factor] = (False, LVLs_fromCOL)  # * Initialize
+            matchdict[factor] = (False, LVLs_fromCOL)  #' Initialize
             if factor == "NOT_FOUND":
                 continue  # !! LVLs_fromCOL won't contain levels from data but actually from input
             for lvls in input_lvls:
@@ -175,7 +175,7 @@ class DataFrameTool(DimsAndLevels):
                     matchdict[factor] = (
                         True,
                         LVLs_fromCOL,
-                    )  # * Update if match
+                    )  #' Update if match
                     break
         if verbose:
             self._print_levelmatches(input_lvls, matchdict)
@@ -190,14 +190,14 @@ class DataFrameTool(DimsAndLevels):
         Raises:
             AssertionError: _description_
         """
-        # * List all unmatched levels
+        #' List all unmatched levels
         problems, warnings = [], []
         if "NOT_FOUND" in matchdict.keys():
             # !! This is treated as a warning, since it might contain levels that fully exclude a factor
             mismatches = matchdict["NOT_FOUND"][1]
             warnings.append(mismatches)
             print(f"🟡 Levels mismatch:  {mismatches}")
-        # * Check for mismatches per factor
+        #' Check for mismatches per factor
         problems = []
         for factor, (match, LVLs_fromCOL) in matchdict.items():
             if not match and factor != "NOT_FOUND":
@@ -205,7 +205,7 @@ class DataFrameTool(DimsAndLevels):
                 print(
                     f"🟠 Levels incomplete: For '{factor}', your input does not cover all levels"
                 )
-        # * Give feedback how much was matched
+        #' Give feedback how much was matched
         if self._count_matching_levels(input_lvls) == 0:
             print("🛑🛑🛑 Levels bad: No input matched with data")
         elif not problems and not warnings:
@@ -217,7 +217,7 @@ class DataFrameTool(DimsAndLevels):
         elif self._count_matching_levels(input_lvls) > 0:
             print("🆗 Levels ok: Some input was found")
 
-        # * Search through input levels and data levels
+        #' Search through input levels and data levels
         if problems:
             self._print_levelmatches_detailed(input_lvls)
 
@@ -231,7 +231,7 @@ class DataFrameTool(DimsAndLevels):
 
         # !! ALWAYS VERBOSE
 
-        RJ = 17  # * Right Justification to have everything aligned nicely
+        RJ = 17  #' Right Justification to have everything aligned nicely
 
         ### Make a catdict
         catdict = self._make_catdict_from_input(input_lvls)
@@ -245,24 +245,24 @@ class DataFrameTool(DimsAndLevels):
             for lvl_df in LVLs_from_COL:
                 if (
                     not factor in catdict.keys()
-                ):  # * When all levels from a factor are missing
+                ):  #' When all levels from a factor are missing
                     message = f"<-- Undefined, like all levels from '{factor}'. This will be ignored"
-                elif lvl_df in input_lvl_flat:  # * MATCH
+                elif lvl_df in input_lvl_flat:  #' MATCH
                     message = "yes"
-                else:  # * when factor was partially defined
+                else:  #' when factor was partially defined
                     message = f"<-- 🚨 UNDEFINED. Other levels from '{factor}' were defined, so this one will turn to NaNs!"
-                # * Add '' to recognize hiding leading or trailing spaces
+                #' Add '' to recognize hiding leading or trailing spaces
                 lvl_df = f"'{lvl_df}'" if isinstance(lvl_df, str) else lvl_df
                 print("     " + f"{lvl_df}: ".rjust(RJ), message)
 
         ### In INPUT (but not in DATA)
         print("\n   >> Searching levels that are in INPUT but not in DATA...")
         print("     ", f"USER INPUT: ".rjust(RJ), "FOUND IN DATA?")
-        problems = []  # * Gather problems for error message
+        problems = []  #' Gather problems for error message
         for lvl in ut.flatten(input_lvls):
-            # * Returns None if nothing found
+            #' Returns None if nothing found
             found: str | None = self.get_factor_from_level(lvl)
-            # * Add '' to recognize hiding leading or trailing spaces
+            #' Add '' to recognize hiding leading or trailing spaces
             lvl = f"'{lvl}'" if isinstance(lvl, str) else lvl
             if not found is None:
                 message = f"Found in '{found}'"
@@ -387,13 +387,13 @@ class DataFrameTool(DimsAndLevels):
 
     def data_get_samplesizes(self) -> pd.Series:
         """Returns a DataFrame with samplesizes per group/facet"""
-        # * Get samplesize per group
+        #' Get samplesize per group
         samplesize_df = (
             self.data.groupby(self.factors_all)
-            .count()[  # * Counts values within each group, will ignore NaNs -> pd.Series
+            .count()[  #' Counts values within each group, will ignore NaNs -> pd.Series
                 self.dims.y
-            ]  # * Use y to count n. -> Series with x as index and n as values
-            .sort_values(ascending=False)  # * Sort by samplesize
+            ]  #' Use y to count n. -> Series with x as index and n as values
+            .sort_values(ascending=False)  #' Sort by samplesize
         )
         return samplesize_df
 
@@ -409,10 +409,10 @@ class DataFrameTool(DimsAndLevels):
         """
         # fmt: off
         count = (
-            df # * Full or partial facetted DataFrame 
-            .groupby(self.dims.x)  # * Iterate through groups
-            .count() # * Counts values within each group, will ignore NaNs -> pd.Series
-            [self.dims.y]  # * Use y to count n. -> Series with x as index and n as values
+            df #' Full or partial facetted DataFrame 
+            .groupby(self.dims.x)  #' Iterate through groups
+            .count() #' ounts values within each group, will ignore NaNs -> pd.Series
+            [self.dims.y]  #' Use y to count n. -> Series with x as index and n as values
             ) 
         # fmt: on
         return count
@@ -421,10 +421,10 @@ class DataFrameTool(DimsAndLevels):
         """groups through all factors and counts the number of groups"""
         count = (
             self.data.groupby(self.factors_all)
-            .count()  # * Counts values within each group, will ignore NaNs -> pd.Series
+            .count()  #' Counts values within each group, will ignore NaNs -> pd.Series
             .shape[
                 0
-            ]  # * gives the length of the series, which is the number of groups
+            ]  #' gives the length of the series, which is the number of groups
         )
         return count
 
@@ -440,13 +440,13 @@ class DataFrameTool(DimsAndLevels):
         """
         count = len(df[self.dims.x].unique())
 
-        # * This is the same, should also count uniques.
+        #' This is the same, should also count uniques.
         # # fmt: off
         # count = (
-        #     df # * Full or partial facetted DataFrame
-        #     .groupby(self.dims.x)  # * Iterate through groups
-        #     .count() # * Count values within each group, will ignore NaNs -> pd.Series
-        #     .shape[0]  # * gives the length of the series, which is the number of groups
+        #     df #' Full or partial facetted DataFrame
+        #     .groupby(self.dims.x)  #' Iterate through groups
+        #     .count() #' Count values within each group, will ignore NaNs -> pd.Series
+        #     .shape[0]  #' gives the length of the series, which is the number of groups
         #     )
         # # fmt: on
 
@@ -467,14 +467,14 @@ class DataFrameTool(DimsAndLevels):
     def data_get_empty_groupkeys(self) -> list[str | tuple[str]]:
         ### Make complete df with all possible groups/facets and with factors as index
         df = self.data_ensure_allgroups().set_index(self.factors_all)
-        # * Rows with only NaNs (these are completely missing in self.data)
+        #' Rows with only NaNs (these are completely missing in self.data)
         allNaN_df = df[df.isna().all(axis=1)]
         empty_group_keys = allNaN_df.index.to_list()
 
         ### Is only X not fully represented in each group?
-        # * Every x has data from each other factor, but not every other Factor has data from each x
-        # * e.g. with the qPCR data
-        # * Make a Tree ..?
+        #' Every x has data from each other factor, but not every other Factor has data from each x
+        #' e.g. with the qPCR data
+        #' Make a Tree ..?
 
         return empty_group_keys
 
@@ -531,7 +531,7 @@ class DataFrameTool(DimsAndLevels):
                 """
             )
             M.append(self._wrap_text("These are the first 5 rows with NaNs:"))
-            df = hasNaN_df.head(5)  # * Show df
+            df = hasNaN_df.head(5)  #' how df
         else:
             M.append("✅ GROUPS COMPLETE: No groups with NaNs.")
 
@@ -544,7 +544,7 @@ class DataFrameTool(DimsAndLevels):
         self,
     ) -> [list[str] | Tuple[list[str], pd.DataFrame]]:
         ### Detect equal samplesize among groups:
-        # * This is not a problem, but it's good to know
+        #' This is not a problem, but it's good to know
         samplesize_df = self.data_get_samplesizes()
         groupcount = self.data_count_groups()
         ss_avg = round(samplesize_df.mean(), 1)
@@ -583,10 +583,10 @@ class DataFrameTool(DimsAndLevels):
         :rtype: pd.DataFrame
         """
         ### Count how often each level appears with another leve
-        # df = self.levels_combocount(normalize=False)  # * It's called by _levels_always_together()
+        # df = self.levels_combocount(normalize=False)  #' It's called by _levels_always_together()
 
         ### Get every levelkey that has the max value from combocount
-        # * AT = always together
+        #' AT = always together
         AT_levels, AT_factors = self._levels_always_together()
 
         M = []
@@ -632,7 +632,7 @@ class DataFrameTool(DimsAndLevels):
                     subjects contain less:"""
             )
 
-            # * Get subjects with missing data
+            #' Get subjects with missing data
             df = counts_persubj[counts_persubj != counts_persubj.max()]
         else:
             M.append("✅ Subjects complete: No subjects with missing data")
@@ -702,7 +702,7 @@ class DataFrameTool(DimsAndLevels):
         ut.print_separator("=", length=width)
         print("#! Checking data integrity...")
         self._print_messages(MESSAGES, width=width)
-        ut.print_separator("=", length=width)  # * fresh new line
+        ut.print_separator("=", length=width)  #' fresh new line
 
     # ==
     # == FIND WELL CONNECTED FACTORS/LEVELS ====================================
@@ -723,7 +723,7 @@ class DataFrameTool(DimsAndLevels):
         ### Count how often each level appears with another level
         df = self.levels_combocounts(
             normalize=False, heatmap=False
-        )  # * Get combocount
+        )  #' Get combocount
 
         ### Max value of combocountdf should be the number of levelkeys found in Data
         len_levelcombos = df.max().max()
@@ -735,28 +735,28 @@ class DataFrameTool(DimsAndLevels):
         # ), "Max value of combocount_df should be the number of levelkeys"
 
         ### Get every levelkey that has the max value from combocount
-        # * These levels are guaranteed to be found together at leat once!
+        #' These levels are guaranteed to be found together at leat once!
         # fmt: off
-        AT_df: pd.DataFrame = (         # * at = always together
-            df[df == len_levelcombos]   # * get max values
-            .dropna(axis=0, how="all")  # * drop rows that are all NaN
-            .dropna(axis=1, how="all")  # * drop columns that are all NaN
+        AT_df: pd.DataFrame = (         #' at = always together
+            df[df == len_levelcombos]   #' t max values
+            .dropna(axis=0, how="all")  #' drop rows that are all NaN
+            .dropna(axis=1, how="all")  #' drop columns that are all NaN
         )
 
         ### Retrieve the fully connected levels
         AT_levels = (
             AT_df
-            .where(AT_df != np.nan) # * remove NaNs
-            .stack()                # * convert to Series with MultiIndex from columns
+            .where(AT_df != np.nan) #' remove NaNs
+            .stack()                #' convert to Series with MultiIndex from columns
             .index.to_list()
         )
         # fmt: on
 
         ### Check if the always together levels fully cover every level of a factor
-        # * If so, that factor is a good candidate to facet the data by
+        #' If so, that factor is a good candidate to facet the data by
         leveldict = (
             self.levels_dict_factor
-        )  # * factor as key, levellist as value
+        )  #' factor as key, levellist as value
 
         AT_flat = set([level for levels in AT_levels for level in levels])
         AT_factors = []
@@ -797,12 +797,12 @@ class DataFrameTool(DimsAndLevels):
 
         factors = self.factors_all if factors is None else factors
 
-        # * Set columns with factors to index, yielding an index with incomplete keys
+        #' et columns with factors to index, yielding an index with incomplete keys
         reindex_DF = self.data.set_index(self.factors_all)
         index_old = reindex_DF.index
 
-        # * Make index with complete set of keys
-        # * If only one factor, we need to use pd.Index instead of pd.MultiIndex
+        #' Make index with complete set of keys
+        #' If only one factor, we need to use pd.Index instead of pd.MultiIndex
         if self.factors_is_just_x:
             index_new = pd.Index(
                 data=self.levels_dict_dim["x"], name=self.dims.x
@@ -814,13 +814,13 @@ class DataFrameTool(DimsAndLevels):
         # index_new = pd.MultiIndex(levels=self.levelkeys_rowcol, names=self.factors_all)
 
         ### Construct empty DF but with complete 'index' (index made out of Factors)
-        # * We need to fill it with float("NaN"), since .isnull doesn't recognize np.nan
+        #' We need to fill it with float("NaN"), since .isnull doesn't recognize np.nan
         empty_DF = pd.DataFrame(
             index=pd.Index.difference(index_new, index_old),
             columns=self.columns_not_factor,
         ).fillna(float("NaN"))
 
-        # * Fill empty DF with data
+        #' Fill empty DF with data
         newDF = pd.concat([empty_DF, reindex_DF]).sort_index().reset_index()
 
         # ut.pp(empty_DF)
@@ -829,15 +829,15 @@ class DataFrameTool(DimsAndLevels):
         # ut.pp(newDF)
         return newDF
 
-    @property  # * >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
+    @property  #' >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
     def data_iter__key_facet(self) -> Generator:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ..."""
         if self.factors_is_unfacetted:
-            # * If no row or col, return all axes and data
+            #' If no row or col, return all axes and data
             yield None, self.data_ensure_allgroups()  # !! Error for  df.groupby().get_group(None)
 
         else:
-            # * Only fill in empty groups for row and col,
+            #' Only fill in empty groups for row and col,
             grouped = self.data_ensure_allgroups().groupby(
                 ut.ensure_list(self.factors_rowcol)
             )
@@ -845,12 +845,12 @@ class DataFrameTool(DimsAndLevels):
                 df = grouped.get_group(key)
                 yield key, df
 
-    @property  # * >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
+    @property  #' >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
     def data_iter__key_facet_skip_empty(self) -> Generator:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ...
         Does not contain rows from empty groups"""
         if self.factors_rowcol is None:
-            # * If no row or col, return all axes and data
+            #' If no row or col, return all axes and data
             yield None, self.data  # !! Error for  df.groupby().get_group(None)
 
         else:
@@ -859,18 +859,18 @@ class DataFrameTool(DimsAndLevels):
                 df = grouped.get_group(key)
                 yield key, df
 
-    @property  # * {key: df1, key2: df2, ...}
+    @property  #' {key: df1, key2: df2, ...}
     def data_dict(self) -> dict:
         return dict(self.data_iter__key_facet)
 
-    @property  # * {key: df1, key2: df2, ...}
+    @property  #' {key: df1, key2: df2, ...}
     def data_dict_skip_empty(self) -> dict:
         return dict(self.data_iter__key_facet_skip_empty)
 
     #
     ### Iterate through LISTS of groups ================================================
 
-    @property  # * >>> (R_l1, C_l1, Hue_l1), df >>> (R_l1, C_l2, Hue_l1), df2 >>> ...
+    @property  #' >>> (R_l1, C_l1, Hue_l1), df >>> (R_l1, C_l2, Hue_l1), df2 >>> ...
     def data_iter__key_groups(self):
         """Returns: >> (R_l1, C_l1,  Hue_l1), df >> (R_l1, C_l2, Hue_l1), df2 >> ...
         Yields Dataframes that lists groups
@@ -883,7 +883,7 @@ class DataFrameTool(DimsAndLevels):
         else:
             yield None, self.data_ensure_allgroups()
 
-    @property  # * >>> (R_l1, C_l1, Hue_l1), df >>> (R_l1, C_l2, Hue_l1), df2 >>> ...
+    @property  #' >>> (R_l1, C_l1, Hue_l1), df >>> (R_l1, C_l2, Hue_l1), df2 >>> ...
     def data_iter__key_groups_skip_empty(self):
         """Returns: >> (R_l1, C_l1,  Hue_l1), df >> (R_l1, C_l2, Hue_l1), df2 >> ...
         Yields Dataframes that lists groups
@@ -897,13 +897,13 @@ class DataFrameTool(DimsAndLevels):
     #
     ### Iterate through GROUPS =========================================================
 
-    @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
+    @property  #' >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
     def data_iter__allkeys_group(self) -> Generator:
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ..."""
         for key, df in self.data_ensure_allgroups().groupby(self.factors_all):
             yield key, df
 
-    @property  # * >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
+    @property  #' >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
     def data_iter__allkeys_group_skip_empty(self) -> Generator:
         """Returns: >> (R_l1, C_l1, X_l1, Hue_l1), df >> (R_l1, C_l2, X_l1, Hue_l1), df2 >> ...
         SKIPS EMPTY GROUPS!"""

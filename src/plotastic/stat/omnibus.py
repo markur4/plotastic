@@ -84,14 +84,16 @@ class Omnibus(Assumptions):
             between=self.factors_xhue,
             detailed=True,
         )
-        kwargs.update(user_kwargs)  # * Add user kwargs
+        kwargs.update(user_kwargs)  #' Add user kwargs
 
         ### Perform ANOVA
-        # * Skip empty groups
+        #' Skip empty groups
         aov_dict = {}
         for key, df in self.data_iter__key_facet_skip_empty:
-            # * key = (row, col)
-            aov = pg.anova(df, **kwargs)  # ? Doesn't seem to print annoying warnings
+            #' key = (row, col)
+            aov = pg.anova(
+                df, **kwargs
+            )  # ? Doesn't seem to print annoying warnings
             aov_dict[key] = aov
         aov_DF = pd.concat(
             aov_dict, keys=aov_dict.keys(), names=self.factors_rowcol_list
@@ -153,13 +155,13 @@ class Omnibus(Assumptions):
             within=self.factors_xhue,
             detailed=True,
         )
-        kwargs.update(user_kwargs)  # * Add user kwargs
+        kwargs.update(user_kwargs)  #' Add user kwargs
 
         ### Perform RMANOVA
-        # * Skip empty groups
+        #' Skip empty groups
         rmaov_dict = {}
         for key, df in self.data_iter__key_facet_skip_empty:
-            # * key = (row, col)
+            #' key = (row, col)
             rmaov = self._omnibus_rm_anova_base(df, facetkey=key, **kwargs)
             rmaov_dict[key] = rmaov
         rmaov_DF = pd.concat(
@@ -190,18 +192,20 @@ class Omnibus(Assumptions):
             between=self.dims.x,
             detailed=True,
         )
-        kwargs.update(user_kwargs)  # * Add user kwargs
+        kwargs.update(user_kwargs)  #' Add user kwargs
 
         ### Perform Kruskal-Wallis
-        # * pg.Kruskal takes only a single factor
-        # * Skip empty groups
+        #' pg.Kruskal takes only a single factor
+        #' Skip empty groups
         kruskal_dict = {}
         for key, df in self.data_iter__key_groups_skip_empty:
-            # * key = (row, col, hue)
+            #' key = (row, col, hue)
             kruskal = pg.kruskal(df, **kwargs)
             kruskal_dict[key] = kruskal
         kruskal_DF = pd.concat(
-            kruskal_dict, keys=kruskal_dict.keys(), names=self.factors_all_without_x
+            kruskal_dict,
+            keys=kruskal_dict.keys(),
+            names=self.factors_all_without_x,
         )
         ### Add extra columns
         kruskal_DF = self._enhance_omnibus(kruskal_DF)
@@ -227,18 +231,20 @@ class Omnibus(Assumptions):
             within=self.dims.x,
             # detailed=True, # !! pg.friedman doesn't have this option
         )
-        kwargs.update(user_kwargs)  # * Add user kwargs
+        kwargs.update(user_kwargs)  #' Add user kwargs
 
         ### Perform Friedman
-        # * pg.friedman takes only a single factor
-        # * Skip empty groups
+        #' pg.friedman takes only a single factor
+        #' Skip empty groups
         friedman_dict = {}
         for key, df in self.data_iter__key_groups_skip_empty:
-            # * key = (row, col, hue)
+            #' key = (row, col, hue)
             friedman = pg.friedman(df, **kwargs)
             friedman_dict[key] = friedman
         friedman_DF = pd.concat(
-            friedman_dict, keys=friedman_dict.keys(), names=self.factors_all_without_x
+            friedman_dict,
+            keys=friedman_dict.keys(),
+            names=self.factors_all_without_x,
         )
         ### Add extra columns
         friedman_DF = self._enhance_omnibus(friedman_DF)
@@ -264,7 +270,9 @@ if __name__ == "__main__":
     kwargs = dict(data=DF, dv=dims["y"], detailed=True)
 
     aov = pg.anova(between=[dims["x"], dims["hue"]], **kwargs)
-    rmaov = pg.rm_anova(within=[dims["x"], dims["hue"]], subject="subject", **kwargs)
+    rmaov = pg.rm_anova(
+        within=[dims["x"], dims["hue"]], subject="subject", **kwargs
+    )
     kruskal = pg.kruskal(between=dims["hue"], **kwargs)
 
     # %% Make DataAnalysis
@@ -277,7 +285,7 @@ if __name__ == "__main__":
     df2 = DF[(DF["class"] == "MMPs") & (DF["method"] == "MACS")].sort_values(
         ["gene", "fraction"]
     )
-    len(df2)  # * 24
+    len(df2)  #' 24
     levelkeys2 = df2.set_index([dims["x"], dims["hue"]]).index.unique()
     DA._ensure_more_than_one_sample_per_group(df2)
     # DA._plot_dendrogram_from_levelkeys(levelkeys2)

@@ -78,7 +78,7 @@ class Filer:
         #' Between Start (^) and end ($) of line
         # -- fname:  Match all characters non-greedy ( .*? )
         # !! fname: Match exact string
-        # * index: : 1 through 3 repetitions of single digit ( \d{1,3} )
+        #' index: : 1 through 3 repetitions of single digit ( \d{1,3} )
         # regex = r"^(?P<fname>.*?)_(?P<index>\d{1,2})$" # ? old one
         regex = r"^(?P<fname>" + filename + r")_(?P<index>\d{1,3})$"
         ### Get matches
@@ -97,7 +97,9 @@ class Filer:
         return f"{filename}_{newindex}"
 
     @docstrings.subst(param_overwrite=docstrings.param_overwrite)
-    def prevent_overwrite(self, fname: "str | Path", overwrite: str = "day") -> str:
+    def prevent_overwrite(
+        self, fname: "str | Path", overwrite: str = "day"
+    ) -> str:
         """Returns a new filename that has a number or current date at the end to enable
         different modes of overwriting protection.
 
@@ -118,10 +120,9 @@ class Filer:
         ### Remove suffix
         fname = fname.split(".")[0]
 
-        if overwrite in ["day", "daily"]:  # * "day"
+        if overwrite in ["day", "daily"]:  #' "day"
             fname = f"{fname}_{self.current_day}"
-        elif overwrite in ["nothing", False]:  # * "nothing"
+        elif overwrite in ["nothing", False]:  #' "nothing"
             fname = self._prevent_overwrite_all(filename=fname)
 
         return fname
-

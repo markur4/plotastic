@@ -18,7 +18,7 @@ import venv
 
 ### Third party imports, requires prepare_venv.py to be run
 import toml
-from icecream import ic  # * For Testing these functions
+from icecream import ic  #' For Testing these functions
 
 # from env_config import *
 
@@ -193,7 +193,8 @@ def print_header(s: str, line_char="=") -> None:
     print("\n")  # ' two empty lines
     print(line_char * 2, s, line_char * (80 - len(s) - 2))
     print()
-    
+
+
 def print_dict(d: dict) -> None:
     """Print a dictionary for terminal nice and pretty with indentation
     and adjusted spacing between keys and values"""

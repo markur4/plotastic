@@ -1,35 +1,35 @@
-# * https://setuptools.readthedocs.io/en/latest/setuptools.html#metadata
+#' https://setuptools.readthedocs.io/en/latest/setuptools.html#metadata
 
 
 # https://setuptools.pypa.io/en/latest/references/keywords.html
 
 ### LAYOUT:
-# * project_root/                 # Project root: 'plotastic'
-# * ├── .gitattributes
-# * ├── .gitignore
-# * ├── LICENSE
-# * ├── MANIFEST.in
-# * ├── README.md
-# * ├── pyproject.toml
-# * ├── requirements.txt
-# * ├── (setup.cfg) # No longer needed, but still supported
-# * ├── (paper.md) # For publication
-# * ├── ...
-# * └── src/                      # Source root
-# *    └── package/               # Package root: 'plotastic'
-# *        ├── __init__.py
-# *        ├── .vscode
-# *        ├── py.typed
-# *        ├── ...
-# *        ├── (module.py)
-# *        ├── subpkg1/           # Subpackage root: 'plotastic.dimensions'
-# *        │   ├── __init__.py
-# *        │   ├── ...
-# *        │   └── module1.py
-# *        └── subpkg2/           # Subpackage root: 'plotastic.plotting'
-# *            ├── __init__.py
-# *            ├── ...
-# *            └── module2.py
+#' project_root/                 # Project root: 'plotastic'
+#' ├── .gitattributes
+#' ├── .gitignore
+#' ├── LICENSE
+#' ├── MANIFEST.in
+#' ├── README.md
+#' ├── pyproject.toml
+#' ├── requirements.txt
+#' ├── (setup.cfg) # No longer needed, but still supported
+#' ├── (paper.md) # For publication
+#' ├── ...
+#' └── src/                      # Source root
+#'    └── package/               # Package root: 'plotastic'
+#'        ├── __init__.py
+#'        ├── .vscode
+#'        ├── py.typed
+#'        ├── ...
+#'        ├── (module.py)
+#'        ├── subpkg1/           # Subpackage root: 'plotastic.dimensions'
+#'        │   ├── __init__.py
+#'        │   ├── ...
+#'        │   └── module1.py
+#'        └── subpkg2/           # Subpackage root: 'plotastic.plotting'
+#'            ├── __init__.py
+#'            ├── ...
+#'            └── module2.py
 
 [build-system] # =======================================================
 requires = ["setuptools", "setuptools-scm"]
@@ -84,13 +84,13 @@ dependencies = [
     "statannotations",
     "pingouin",
     ### Excel
-    "xlsxwriter", # * For saving results to excel
-    "openpyxl",   # * Optional for Pandas, but error when not installed
+    "xlsxwriter",    # * For saving results to excel
+    "openpyxl",      # * Optional for Pandas, but error when not installed
     ### Misc
-    "joblib",    # * Caching
-    "colour",    # * For custom colour maps
-    "ipynbname", # * Used by utils
-    "icecream",  # * Better than print
+    "joblib",      # * Caching
+    "colour",      # * For custom colour maps
+    "ipynbname",   # * Used by utils
+    "icecream",    # * Better than print
 ]
 
 ### Dynamic fields

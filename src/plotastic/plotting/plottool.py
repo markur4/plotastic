@@ -34,21 +34,20 @@ if TYPE_CHECKING:
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
 
 
-#%%
+# %%
 
 # ? HOW DO WE TYPE HINT np.ndarray FILLED WITH plt.Axes ?????
 # ? Tried TypeVar, doesn't work
 if __name__ == "__main__":
     # axes: Annotated[np.ndarray[plt.Axes], "axes"]
     import matplotlib
+
     axes: npt.NDArray[matplotlib.axes.Axes]
 
     for ax in axes:
         for a in ax:
-            
-            # a: plt.Axes # ? Explicit type hinting works, but not feasable ! 
-            a.set_title("test") # ? Not detected by VScode !!!
-
+            # a: plt.Axes # ? Explicit type hinting works, but not feasable !
+            a.set_title("test")  # ? Not detected by VScode !!!
 
 
 # %% Class: PlotToolf
@@ -138,7 +137,7 @@ class PlotTool(DataFrameTool):
         )
         self.fig: plt.Figure = fig
         self.axes: plt.Axes | np.ndarray[plt.Axes] = axes
-        plt.close()  # * Close the figure to avoid displaying it
+        plt.close()  #' Close the figure to avoid displaying it
 
     # __init__
     #
@@ -149,7 +148,7 @@ class PlotTool(DataFrameTool):
     #
     ### NESTED / FLAT....................................#
 
-    @property  # * [[ax11, ax12], [ax21, ax22]]
+    @property  #' [[ax11, ax12], [ax21, ax22]]
     def axes_nested(self) -> np.ndarray[np.ndarray[plt.Axes]]:
         """Always returns a 2D nested array of axes, even if there is
         only one row or column."""
@@ -159,14 +158,14 @@ class PlotTool(DataFrameTool):
         # !! So let's just keep it this way
         # return self.axes
 
-        if bool(self.dims.row and self.dims.col):  # * both row and col
+        if bool(self.dims.row and self.dims.col):  #' both row and col
             return self.axes
-        elif self.factors_is_1_facet:  # * either or
-            return np.array([self.axes])  # * add one more layer
-        else:  # * Single figure
+        elif self.factors_is_1_facet:  #' either or
+            return np.array([self.axes])  #' add one more layer
+        else:  #' Single figure
             return np.array([self.axes]).reshape(1, 1)
 
-    @property  # * [ax11, ax12, ax21, ax22]
+    @property  #' [ax11, ax12, ax21, ax22]
     def axes_flat(self) -> Sequence[plt.Axes]:
         """Always returns a 1D flattened array of axes, regardless of
         row, column, or single figure."""
@@ -176,14 +175,14 @@ class PlotTool(DataFrameTool):
     #
     #### Associate with Keys ....................................#
 
-    @property  # * >>> (R_lvl1, C_lvl1), ax11 >>> (R_lvl1, C_lv2), ax12 >>> (R_lvl2, C_lvl1), ax21 >> ...
+    @property  #' >>> (R_lvl1, C_lvl1), ax11 >>> (R_lvl1, C_lv2), ax12 >>> (R_lvl2, C_lvl1), ax21 >> ...
     def axes_iter__keys_ax(
         self,
     ) -> Generator[Tuple[tuple | str, plt.Axes], None, None]:
         """Returns: >> (R_lvl1, C_lvl1), ax11 >> (R_lvl1, C_lv2), ax12
         >> (R_lvl2, C_lvl1), ax21 >> ..."""
         if self.factors_rowcol is None:
-            # * If no row or col, return all axes and data
+            #' If no row or col, return all axes and data
             yield None, self.axes  # !! Error for  df.groupby().get_group(None)
         else:
             for key, ax in zip(self.levelkeys_rowcol, self.axes.flatten()):
@@ -197,7 +196,7 @@ class PlotTool(DataFrameTool):
     #
     #### Associate with Rowcol   ................................#
 
-    @property  # * >>> row_lvl1, (ax11, ax21, ...) >>> row_lvl2, (ax12, ax22, ...) >>> ...
+    @property  #' >>> row_lvl1, (ax11, ax21, ...) >>> row_lvl2, (ax12, ax22, ...) >>> ...
     def axes_iter__row_axes(
         self,
     ) -> Generator[Tuple[str, plt.Axes], None, None]:
@@ -207,7 +206,7 @@ class PlotTool(DataFrameTool):
         for rowkey, axes in zip(self.levels_dict_dim["row"], self.axes_nested):
             yield rowkey, axes
 
-    @property  # * >>> col_lvl1, (ax11, ax21, ...) >>> col_lvl2, (ax12, ax22, ...) >>> ...
+    @property  #' >>> col_lvl1, (ax11, ax21, ...) >>> col_lvl2, (ax12, ax22, ...) >>> ...
     def axes_iter__col_axes(
         self,
     ) -> Generator[Tuple[str, plt.Axes], None, None]:
@@ -221,13 +220,13 @@ class PlotTool(DataFrameTool):
     #
     ### Data  ..................................................#
 
-    @property  # * >>> ax11, df11 >>> ax12, df12 >>> ax21, df21 >>> ...
+    @property  #' >>> ax11, df11 >>> ax12, df12 >>> ax21, df21 >>> ...
     def axes_iter__ax_df(
         self,
     ) -> Generator[Tuple[plt.Axes, pd.DataFrame], None, None]:
         """Returns: >> (ax11, df11) >> (ax12, df12) >> (ax21, df21) >> ..."""
         if self.factors_rowcol is None:
-            yield self.axes, self.data  # * If no row or col, return all axes and data
+            yield self.axes, self.data  #' If no row or col, return all axes and data
         else:
             # data_dict = self.data.groupby(self.factors_rowcol) # !! works too!
             for key in self.levelkeys_rowcol:
@@ -235,7 +234,7 @@ class PlotTool(DataFrameTool):
                 df = self.data_dict_skip_empty[key]
                 # df = data_dict.get_group(key) # !! works, too!
                 # ut.pp(df)
-                # * Seaborn breaks on Dataframes that are only NaNs
+                #' Seaborn breaks on Dataframes that are only NaNs
                 if df[self.dims.y].isnull().all():
                     continue
                 else:
@@ -244,35 +243,35 @@ class PlotTool(DataFrameTool):
     #
     #### Selective   ............................................#
 
-    @property  # * ax11 >>> ax12 >>> ax21 >>> ax22 >>> ...
+    @property  #' ax11 >>> ax12 >>> ax21 >>> ax22 >>> ...
     def axes_iter_leftmost_col(self) -> Generator[plt.Axes, None, None]:
         """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
-        for row in self.axes_nested:  # * Through rows
-            yield row[0]  # * Leftmost ax
+        for row in self.axes_nested:  #' Through rows
+            yield row[0]  #' Leftmost ax
 
-    @property  # * >> axes excluding leftmost column
+    @property  #' >> axes excluding leftmost column
     def axes_iter_notleftmost_col(self) -> Generator[plt.Axes, None, None]:
         """Returns: >> axes excluding leftmost column"""
-        for row in self.axes_nested:  # * Through rows
-            for ax in row[1:]:  # * Through all columns except leftmost
+        for row in self.axes_nested:  #' Through rows
+            for ax in row[1:]:  #' Through all columns except leftmost
                 yield ax
 
-    @property  # * ax31 >>> ax32 >>> ax33 >>> ax34 >>> ...
+    @property  #' ax31 >>> ax32 >>> ax33 >>> ax34 >>> ...
     def axes_iter_lowest_row(self) -> Generator[plt.Axes, None, None]:
         """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
         if not self.dims.col is None:
             for ax in self.axes_nested[
                 -1
-            ]:  # * Pick Last row, iterate through columns
+            ]:  #' Pick Last row, iterate through columns
                 yield ax
         else:
-            yield self.axes_flat[-1]  # * If no col, return last
+            yield self.axes_flat[-1]  #' If no col, return last
 
-    @property  # * >> axes excluding lowest row
+    @property  #' >> axes excluding lowest row
     def axes_iter_notlowest_row(self) -> Generator[plt.Axes, None, None]:
         """Returns: >> axes excluding lowest row"""
-        for row in self.axes_nested[:-1]:  # * All but last row
-            for ax in row:  # * Through columns
+        for row in self.axes_nested[:-1]:  #' All but last row
+            for ax in row:  #' Through columns
                 yield ax
 
     # ==
@@ -314,13 +313,13 @@ class PlotTool(DataFrameTool):
                 wspace=wspace,
                 hspace=hspace,
                 width_ratios=width_ratios
-                or [1] * self.len_collevels,  # * [1,1, ...]
+                or [1] * self.len_collevels,  #' [1,1, ...]
                 height_ratios=height_ratios
-                or [1] * self.len_rowlevels,  # * [1,1, ...]
+                or [1] * self.len_rowlevels,  #' [1,1, ...]
             ),
         )
-        # KWS = ut.remove_None_recursive(KWS) # * Kick out Nones from dict
-        # * User args override defaults
+        # KWS = ut.remove_None_recursive(KWS) #' Kick out Nones from dict
+        #' User args override defaults
         KWS = ut.update_dict_recursive(KWS, subplot_kws)
 
         # == SUBPLOTS ===========
@@ -342,11 +341,10 @@ class PlotTool(DataFrameTool):
 
         ### Save current plot as attributes
         # ? Not needed? Further actions edit self.axes reference
-        # self.fig = fig  # * plt.Figure
-        # self.axes = ax  # * np.ndarray[np.ndarray[plt.Axes]]
+        # self.fig = fig  #' plt.Figure
+        # self.axes = ax  #' np.ndarray[np.ndarray[plt.Axes]]
 
         return self
-
 
     def fillaxes(
         self, kind: str = "strip", **sns_kws: dict
@@ -410,7 +408,6 @@ class PlotTool(DataFrameTool):
         # self.fig = ax.get_figure()  # Update the figure reference
 
         return self
-
 
     #
     #

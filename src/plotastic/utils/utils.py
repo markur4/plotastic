@@ -14,7 +14,7 @@ import warnings
 
 import re
 
-from IPython.display import DisplayObject  # * For type hinting of ut.pp()
+from IPython.display import DisplayObject  #' For type hinting of ut.pp()
 from IPython import get_ipython
 
 
@@ -522,9 +522,9 @@ def make_cmap_saturation(
     from matplotlib.colors import ListedColormap
 
     ### Create a custom colormap from scratch
-    # * Create a list of colors
+    #' Create a list of colors
     colors = list(Color("black").range_to(Color("white"), n))
-    colors = [c.rgb for c in colors]  # * Convert to RGB
+    colors = [c.rgb for c in colors]  #' Convert to RGB
 
     ### Add a color for values under and over the range of the colormap
     colors.append(oversat)
@@ -565,17 +565,17 @@ def copy_by_pickling(obj, plt_close=True):
     import pickle
     from matplotlib import pyplot as plt
 
-    # * CONVERT TO BYTE RAM
+    #' CONVERT TO BYTE RAM
     # with io.BytesIO() as buf: # !! 'with' statement not working with pyplot
     buf = io.BytesIO()
     pickle.dump(obj, buf)
     buf.seek(0)
 
-    # * RELOAD IT
+    #' RELOAD IT
     copy = pickle.load(buf)
     # p2 = pickle.loads(buf.getvalue()) # THIS GETS VALUE WITHOUT RESETTING buf
 
-    # * MPL IS ANNOYING
+    #' MPL IS ANNOYING
     # if plt_close:
     plt.close()
 

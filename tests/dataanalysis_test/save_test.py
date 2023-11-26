@@ -50,22 +50,23 @@ def test_save(func: Callable, lastcleanup=True):
     # == Test overwrite=True ===============================
     kwargs = dict(fname=fname, overwrite=True)
     func(**kwargs)
-    func(**kwargs)  # * Should overwrite
-    func(**kwargs)  # * Should overwrite
+    func(**kwargs)  #' Should overwrite
+    func(**kwargs)  #' Should overwrite
 
     ### Make sure files overwrote each other
     saved = glob(fname + "*")
-    assert len(saved) in [1, 2], "Should have saved one/two files, insted got: " + str(
-        saved
-    )
+    assert len(saved) in [
+        1,
+        2,
+    ], "Should have saved one/two files, insted got: " + str(saved)
 
     ct.cleanfiles(fname)
 
     # == Test overwrite="day" ===============================
     kwargs = dict(fname=fname, overwrite="day")
     func(**kwargs)
-    func(**kwargs)  # * Should overwrite
-    func(**kwargs)  # * Should overwrite
+    func(**kwargs)  #' Should overwrite
+    func(**kwargs)  #' Should overwrite
 
     ### Make sure files didn't delet each other
     saved = glob(fname + "*")
@@ -79,8 +80,8 @@ def test_save(func: Callable, lastcleanup=True):
     # == Test overwrite="nothing" ===============================
     kwargs = dict(fname=fname, overwrite="nothing")
     func(**kwargs)
-    func(**kwargs)  # * Should NOT overwrite
-    func(**kwargs)  # * Should NOT overwrite
+    func(**kwargs)  #' Should NOT overwrite
+    func(**kwargs)  #' Should NOT overwrite
 
     ### Make sure files didn't delete each other
     saved = glob(fname + "*")

@@ -10,13 +10,15 @@ def load_dataset(name: str = "tips", verbose=True) -> tuple[pd.DataFrame, dict]:
     """
 
     ### Check user Arguments
-    assert name in FILES, f" '{name}' should have been one of {list(FILES.keys())}"
+    assert (
+        name in FILES
+    ), f" '{name}' should have been one of {list(FILES.keys())}"
 
     ### Import DataFrame from package
-    package = "plotastic.example_data"  # * Needs to be importable
+    package = "plotastic.example_data"  #' Needs to be importable
     path_relative = os.path.join(
         "data", FILES[name]
-    )  # * Path with python package as root
+    )  #' Path with python package as root
     path_full = pkg_resources.resource_filename(package, path_relative)
     df = pd.read_excel(path_full)
 

@@ -65,17 +65,19 @@ class SubCache(Memory):
         subcache = self.subcache_path
 
         location_subdirs = []
+
+        ### Recursive walking
         for root, dirs, _files in os.walk(subcache):
-            # * Don't go too deep: 'joblib/plotastic/example_data/load_dataset/load_dataset',
+            #' Don't go too deep: 'joblib/plotastic/example_data/load_dataset/load_dataset',
             depth = root[len(subcache) :].count(os.sep)
             if not detailed and depth > max_depth:
                 continue
             for dir in dirs:
-                # * Don't need to check for 'joblib' because it's not a subdirectory of cache_dir
-                # * Exclude subdirectories like "c1589ea5535064b588b2f6922e898473"
+                #' Don't need to check for 'joblib' because it's not a subdirectory of cache_dir
+                #' Exclude subdirectories like "c1589ea5535064b588b2f6922e898473"
                 if len(dir) >= 32 or dir == "joblib":
                     continue
-                # * Return every path completely
+                #' Return every path completely
                 if detailed:
                     location_subdirs.append(os.path.join(root, dir))
                 else:

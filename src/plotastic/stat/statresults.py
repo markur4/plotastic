@@ -15,9 +15,9 @@ class StatResults:
     # ==
     # == DEFAULTS ======================================================================
     # fmt: off
-    DEFAULT_UNCHECKED = "NOT CHECKED"   # * If ASSUMPTION not tested,
-    DEFAULT_UNTESTED = "NOT TESTED"     # * If statistical test not tested (posthoc, omnibus)
-    DEFAULT_UNASSESSED = "NOT ASSESSED" # * If not
+    DEFAULT_UNCHECKED = "NOT CHECKED"   #' If ASSUMPTION not tested,
+    DEFAULT_UNTESTED = "NOT TESTED"     #' If statistical test not tested (posthoc, omnibus)
+    DEFAULT_UNASSESSED = "NOT ASSESSED" #' If not
     # fmt: on
 
     # ==
@@ -132,9 +132,9 @@ class StatResults:
 
         ### Iterate through results
         for test_name, DF in self.as_dict.items():
-            worksheet = workbook.add_worksheet(test_name)  # * Make sheet
-            writer.sheets[test_name] = worksheet  # * Add sheet name to writer
-            DF.to_excel(writer, sheet_name=test_name)  # * # Write DF to sheet
+            worksheet = workbook.add_worksheet(test_name)  #' Make sheet
+            writer.sheets[test_name] = worksheet  #' Add sheet name to writer
+            DF.to_excel(writer, sheet_name=test_name)  #' # Write DF to sheet
 
         ### Save
         writer.close()

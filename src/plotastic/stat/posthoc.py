@@ -18,9 +18,9 @@ from plotastic.stat.assumptions import Assumptions
 
 class PostHoc(Assumptions):
     DEFAULT_KWS_PAIRWISETESTS = dict(
-        nan_policy="pairwise",  # * Delete only pairs or complete subjects ("listwise") if sasmples are missing?
-        return_desc=True,  # * Return descriptive statistics?
-        correction="auto",  # * Use welch correction if variances unequal?
+        nan_policy="pairwise",  #' Delete only pairs or complete subjects ("listwise") if sasmples are missing?
+        return_desc=True,  #' Return descriptive statistics?
+        correction="auto",  #' Use welch correction if variances unequal?
     )
 
     # == __init__ ======================================================================
@@ -44,10 +44,10 @@ class PostHoc(Assumptions):
                 kwargs_2["between"] = list(reversed(kwargs["between"]))
 
         ### Perform Test
-        # * Iterate over rows and columns
+        #' Iterate over rows and columns
         PH_dict = {}
 
-        # * Skip empty so that no empty groups of level combinations are artificially added
+        #' Skip empty so that no empty groups of level combinations are artificially added
         for key, df in self.data_iter__key_facet_skip_empty:
             # print(key)
             # ut.pp(df)
@@ -55,15 +55,19 @@ class PostHoc(Assumptions):
             # for key in self.levelkeys_rowcol:
             #     df = self.data_dict_skip_empty[key]
 
-            if self.dims.hue:  # * Perform twice with x and hue turned around (= huex)
+            if (
+                self.dims.hue
+            ):  #' Perform twice with x and hue turned around (= huex)
                 ph_xhue = pg.pairwise_tests(data=df, **kwargs)
                 ph_huex = pg.pairwise_tests(data=df, **kwargs_2)
                 PH_dict[key] = ph_xhue.merge(ph_huex, how="outer")
-            else:  # * perform once with x
+            else:  #' perform once with x
                 ph_x = pg.pairwise_tests(data=df, **kwargs)
                 PH_dict[key] = ph_x
 
-        PH = pd.concat(PH_dict, keys=PH_dict.keys(), names=self.factors_rowcol_list)
+        PH = pd.concat(
+            PH_dict, keys=PH_dict.keys(), names=self.factors_rowcol_list
+        )
 
         return PH
 
@@ -88,7 +92,7 @@ class PostHoc(Assumptions):
             nan_policy="pairwise",
         )
 
-        # * Paired or unpaired
+        #' Paired or unpaired
         if paired:
             assert (self.subject is not None) or (
                 subject is not None
@@ -98,18 +102,24 @@ class PostHoc(Assumptions):
         else:
             kwargs["between"] = self.factors_xhue
 
-        # * Add user kwargs
+        #' Add user kwargs
         kwargs.update(self.DEFAULT_KWS_PAIRWISETESTS)
         kwargs.update(user_kwargs)
 
-        # * Make sure the specified factors are present
+        #' Make sure the specified factors are present
         if "within" in kwargs:
             assert all(
-                [f in self.factors_all for f in ut.ensure_list(kwargs["within"])]
+                [
+                    f in self.factors_all
+                    for f in ut.ensure_list(kwargs["within"])
+                ]
             ), f"Argument 'within' contains unknown columns ({kwargs['within']} should be like one of {self.factors_all}"
         if "between" in kwargs:
             assert all(
-                [f in self.factors_all for f in ut.ensure_list(kwargs["between"])]
+                [
+                    f in self.factors_all
+                    for f in ut.ensure_list(kwargs["between"])
+                ]
             ), f"Argument 'between' contains unknown columns {kwargs['between']} should be like one of {self.factors_all}"
 
         ### Make PH table
@@ -139,14 +149,14 @@ class PostHoc(Assumptions):
         ### EDIT PH
         PH = PH.reset_index(
             drop=False
-        )  # * drop is default false, but put it explicitly  here
+        )  #' drop is default false, but put it explicitly  here
 
-        # * Add Stars
+        #' Add Stars
         PH["**p-unc"] = PH["p-unc"].apply(self._p_to_stars, alpha=alpha)
         if "p-corr" in PH.columns:
             PH["**p-corr"] = PH["p-corr"].apply(self._p_to_stars, alpha=alpha)
 
-        # * Make Column for categorizing significance
+        #' Make Column for categorizing significance
         PH["Sign."] = pd.cut(
             PH["p-unc"],
             bins=[0, alpha, alpha_tolerance, 1],
@@ -159,17 +169,17 @@ class PostHoc(Assumptions):
                 labels=["signif.", "toler.", False],
             )
 
-        # * Make pairs
+        #' Make pairs
         PH["pairs"] = PH.apply(self._level_to_pair, axis=1)
 
         # ### Check contrast
-        # # * Optionally remove non-contrast comparisons
+        # #' Optionally remove non-contrast comparisons
         # if only_contrast and self.dims.hue:
         #     PH = PH[
         #         PH["Contrast"].str.contains("*", regex=False)
         #     ]  # <<<< OVERRRIDE PH, REMOVE NON-CONTRAST ROWS
 
-        # * Show if the pair crosses x or hue boundaries
+        #' Show if the pair crosses x or hue boundaries
         if self.dims.hue:
             PH["cross"] = PH.apply(self._detect_xhue_crossing, axis=1)
         else:
@@ -178,7 +188,9 @@ class PostHoc(Assumptions):
         ### Set index
         PH = ut.drop_columns_by_regex(PH, "level_\d")
         if self.dims.hue:
-            PH = PH.set_index(self.factors_rowcol_list + [self.dims.hue, "Contrast"])
+            PH = PH.set_index(
+                self.factors_rowcol_list + [self.dims.hue, "Contrast"]
+            )
         else:
             PH = PH.set_index(self.factors_rowcol_list + ["Contrast"])
 

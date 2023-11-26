@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
 
 # %% Utils
-df = None  # * Prevent warning when using catchstate
+df = None  #' Prevent warning when using catchstate
 
 
 def catchstate(df, var_name: str = "df"):
@@ -125,12 +125,12 @@ class DimsAndLevels:
     # ==
     # == List FACTORS ==========================================================
 
-    @property  # * [row, col, hue, x] (dims may be missing)
+    @property  #' [row, col, hue, x] (dims may be missing)
     def factors_all(self) -> list[str]:
         F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
         return [e for e in F if (not e is None)]
 
-    @property  # * [row, col, hue]
+    @property  #' [row, col, hue]
     def factors_all_without_x(self) -> list[str]:
         """Used for iterating through dataframe yielding lists of groups"""
         F = (self.dims.row, self.dims.col, self.dims.hue)
@@ -141,7 +141,7 @@ class DimsAndLevels:
     #     F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
     #     return [e for e in F]
 
-    @property  # * {"y": dims.y, "x": dims.x, "hue": dims.hue, "col": dims.col, "row": dims.row}
+    @property  #' {"y": dims.y, "x": dims.x, "hue": dims.hue, "col": dims.col, "row": dims.row}
     def factors_as_dict(self) -> dict:
         """
         gets the dimensions in forms of a dictinary to be passed onto seaborn functions
@@ -152,7 +152,7 @@ class DimsAndLevels:
         return self.dims.asdict(incl_None=False)
         # return {dim: factor for dim, factor in self.dims.asdict().items() if not factor is None}
 
-    @property  # * [col1, col7, col8]
+    @property  #' [col1, col7, col8]
     def columns_not_factor(self) -> list[str]:
         return [c for c in self.data.columns if c not in self.factors_all]
 
@@ -191,7 +191,7 @@ class DimsAndLevels:
     #         xhue = [self.dims.x]
     #     return xhue
 
-    @property  # * [row, col]; row; col; None
+    @property  #' [row, col]; row; col; None
     def factors_rowcol(self) -> str | list[str] | None:
         if self.dims.row and self.dims.col:
             rowcol = [self.dims.row, self.dims.col]
@@ -203,7 +203,7 @@ class DimsAndLevels:
             rowcol = None
         return rowcol
 
-    @property  # * [row, col]; [row]; [col]; [""]
+    @property  #' [row, col]; [row]; [col]; [""]
     def factors_rowcol_list(self) -> list[str]:
         if self.dims.row and self.dims.col:
             rowcol = [self.dims.row, self.dims.col]
@@ -217,21 +217,21 @@ class DimsAndLevels:
 
     # == Properties of FACTORS  ================================================
 
-    @property  # * no hue, row or col
+    @property  #' no hue, row or col
     def factors_is_just_x(self) -> bool:
         return not self.dims.row and not self.dims.col and not self.dims.hue
 
-    @property  # * Either just row or col.
+    @property  #' Either just row or col.
     def factors_is_1_facet(self) -> bool:
         only_row = (not self.dims.row is None) and (self.dims.col is None)
         only_col = (self.dims.row is None) and (not self.dims.col is None)
         return only_row or only_col
 
-    @property  # * No col or row
+    @property  #' No col or row
     def factors_is_unfacetted(self) -> bool:
         return not self.dims.row and not self.dims.col
 
-    @property  # * {"f1": "continuous", "f2": "category",}
+    @property  #' {"f1": "continuous", "f2": "category",}
     def factors_types(self) -> dict:
         """Returns: {"f1": "continuous", "f2": "category",}"""
         D = dict()
@@ -244,7 +244,14 @@ class DimsAndLevels:
                 )
             if type == "category":
                 D[factor] = "category"
-            elif type in ["int", "float", "float32", "float64", "int32", "int16"]:
+            elif type in [
+                "int",
+                "float",
+                "float32",
+                "float64",
+                "int32",
+                "int16",
+            ]:
                 D[factor] = "continuous"
             else:
                 print(f"#!!! factor '{factor}' is of unknown type '{type}'")
@@ -259,7 +266,7 @@ class DimsAndLevels:
     #
     # == Retrieve FACTORS ======================================================
 
-    # * input: Hue -> "smoke"
+    #' input: Hue -> "smoke"
     def getfactors_from_dim(
         self, putative_factors: str | list[str,]
     ) -> str | list[str]:
@@ -293,7 +300,7 @@ class DimsAndLevels:
                 return factor
         ### If nothing returned, nothing was wound
         if ret_notfound is None:
-            return None  # * We use this to check if the level is in the data
+            return None  #' We use this to check if the level is in the data
         elif ret_notfound == "raise":
             raise AssertionError(f"#! Level '{level}' not found in data.")
 
@@ -315,7 +322,7 @@ class DimsAndLevels:
         else:
             return S.unique().tolist()
 
-    @property  # * {"f1": [lvl1, lvl2], "f2": [lvl1, lvl2],}
+    @property  #' {"f1": [lvl1, lvl2], "f2": [lvl1, lvl2],}
     def levels_dict_factor(self) -> dict:
         """Returns: {"f1": [lvl1, lvl2], "f2": [lvl1, lvl2],}"""
         return {
@@ -323,7 +330,7 @@ class DimsAndLevels:
             for factor in self.factors_all
         }
 
-    @property  # * {"row":[row_l1, row_l2, ...], "col":[c_l1, c_l2, ...], "hue":[...], "x":[...]}
+    @property  #' {"row":[row_l1, row_l2, ...], "col":[c_l1, c_l2, ...], "hue":[...], "x":[...]}
     def levels_dict_dim(self) -> dict:
         """Returns: {"row":[row_l1, row_l2, ...], "col":[c_l1, c_l2, ...], "hue":[...], "x":[...]}"""
         D = self.levels_dict_factor
@@ -334,12 +341,14 @@ class DimsAndLevels:
             "x": D.get(self.dims.x),
         }
 
-    @property  # * [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]
+    @property  #' [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]
     def levels_tuples(self) -> list[tuple]:
         """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]"""
-        return [tuple(l) for l in self.levels_dict_factor.values() if not l is None]
+        return [
+            tuple(l) for l in self.levels_dict_factor.values() if not l is None
+        ]
 
-    @property  # * [(row, R_lvl1), (row, R_lvl2), (col, C_lvl1), (col, C_lvl2), ...]
+    @property  #' [(row, R_lvl1), (row, R_lvl2), (col, C_lvl1), (col, C_lvl2), ...]
     def levels_factortuples(self) -> list[tuple]:
         """Make a list of tuples with first element being factor and second element
         being level
@@ -351,7 +360,7 @@ class DimsAndLevels:
             for level in levels
         ]
 
-    @property  # * [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2) ]
+    @property  #' [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2) ]
     def levels_tuples_rowcol(self):
         """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2) ]"""
         return [
@@ -360,7 +369,7 @@ class DimsAndLevels:
             if (not l is None) and (k in ut.ensure_list(self.factors_rowcol))
         ]
 
-    @property  # * [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]
+    @property  #' [ (R_l1, C_l1, X_l1, Hue_l1), (R_l1, C_l2, X_l1, Hue_l1), (R_l2, C_l1, X_l1, Hue_l1), ... ]
     def levelkeys_all(
         self,
     ) -> list[tuple]:  # !! refactored from 'levelkeys' -> 'levelkeys_all'
@@ -370,7 +379,7 @@ class DimsAndLevels:
         C_l1, X_l1, Hue_l1), ... ]."""
         return [key for key in product(*self.levels_tuples)]
 
-    @property  # * [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
+    @property  #' [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
     def levelkeys(self) -> list[tuple]:
         """Contains unique combinations of levels that exist in the data. Should be
         sorted (?)
@@ -381,17 +390,17 @@ class DimsAndLevels:
 
         return list(self.data.groupby(self.factors_all).groups.keys())
 
-    @property  # * [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
+    @property  #' [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]
     def levelkeys_rowcol(self) -> list[tuple | str]:
         """Returns: [ (R_l1, C_l1), (R_l1, C_l2), (R_l2, C_l1), ... ]"""
         return [
             key
             if not len(key) == 1
-            else key[0]  # * If only one factor, string is needed, not a tuple
+            else key[0]  #' If only one factor, string is needed, not a tuple
             for key in product(*self.levels_tuples_rowcol)
         ]
 
-    @property  # * (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
+    @property  #' (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
     def levels_xhue_flat(self) -> tuple:
         """Returns: (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)"""
         l = []
@@ -405,7 +414,7 @@ class DimsAndLevels:
                 [l.append(e) for e in S.unique()]
         return tuple(l)
 
-    @property  # * (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
+    @property  #' (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)
     def levels_rowcol_flat(self) -> tuple:
         """Returns: (x_lvl1, x_lvl2, x_lvl3, hue_lvl1, hue_lvl2)"""
         l = []
@@ -427,14 +436,14 @@ class DimsAndLevels:
         if not self.dims.row is None:
             return len(self.levels_dict_factor[self.dims.row])
         else:
-            return 1  # * Used by subplots, we need minimum of one row
+            return 1  #' Used by subplots, we need minimum of one row
 
     @property
     def len_collevels(self) -> int:
         if not self.dims.col is None:
             return len(self.levels_dict_factor[self.dims.col])
         else:
-            return 1  # * Used by subplots, we need minimum of one col
+            return 1  #' sed by subplots, we need minimum of one col
 
     # ==
     # == COUNT FULLY CONNECTED LEVELS ==========================================
@@ -450,7 +459,7 @@ class DimsAndLevels:
         level_combocount = defaultdict(int)
 
         ### Iterate through the list of level keys
-        # * To initialize, we need all possible combinations of levels from all factors
+        #' To initialize, we need all possible combinations of levels from all factors
         for level_key in self.levelkeys_all:
             ### Iterate through all pairs of levels in the level key
             for i in range(len(level_key)):
@@ -458,7 +467,9 @@ class DimsAndLevels:
                     ### Sort the levels in alphabetical order to count combinations regardless of order
                     # !! can't sort tuples with different types
                     # combination = tuple(sorted((level_key[i], level_key[j])))
-                    combination = tuple(set((level_key[i], level_key[j])))  # * WORKING
+                    combination = tuple(
+                        set((level_key[i], level_key[j]))
+                    )  #' WORKING
                     level_combocount[combination] += 1
 
         return level_combocount
@@ -480,8 +491,8 @@ class DimsAndLevels:
         """
 
         ### Get level_combocount
-        # * dict with every pairwise combination of levels from every factor as keys and
-        # * count as values
+        #' dict with every pairwise combination of levels from every factor as keys and
+        #' count as values
         levelcombo_count: dict = self._count_levelcombos()
 
         ### Initialize the DataFrame with multiindexes
@@ -495,10 +506,12 @@ class DimsAndLevels:
             f0 = self.get_factor_from_level(level=levelkey[0])
             f1 = self.get_factor_from_level(level=levelkey[1])
             df.loc[(f0, levelkey[0]), (f1, levelkey[1])] = count
-            df.loc[(f1, levelkey[1]), (f0, levelkey[0])] = count  # * Ensure symmetry
+            df.loc[
+                (f1, levelkey[1]), (f0, levelkey[0])
+            ] = count  #' Ensure symmetry
 
         ### Normalize the DataFrame by dividing by the maximum value
-        # * make percent format, round to 0 decimals
+        #' make percent format, round to 0 decimals
         if normalize:
             df = df / df.max().max() * 100
             df = df.round(0).astype(int)
@@ -509,8 +522,8 @@ class DimsAndLevels:
             def heatmap_combocount(matrix: np.array, depth: int):
                 ### Colors:
                 custom_cmap = ut.make_cmap_saturation(
-                    undersat=(0.5, 0.0, 0.0),  # * dark red
-                    oversat=(0.0, 0.7, 0.0),  # * darker green
+                    undersat=(0.5, 0.0, 0.0),  #' dark red
+                    oversat=(0.0, 0.7, 0.0),  #' arker green
                     n=depth,
                 )
 
@@ -554,7 +567,7 @@ class DimsAndLevels:
         :rtype: float
         """
         ### Take unique values,
-        # * Yes the Score might change, but relations between scores won't change
+        #' Yes the Score might change, but relations between scores won't change
         set1 = set(combination1)
         set2 = set(combination2)
 
@@ -564,7 +577,9 @@ class DimsAndLevels:
         return len_intersection / len_union
 
     @staticmethod
-    def _link_levelkeys(levelkeys: list[tuple[str]], method: str = "ward") -> np.array:
+    def _link_levelkeys(
+        levelkeys: list[tuple[str]], method: str = "ward"
+    ) -> np.array:
         """Calculates Jaccard distance matrix between levelkeys and links them by
         hierarchical clustering.
         :param method: How to link distance matrix by sch.linkage.
@@ -576,9 +591,9 @@ class DimsAndLevels:
         :rtype: np.array
         """
         ### Take Unique values from the index
-        # * The number of occurences of each index is not important
-        # * They often represent technical replicates
-        # * It's more important how often the levels occur together within one element
+        #' The number of occurences of each index is not important
+        #' They often represent technical replicates
+        #' It's more important how often the levels occur together within one element
         ### levelkeys are the same as index after setting DF.index to all factors
         # !! keep this static, since it's useful.
         # levelkeys = self.levelkeys if levelkeys is None else levelkeys
@@ -685,11 +700,15 @@ class DimsAndLevels:
 
     # !!
     def switch(
-        self, *keys: str, inplace=False, verbose=True, **kwarg: str | Dict[str, str]
+        self,
+        *keys: str,
+        inplace=False,
+        verbose=True,
+        **kwarg: str | Dict[str, str],
     ) -> "DimsAndLevels | DataAnalysis":
         a = self if inplace else copy(self)
 
-        # * NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply
+        #' NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply
         a.dims = a.dims.switch(*keys, inplace=inplace, verbose=verbose, **kwarg)
 
         return a
@@ -727,10 +746,10 @@ class DimsAndLevels:
                     ("y", "x", "hue", "row", "col"), (y, x, hue, row, col)
                 )
                 if not arg is None
-                # * WE ALSO ALLOW "none" TO REMOVE A DIMENSION
+                #' WE ALSO ALLOW "none" TO REMOVE A DIMENSION
             }
 
-            # * NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply"""
+            #' NEEDS RESETTING, otherwise in-chain modifications with inplace=False won't apply"""
             a.dims = a.dims.set(inplace=inplace, verbose=verbose, **kwargs)
             # a.dims.set(inplace=inplace, verbose=verbose, **kwargs) # NOT WORKIN IN-CHAIN
         if not data is None:
@@ -836,13 +855,13 @@ Also, I don't think I need it
 #         try:
 #             df = grouped.get_group(key)
 #         except KeyError:
-#             # * Associate key with respective factor
+#             #' Associate key with respective factor
 #             factor_and_keys = {DA.get_factor_from_level(lvl): lvl for lvl in key}
 #             factor_and_keys_df = pd.DataFrame(factor_and_keys, index=[0])
 
 #             empty_df = pd.DataFrame(columns=DA.data.columns)
 
-#             # * Append to empty df
+#             #' Append to empty df
 #             df = empty_df.append(factor_and_keys_df, ignore_index=True)
 
 #         yield key, df

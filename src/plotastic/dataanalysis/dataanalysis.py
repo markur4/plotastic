@@ -114,8 +114,12 @@ class DataAnalysis(Annotator):
         """
 
         ### Overwrite Protection
-        if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
-            fname = self.filer.prevent_overwrite(fname=fname, overwrite=overwrite)
+        if (not overwrite and not overwrite is None) or isinstance(
+            overwrite, str
+        ):
+            fname = self.filer.prevent_overwrite(
+                fname=fname, overwrite=overwrite
+            )
 
         ### Save Statistics
         self.results.save(fname=fname)
@@ -126,7 +130,7 @@ class DataAnalysis(Annotator):
     #     fname: str | Path = "plotastic_results",
     #     format: str = "pdf",
     #     fig: Figure = None,
-    #     overwrite: str | bool = "day",  # * Added overwrite protection
+    #     overwrite: str | bool = "day",  #' Added overwrite protection
     #     dpi: int | str = 300,  # !! mpl default is "figure"
     #     bbox_inches: "str | Bbox" = "tight",
     #     pad_inches: float = 0.1,
@@ -187,7 +191,7 @@ class DataAnalysis(Annotator):
     #         edgecolor=edgecolor,
     #         backend=backend,
     #     )
-    #     kwargs.update(**user_kwargs)  # * Add user kwargs
+    #     kwargs.update(**user_kwargs)  #' Add user kwargs
 
     #     ### Overwrite protection
     #     if (not overwrite and not overwrite is None) or isinstance(overwrite, str):
@@ -242,9 +246,9 @@ class DataAnalysis(Annotator):
     # @staticmethod
     # def _redraw_fig(fig):
     #     """create a dummy figure and use its manager to display "fig" """
-    #     dummy = plt.figure()  # * Make empty figure
-    #     new_manager = dummy.canvas.manager  # * Get the figure's manager
-    #     new_manager.canvas.figure = fig  # * Associate it with the figure
+    #     dummy = plt.figure()  #' Make empty figure
+    #     new_manager = dummy.canvas.manager  #' Get the figure's manager
+    #     new_manager.canvas.figure = fig  #' Associate it with the figure
     #     fig.set_canvas(new_manager.canvas)
     #     return fig
 

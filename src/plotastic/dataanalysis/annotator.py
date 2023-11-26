@@ -35,7 +35,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
     def __init__(self, **dataframetool_kws):
         ### Inherit
-        # * verbosity false, since each subclass can test its own DataFrame
+        #' verbosity false, since each subclass can test its own DataFrame
         super().__init__(**dataframetool_kws)
 
         ### Make an annotated flag to mark plot as annotated
@@ -47,8 +47,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
     # == Check User Arguments of Datagroup Selection
 
-    # * [x1, {hue4:(x3,x4)}, {x2:(hue1,hue2)}, hue3]
-    # * OR  [x_or_hue, {x_or_hue: xhuepair} ] ETC.
+    #' [x1, {hue4:(x3,x4)}, {x2:(hue1,hue2)}, hue3]
+    #' OR  [x_or_hue, {x_or_hue: xhuepair} ] ETC.
     def _check_selected_xhue(self, xhue_selected: list[dict | str]) -> None:
         """Raises Error if user xhue selection does not match required
         patterns.
@@ -67,10 +67,10 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         """
 
         ### Define allowed types for elements of xhue
-        # * Dictionaries selects specific pairs, everything else selects all
-        # * pairs containing that element.
-        # * Levels of xhue levels can be specified as string, int bool and all
-        # * all numerical types.
+        #' Dictionaries selects specific pairs, everything else selects all
+        #' pairs containing that element.
+        #' Levels of xhue levels can be specified as string, int bool and all
+        #' all numerical types.
         types_allowed = self._TYPES_SELECTION + (dict,)
         types_specific = self._TYPES_SELECTION
 
@@ -81,8 +81,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         if self.dims.hue:
             LVLs_HUE = LVLdict[self.dims.hue]
 
-        # * If "__hue" or "__x" is specified, nothing must be checked as the
-        # * complete x or hue will be included or excluded
+        #' If "__hue" or "__x" is specified, nothing must be checked as the
+        #' complete x or hue will be included or excluded
         special_selectors = ("__hue", "__x", "__HUE", "__X")
         if xhue_selected in special_selectors:
             return None
@@ -104,18 +104,18 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                     self.dims.hue
                 ), f"#! A dictionary was used {xhue}, but no HUE was defined."
 
-                # * {x_or_hue: xhuepair }
+                #' {x_or_hue: xhuepair }
                 for x_or_hue_key, xhuepair in xhue.items():
                     assert (
                         x_or_hue_key in LVLs
                     ), f"#! The passed key  {x_or_hue_key} ({ut.get_type(x_or_hue_key)}) should be one of {LVLs_X} if values are in HUE-levels, or one of {LVLs_HUE} if values are in X-levels"
-                    # * {x: (hue1, hue2) } or {hue: (x1, x2) }
+                    #' {x: (hue1, hue2) } or {hue: (x1, x2) }
                     assert (
                         isinstance(xhuepair, tuple) and len(xhuepair) == 2
                     ), f"#! When specifying a specific level from X or HUE  ({x_or_hue_key}), then  {xhuepair}  ({ut.get_type(xhuepair)}) should be a tuple with two values from either {LVLs_X} or {LVLs_HUE}, in order to define a specific pair where X or Hue = {x_or_hue_key}. If {x_or_hue_key} is from X, then {xhuepair} should be made of {LVLs_HUE}. If {x_or_hue_key} is from HUE, then {xhuepair} should be made of {LVLs_X}"
 
                     for x_or_hue_value in xhuepair:
-                        # * {x_or_hue: (x_or_hue2, x_or_hue2) }
+                        #' {x_or_hue: (x_or_hue2, x_or_hue2) }
                         assert (
                             x_or_hue_value in LVLs
                         ), f"#! The passed value {x_or_hue_value} ({ut.get_type(x_or_hue_value)}) should be one of {LVLs_X}, if key is in HUE-levels), or one of {LVLs_HUE}, if key is in X-levels)"
@@ -128,7 +128,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                                 not x_or_hue_value in LVLs_X
                             ), f"#! When {x_or_hue_key} is from X, '{xhuepair}' should be made of {LVLs_HUE}"
 
-    # * (row1, col2)  OR  row1  OR  col2
+    #' (row1, col2)  OR  row1  OR  col2
     def _check_selected_rowcol(self, rowcol_selected: tuple | str) -> None:
         """Raises Error if user rowcol selection does not match required
         patterns.
@@ -140,8 +140,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         """
 
         ### Define expected types for elements of rowcol
-        # * Tuples are used if both row and col are specified.
-        # * Row and col levels may be specified as strings, numericals, bools, etc.
+        #' Tuples are used if both row and col are specified.
+        #' Row and col levels may be specified as strings, numericals, bools, etc.
         types_allowed = self._TYPES_SELECTION + (tuple,)
         types_specific = self._TYPES_SELECTION
 
@@ -151,7 +151,9 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         LVLs_COL = self.levels_dict_dim["col"]
 
         ### Warn user to specify both row and col explicitly, if both are present
-        if len(self.factors_rowcol_list) == 2 and isinstance(rowcol_selected, str):
+        if len(self.factors_rowcol_list) == 2 and isinstance(
+            rowcol_selected, str
+        ):
             warnings.warn(
                 f"#! When facetting with both row and col, it's safest to specify both row and col explicitly and not just one of them.",
                 stacklevel=10000,
@@ -159,16 +161,16 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         ### CHECK IF SELECTION IS CORRECT
         typ = ut.get_type(rowcol_selected)
-        # * types_allowed
+        #' types_allowed
         assert isinstance(
             rowcol_selected, types_allowed
         ), f"#!  {rowcol_selected} ({typ}) should be a tuple, string, bool or numerical-like type"
-        # * rowcol_selected = 'row1' or 'col2'
+        #' rowcol_selected = 'row1' or 'col2'
         if isinstance(rowcol_selected, types_specific):
             assert (
                 rowcol_selected in LVLs
             ), f"#!  {rowcol_selected} ({typ}) should be one of {LVLs}"  # #
-        # * rowcol_selected = '(row1, col2)'
+        #' rowcol_selected = '(row1, col2)'
         elif isinstance(rowcol_selected, tuple):
             assert (
                 len(self.factors_rowcol_list) == 2
@@ -178,14 +180,14 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             ), f"#! Facet-key  {rowcol_selected} ({typ}) should have two strings"
             row_or_col1, row_or_col2 = rowcol_selected[0], rowcol_selected[1]
             for row_or_col in (row_or_col1, row_or_col2):
-                typ = ut.get_type(row_or_col)  # * Yes, this has to be that ugly
-                # * If both row and col are present
+                typ = ut.get_type(row_or_col)  #' Yes, this has to be that ugly
+                #' If both row and col are present
                 if LVLs_ROW and LVLs_COL:
                     message = f"#!  {row_or_col} ({typ}) should be one of ROW-levels {LVLs_ROW} if other element is in COL-levels; or one of COL-levels {LVLs_COL} if other element is in ROW-levels"
-                # * If only row is present
+                #' If only row is present
                 elif LVLs_ROW and not LVLs_COL:
                     message = f"#!  {row_or_col} ({typ}) should be one of ROW-levels {LVLs_ROW}"
-                # * If only col is present
+                #' If only col is present
                 elif not LVLs_ROW and LVLs_COL:
                     message = f"#!  {row_or_col} ({typ})  should be one of COL-levels {LVLs_COL}"
                 assert row_or_col in LVLs, message
@@ -228,7 +230,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
             ), f"#! Facet-specific selection was passed, but no facetting (row or col) was done."
 
         ### Selection in indivicual Facets
-        # * {(row, col): [ x1,  {hue4:(x3,x4)},    hue3 ]}
+        #' {(row, col): [ x1,  {hue4:(x3,x4)},    hue3 ]}
         if not include_in_facet is None:
             assert isinstance(
                 include_in_facet, dict
@@ -278,7 +280,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         for xhue in xhue_selected:
             """xhue should be a string or a dictionary
-            (with an x-/hue-level as key and a tuple of two x-/hue-levels as value)"""
+            (with an x-/hue-level as key and a tuple of two x-/hue-levels as value)
+            """
             if isinstance(xhue, self._TYPES_SELECTION):
                 """xhue should be one of levels_xhue"""
                 match = true_value if xhue in PAIR else 0
@@ -483,7 +486,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
                     print(
                         f"#! These are are the p-values that barely missed significance (p < {self.ALPHA_TOLERANCE}): \n",
                         ph_inc.loc[
-                            ph_inc["Sign."] == "toler.", ["pairs", pcol, "Sign."]
+                            ph_inc["Sign."] == "toler.",
+                            ["pairs", pcol, "Sign."],
                         ],
                     )
             elif only_sig == "strict":
@@ -555,10 +559,10 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
         ### Standard KWS for annotate
         config_KWS = dict(
-            text_format="star",  # * ['full', 'simple', 'star']
-            loc="inside",  # * ['inside', 'outside'] where to display stars
-            text_offset=-4,  # * u*10, # Distance between star and its line
-            line_height=0.02,  # * Length of vertical lines at both ends
+            text_format="star",  #' 'full', 'simple', 'star']
+            loc="inside",  #' ['inside', 'outside'] where to display stars
+            text_offset=-4,  #' u*10, # Distance between star and its line
+            line_height=0.02,  #' Length of vertical lines at both ends
             verbose=0,
             line_width=0.7,
         )
@@ -630,8 +634,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         """
 
         ### Assert presence of a posthoc table and plot
-        # * Assert presence of Posthoc
-        # * We could execute automatically, but producing a plot and a posthoc test at the same time is a lot to handle
+        #' Assert presence of Posthoc
+        #' We could execute automatically, but producing a plot and a posthoc test at the same time is a lot to handle
         assert isinstance(
             self.results.DF_posthoc, pd.DataFrame
         ), "Posthoc not tested yet, please call .test_pairwise() first"
@@ -640,10 +644,10 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         PH = self.results.DF_posthoc.copy()
 
         ### Modify PH
-        # * Reset Index for easy access
+        #' eset Index for easy access
         PH.reset_index(inplace=True)
 
-        # * Use only contrast rows from now on, if hue is present to ensure pairs have format (("l1", "l2"),("l3","l4"))
+        #' Use only contrast rows from now on, if hue is present to ensure pairs have format (("l1", "l2"),("l3","l4"))
         if self.dims.hue:
             PH = PH.loc[PH["Contrast"].str.contains("*", regex=False), :]
         # ut.pp(PH)

@@ -19,7 +19,7 @@ import plotastic as plst
 # import plotastic.utils.cache as utc
 from plotastic.utils.subcache import SubCache
 
-# %% 
+# %%
 ### Cache it to speed up
 MEMORY_TESTCONFIGS = SubCache(
     location="./tests",
@@ -31,7 +31,7 @@ MEMORY_TESTCONFIGS = SubCache(
 # MEMORY_TESTCONFIGS.clear()
 
 
-# %% 
+# %%
 # == Load Datasets =====================================================
 #' Source of files is seaborn, markurutils just adds cut column
 
@@ -44,7 +44,7 @@ DF_fmri, dims_fmri = load_dataset("fmri", verbose=False)
 DF_qpcr, dims_qpcr = load_dataset("qpcr", verbose=False)
 
 
-# %% 
+# %%
 # == Arguments for plst.DataAnalysis ===================================
 #' Facet data such that it leads to presence of absence of empty groups
 
@@ -87,7 +87,7 @@ dims_noempty_qpcr = [
     dict(y="FC", x="gene"),
 ]
 
-# %%  
+# %%
 # == Make tuples (DF, dims) ============================================
 #' for pytest.parametrize
 
@@ -102,10 +102,10 @@ zipped_noempty_PAIRED = zipped_noempty_fmri + zipped_noempty_qpcr
 zipped_noempty_ALL = (
     zipped_noempty_tips + zipped_noempty_fmri + zipped_noempty_qpcr
 )
-# len(zipped_noempty_ALL) # * -> 14 total tests
+# len(zipped_noempty_ALL) #' -> 14 total tests
 
 
-# %% 
+# %%
 # == Make Dataanalysis objects =========================================
 
 
@@ -199,8 +199,9 @@ DA_PLOT: plst.DataAnalysis = make_DA_plot("qpcr")
 DA_ALL: plst.DataAnalysis = make_DA_all("qpcr")
 
 
-# %% 
+# %%
 # == Utils =============================================================
+
 
 ###  (DF, dims) -> (DF, dims, kwargs)
 def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:

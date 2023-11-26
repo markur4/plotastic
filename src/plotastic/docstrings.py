@@ -21,8 +21,6 @@ if __name__ == "__main__":
     len("            ")
 
 
-
-
 # %% Write :param: part of docstring
 
 
@@ -44,7 +42,7 @@ def param(
     ### First line, (no tabstop needed)
     # # Don't include :param: in docstring, add that manually always, so
     # # vscode at least shows the parameter in the intellisense
-    S.append(" ")  # * whitespace after :param param:
+    S.append(" ")  #' whitespace after :param param:
     # S = f":param {param}: {wrap_descr(descr)}"
     S.append(
         ut.wrap_text(
@@ -65,7 +63,7 @@ def param(
     ### Further options need a tab
     ### Type
     if typ:
-        S.append("\n\t")  # * newline
+        S.append("\n\t")  #' newline
         S.append(f":type {param}: {typ}")
 
     ### Optional, same line as type

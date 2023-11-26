@@ -5,8 +5,8 @@ import os
 ### List all available datasets
 
 FILES = dict(
-    fmri="fmri.xlsx",  # * Removed timepoints bigger than 10
-    tips="tips.xlsx",  # * Added a size-cut column pd.cut(df["size"], bins=[0, 2, 10], labels=["1-2", ">=3"])
+    fmri="fmri.xlsx",  #' Removed timepoints bigger than 10
+    tips="tips.xlsx",  #' Added a size-cut column pd.cut(df["size"], bins=[0, 2, 10], labels=["1-2", ">=3"])
     qpcr="qpcr.xlsx",
 )
 
@@ -28,13 +28,15 @@ def load_dataset(name: str = "tips", verbose=True) -> tuple[pd.DataFrame, dict]:
     """
 
     ### Check user Arguments
-    assert name in FILES, f" '{name}' should have been one of {list(FILES.keys())}"
+    assert (
+        name in FILES
+    ), f" '{name}' should have been one of {list(FILES.keys())}"
 
     ### Import DataFrame from package
-    package = "plotastic.example_data"  # * Needs to be importable
+    package = "plotastic.example_data"  #' Needs to be importable
     path_relative = os.path.join(
         "data", FILES[name]
-    )  # * Path with python package as root
+    )  #' Path with python package as root
     path_full = pkg_resources.resource_filename(package, path_relative)
     df = pd.read_excel(path_full)
 

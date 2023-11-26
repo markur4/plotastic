@@ -4,11 +4,11 @@ import plotastic as plst
 import unittest
 
 
-
 # %% Import Test Data
-DF, dims = plst.load_dataset("tips")  # * Import Data
-DA = plst.DataAnalysis(data=DF, dims=dims, title="tips")  # * Make DataAnalysis Object
-
+DF, dims = plst.load_dataset("tips")  #' Import Data
+DA = plst.DataAnalysis(
+    data=DF, dims=dims, title="tips"
+)  #' Make DataAnalysis Object
 
 
 # %% Unit Tests

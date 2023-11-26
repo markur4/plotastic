@@ -55,10 +55,10 @@ class MultiPlot(PlotEdits):
         if kind == "strip" and len(sns_kws) == 0:
             sns_kws = dict(alpha=0.6, dodge=True)
 
-        self.subplots(**subplot_kws)  # * Initialise Figure and Axes
-        self.fillaxes(kind=kind, **sns_kws)  # * Fill axes with seaborn graphics
-        self.edit_legend()  # * Add legend to figure
-        plt.tight_layout()  # * Make sure everything fits nicely
+        self.subplots(**subplot_kws)  #' Initialise Figure and Axes
+        self.fillaxes(kind=kind, **sns_kws)  #' Fill axes with seaborn graphics
+        self.edit_legend()  #' Add legend to figure
+        plt.tight_layout()  #' Make sure everything fits nicely
 
         return self
 
@@ -94,21 +94,21 @@ class MultiPlot(PlotEdits):
         ### Boxplot kws
         box_KWS = dict(
             showfliers=False,
-            boxprops=dict(  # * Box line and surface
+            boxprops=dict(  #' Box line and surface
                 alpha=hazy,
                 linewidth=thin,
             ),
-            medianprops=dict(  # * Median line
+            medianprops=dict(  #' Median line
                 alpha=covering,
                 zorder=front,
                 linewidth=thick,
             ),
-            whiskerprops=dict(  # * Lines conencting box and caps
+            whiskerprops=dict(  #' Lines conencting box and caps
                 alpha=covering,
                 zorder=mid,
                 linewidth=thin,
             ),
-            capprops=dict(  # * Caps at the end of whiskers
+            capprops=dict(  #' Caps at the end of whiskers
                 alpha=covering,
                 zorder=mid,
                 linewidth=thick,
@@ -117,15 +117,15 @@ class MultiPlot(PlotEdits):
 
         ### Stripplot kws
         strip_KWS = dict(
-            dodge=True,  # * Separates the points in hue
-            jitter=0.2,  # * How far datapoints of one group scatter across the x-axis
+            dodge=True,  #' Separates the points in hue
+            jitter=0.2,  #' How far datapoints of one group scatter across the x-axis
             zorder=front,
             ### Marker Style
             alpha=marker_alpha,
             size=marker_size,
             # color="none",
             edgecolor="white",
-            linewidth=thin,  # * Edge width of the marker
+            linewidth=thin,  #' Edge width of the marker
         )
 
         ### User KWS
@@ -143,7 +143,6 @@ class MultiPlot(PlotEdits):
             self.edit_legend()
 
         return self
-
 
     def plot_box_swarm(
         self,
@@ -174,24 +173,24 @@ class MultiPlot(PlotEdits):
         ### Boxplot kws
         box_KWS = dict(
             showfliers=False,
-            # * Widths of boxes
+            #' Widths of boxes
             # !! Throws TypeError: matplotlib.axes._axes.Axes.boxplot() got multiple values for keyword argument 'widths'
             # widths=0.9,
-            boxprops=dict(  # * Box line and surface
+            boxprops=dict(  #' Box line and surface
                 alpha=translucent,
                 linewidth=thin,
             ),
-            medianprops=dict(  # * Median line
+            medianprops=dict(  #' Median line
                 alpha=covering,
                 zorder=front,
                 linewidth=thick,
             ),
-            whiskerprops=dict(  # * Lines conencting box and caps
+            whiskerprops=dict(  #' Lines conencting box and caps
                 alpha=covering,
                 zorder=mid,
                 linewidth=thin,
             ),
-            capprops=dict(  # * Caps at the end of whiskers
+            capprops=dict(  #' Caps at the end of whiskers
                 alpha=covering,
                 zorder=mid,
                 linewidth=thick,
@@ -201,14 +200,14 @@ class MultiPlot(PlotEdits):
         ### Swarmplot kws
 
         swarm_KWS = dict(
-            dodge=True,  # * Separates the points in hue
+            dodge=True,  #' Separates the points in hue
             zorder=front,
             ### Marker Style
             alpha=marker_alpha,
             size=marker_size,
             # color="none",
             edgecolor="black",
-            linewidth=thin,  # * Edge width of the marker
+            linewidth=thin,  #' Edge width of the marker
         )
 
         ### User KWS

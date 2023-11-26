@@ -46,7 +46,7 @@ if TYPE_CHECKING:
 #         Returns:
 #             Dimension: _description_
 #         """
-#         # * "nominal", "ordinal", "interval", "ratio
+#         #' "nominal", "ordinal", "interval", "ratio
 
 #         self.name = name
 #         self.som = scale_of_measurement
@@ -78,7 +78,7 @@ class Dims:
 
         # self.som = dict(y="interval", x="ordinal", row="")
 
-        # if som:  # * SOM = Scale of Measurement / Skalenniveau
+        # if som:  #' SOM = Scale of Measurement / Skalenniveau
         #     self.som = som
         # else:
         #     self.som = dict(y= "continuous", )
@@ -86,10 +86,10 @@ class Dims:
     #
     #
     #
-    
+
     def __repr__(self) -> str:
         return self.asdict().__repr__()
-    
+
     # == Properties ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     # @property
@@ -132,7 +132,9 @@ class Dims:
         l = []
         keys = [keys] + [arg for arg in args]
         for key in keys:
-            assert key in defkeys, f"#! '{key}' should have been one of {defkeys}"
+            assert (
+                key in defkeys
+            ), f"#! '{key}' should have been one of {defkeys}"
             l.append(getattr(self, key))
         return l
 
@@ -164,7 +166,7 @@ class Dims:
         """
 
         ### Handle Arguments
-        # * If keys are passed, e.g. dims.switch("x","row",**kwargs)"""
+        #' If keys are passed, e.g. dims.switch("x","row",**kwargs)"""
         if len(keys_args) == 0:
             pass
         elif len(keys_args) == 2:
@@ -174,7 +176,9 @@ class Dims:
             values = self.getvalues(*keys_args)
             keys_kws[keys_args[0]] = values[1]
         else:
-            raise AssertionError(f"#! '{keys_args}' should have been of length 2")
+            raise AssertionError(
+                f"#! '{keys_args}' should have been of length 2"
+            )
         assert len(keys_kws) == 1, f"#! {keys_kws} should be of length 1 "
 
         ### Print first Line
@@ -186,7 +190,7 @@ class Dims:
             print("   (dim =\t'old' -> 'new')")
 
         ### SWITCH IT
-        # * Copy Object
+        #' Copy Object
         original: dict = deepcopy(self.asdict(incl_None=True))
         newobj = self if inplace else deepcopy(self)
 
@@ -223,7 +227,10 @@ class Dims:
                 print(f" {pre} {oK} =\t{printval}")
 
         ### x AND y MUST NOT BE None
-        assert not None in [self.y, self.x], "#! This switch causes x or y to be None"
+        assert not None in [
+            self.y,
+            self.x,
+        ], "#! This switch causes x or y to be None"
 
         return newobj
 
