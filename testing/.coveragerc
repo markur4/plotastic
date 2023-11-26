@@ -6,8 +6,8 @@ source =
     ; */site-packages
 
 
-[run]
-parallel = true
+; [run]
+; parallel = true
 ; omit = tests/*
 ; branch = true
 ; source =
