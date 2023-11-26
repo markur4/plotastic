@@ -44,11 +44,17 @@ class PlotEdits(PlotTool):
         connect="\n",
         capitalize: bool = False,
     ) -> str:
-        """make axis title from key
+        """Makes a standard title for axes
 
-        Args:
-            key (tuple): _description_
-        """
+        :param key: _description_
+        :type key: tuple[str] | str
+        :param connect: _description_, defaults to "\n"
+        :type connect: str, optional
+        :param capitalize: _description_, defaults to False
+        :type capitalize: bool, optional
+        :return: _description_
+        :rtype: str
+        """        
         if isinstance(key, str):
             return ut.capitalize(key)
         elif isinstance(key, tuple):
@@ -62,14 +68,27 @@ class PlotEdits(PlotTool):
 
     def edit_titles(
         self,
-        axes: mpl.axes.Axes = None,
         axtitles: dict = None,
     ) -> "PlotEdits | DataAnalysis":
-        axes = axes or self.axes
+        """Replaces Titles by axes keys
 
+        :param axtitles: _description_, defaults to None
+        :type axtitles: dict, optional
+        :return: _description_
+        :rtype: PlotEdits | DataAnalysis
+        """        
+        
+        ### Assert correct input
+        if not axtitles is None:
+            keys = list(dict(self.axes_iter__keys_ax).keys())
+            for key, ax in axtitles.items():
+                assert key in keys, f"Can't edit titles, '{key}' should be one of {keys}"
+
+        ### Edit titles
         if not axtitles is None:
             for key, ax in self.axes_iter__keys_ax:
-                ax.set_title(axtitles[key])
+                if key in axtitles.keys():
+                    ax.set_title(axtitles[key])
         return self
 
     def edit_titles_with_func(
@@ -79,10 +98,25 @@ class PlotEdits(PlotTool):
         connect="\n",
     ) -> "PlotEdits | DataAnalysis":
         """Applies formatting functions (e.g. lambda x: x.upper()) to
-        row and col titles)"""
+        row and col titles)
+
+        :param row_func: _description_, defaults to None
+        :type row_func: Callable, optional
+        :param col_func: _description_, defaults to None
+        :type col_func: Callable, optional
+        :param connect: _description_, defaults to "\n"
+        :type connect: str, optional
+        :return: _description_
+        :rtype: PlotEdits | DataAnalysis
+        """        
+        ### Default functions
         row_func = row_func or (lambda x: x)
         col_func = col_func or (lambda x: x)
 
+        ### Don't use connect if only one facet
+        # if self.factors_is_1_facet:
+        #     connect=""
+        
         for rowkey, axes in self.axes_iter__row_axes:
             for ax in axes:
                 title = row_func(rowkey)
@@ -93,21 +127,22 @@ class PlotEdits(PlotTool):
                 ax.set_title(title)
         return self
 
-    def edit_title_replace(self, titles: list) -> "PlotEdits | DataAnalysis":
+    def edit_titles_replace(self, titles: list) -> "PlotEdits | DataAnalysis":
         """Edits axes titles. If list is longer than axes, the remaining
         titles are ignored
 
-        Args:
-            titles (list): Titles to be set. The order of the titles
+        :param titles: Titles to be set. The order of the titles
             should be the same as the order of the axes, which is from
-            left to right for row after row (like reading).
-
-        Returns:
-            PlotTool: The object itselt
-        """
+            left to right for row after row (like reading)
+        :type titles: list
+        :return: _description_
+        :rtype: PlotEdits | DataAnalysis
+        """        
+        
 
         for ax, title in zip(self.axes_flat, titles):
-            ax.set_title(title)
+            if not title is None:
+                ax.set_title(title)
         return self
 
     #
