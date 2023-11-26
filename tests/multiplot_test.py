@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 import plotastic as plst
 
-import _DA_configs as dac 
+import _DA_configs as dac
 
 
 # %%
@@ -19,11 +19,13 @@ def test_plot(DF, dims):
         plt.show()
     else:
         plt.close("all")
-    
+
+
 if __name__ == "__main__":
     ipytest.run()
-    
-# %%  
+
+
+# %%
 @pytest.mark.parametrize("DF, dims", dac.zipped_ALL)
 def test_box_strip(DF, dims):
     DA = plst.DataAnalysis(data=DF, dims=dims, verbose=False)
@@ -32,11 +34,13 @@ def test_box_strip(DF, dims):
         plt.show()
     else:
         plt.close("all")
-    
+
+
 if __name__ == "__main__":
     ipytest.run()
 
-# %%  
+
+# %%
 @pytest.mark.parametrize("DF, dims", dac.zipped_ALL)
 def plot_box_swarm(DF, dims):
     DA = plst.DataAnalysis(data=DF, dims=dims, verbose=False)
@@ -45,6 +49,7 @@ def plot_box_swarm(DF, dims):
         plt.show()
     else:
         plt.close("all")
-    
+
+
 if __name__ == "__main__":
     ipytest.run()
