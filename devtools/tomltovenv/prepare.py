@@ -38,6 +38,7 @@ print_header(f"Preparing Environment: {python_s}")
 # == Install packages required for tomltovenv ==================================
 
 PREPARE_PACKAGES = [
+    "venv",
     "toml",  #' to read the python version from pyproject.toml
     "icecream",
 ]
