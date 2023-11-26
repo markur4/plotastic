@@ -402,6 +402,7 @@ class PlotEdits(PlotTool):
         ### Prevent legend duplication:
         if reset_legend:
             self.remove_legend()
+            
         ### An Alias for borderaxespad
         if not pad is None and borderaxespad == 4:
             borderaxespad = pad

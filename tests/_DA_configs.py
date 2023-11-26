@@ -96,6 +96,7 @@ dims_noempty_qpcr = [
 # == Make tuples (DF, dims) ============================================
 #' for pytest.parametrize
 
+zipped_withempty_tips = [(DF_tips, dim) for dim in dims_withempty_tips]
 zipped_noempty_tips = [(DF_tips, dim) for dim in dims_noempty_tips]
 zipped_noempty_fmri = [(DF_fmri, dim) for dim in dims_noempty_fmri]
 zipped_noempty_qpcr = [(DF_qpcr, dim) for dim in dims_noempty_qpcr]
@@ -106,6 +107,10 @@ zipped_noempty_PAIRED = zipped_noempty_fmri + zipped_noempty_qpcr
 ### All should make 14 test
 zipped_noempty_ALL = (
     zipped_noempty_tips + zipped_noempty_fmri + zipped_noempty_qpcr
+)
+
+zipped_ALL = (
+    zipped_noempty_tips + zipped_noempty_fmri + zipped_noempty_qpcr + zipped_withempty_tips
 )
 # len(zipped_noempty_ALL) #' -> 14 total tests
 

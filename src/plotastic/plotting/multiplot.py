@@ -26,10 +26,9 @@ if TYPE_CHECKING:
 
 class MultiPlot(PlotEdits):
     #
-    # == Favorite kwargs ..........................................................................
 
     #
-    # == __init__ .................................................................................
+    # == __init__ ======================================================
 
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
@@ -57,13 +56,15 @@ class MultiPlot(PlotEdits):
 
         self.subplots(**subplot_kws)  #' Initialise Figure and Axes
         self.fillaxes(kind=kind, **sns_kws)  #' Fill axes with seaborn graphics
-        self.edit_legend()  #' Add legend to figure
+        if self.dims.hue:
+            self.edit_legend() #' Add legend to figure
+
         plt.tight_layout()  #' Make sure everything fits nicely
 
         return self
 
     #
-    # == Boxplots .................................................................................
+    # == Boxplots ======================================================
 
     def plot_box_strip(
         self,
@@ -83,12 +84,9 @@ class MultiPlot(PlotEdits):
             strip_kws (dict, optional): _description_. Defaults to dict().
         """
         # == PARAMETERS
-        ### Linewidths
-        thin, thick = 0.3, 1.0
-        ### Alpha
-        covering, translucent, hazy = 1.0, 0.5, 0.3
-        ### z-order
-        front, mid, background, hidden = 100, 50, 1, -1
+        thin, thick = 0.3, 1.0  #' Linewidths
+        covering, translucent, hazy = 1.0, 0.5, 0.3  #' Alpha
+        front, mid, background, hidden = 100, 50, 1, -1  #' z-order
 
         ### == KEYWORD ARGUMENTS
         ### Boxplot kws
@@ -139,7 +137,7 @@ class MultiPlot(PlotEdits):
             .fillaxes(kind="strip", **strip_KWS)
         )
 
-        if legend:
+        if legend and self.dims.hue:
             self.edit_legend()
 
         return self
@@ -162,12 +160,9 @@ class MultiPlot(PlotEdits):
             strip_kws (dict, optional): _description_. Defaults to dict().
         """
         # == PARAMETERS
-        ### Linewidths
-        thin, thick = 0.2, 1.0
-        ### Alpha
-        covering, translucent, hazy = 1.0, 0.5, 0.3
-        ### z-order
-        front, mid, background, hidden = 100, 50, 1, -1
+        thin, thick = 0.2, 1.0  #' Linewidths
+        covering, translucent, hazy = 1.0, 0.5, 0.3  #' Alpha
+        front, mid, background, hidden = 100, 50, 1, -1  #' z-order
 
         ### == KEYWORD ARGUMENTS
         ### Boxplot kws
@@ -198,7 +193,6 @@ class MultiPlot(PlotEdits):
         )
 
         ### Swarmplot kws
-
         swarm_KWS = dict(
             dodge=True,  #' Separates the points in hue
             zorder=front,
@@ -222,7 +216,7 @@ class MultiPlot(PlotEdits):
             .fillaxes(kind="swarm", **swarm_KWS)
         )
 
-        if legend:
+        if legend and self.dims.hue:
             self.edit_legend()
 
         return self
