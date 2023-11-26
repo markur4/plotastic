@@ -72,25 +72,25 @@ classifiers = [
 #' Specify version only if concrete incompatibilities exist
 requires-python = ">=3.11"
 dependencies = [
-    ### Core
+    #* Core
     "numpy",
     "pandas==1.5.3", # !! pingouin Not working with pandas 2.0 yet
-    ### Plotting
+    # * Plotting
     "matplotlib",
     "seaborn",
-    ### Statistics
+    #* Statistics
     "scipy",
-    # "statannot",   # * Superseded by statannotations
+    # "statannot",   #' Superseded by statannotations
     "statannotations",
     "pingouin",
-    ### Excel
-    "xlsxwriter",    # * For saving results to excel
-    "openpyxl",      # * Optional for Pandas, but error when not installed
-    ### Misc
-    "joblib",      # * Caching
-    "colour",      # * For custom colour maps
-    "ipynbname",   # * Used by utils
-    "icecream",    # * Better than print
+    #* Excel
+    "xlsxwriter",    #' For saving results to excel
+    "openpyxl",      #' Optional for Pandas, but error when not installed
+    #* Misc
+    "joblib",      #' Caching
+    "colour",      #' For custom colour maps
+    "ipynbname",   #' Used by utils
+    "icecream",    #' Better than print (and maybe later logging)
 ]
 
 ### Dynamic fields
