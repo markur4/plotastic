@@ -1,4 +1,5 @@
 
 
 ### From within project root
-pytest tests -n 3 --cov --cov-report html:testing/htmlcov --cov-config testing/.coveragerc 
+#' sadly coveragerc can't be in a different directory
+pytest tests -n 3 --cov --cov-report html:testing/htmlcov --cov-config .coveragerc 

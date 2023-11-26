@@ -54,7 +54,7 @@ class PlotEdits(PlotTool):
         :type capitalize: bool, optional
         :return: _description_
         :rtype: str
-        """        
+        """
         if isinstance(key, str):
             return ut.capitalize(key)
         elif isinstance(key, tuple):
@@ -76,13 +76,15 @@ class PlotEdits(PlotTool):
         :type axtitles: dict, optional
         :return: _description_
         :rtype: PlotEdits | DataAnalysis
-        """        
-        
+        """
+
         ### Assert correct input
         if not axtitles is None:
             keys = list(dict(self.axes_iter__keys_ax).keys())
             for key, ax in axtitles.items():
-                assert key in keys, f"Can't edit titles, '{key}' should be one of {keys}"
+                assert (
+                    key in keys
+                ), f"Can't edit titles, '{key}' should be one of {keys}"
 
         ### Edit titles
         if not axtitles is None:
@@ -108,7 +110,7 @@ class PlotEdits(PlotTool):
         :type connect: str, optional
         :return: _description_
         :rtype: PlotEdits | DataAnalysis
-        """        
+        """
         ### Default functions
         row_func = row_func or (lambda x: x)
         col_func = col_func or (lambda x: x)
@@ -116,7 +118,7 @@ class PlotEdits(PlotTool):
         ### Don't use connect if only one facet
         # if self.factors_is_1_facet:
         #     connect=""
-        
+
         for rowkey, axes in self.axes_iter__row_axes:
             for ax in axes:
                 title = row_func(rowkey)
@@ -137,8 +139,7 @@ class PlotEdits(PlotTool):
         :type titles: list
         :return: _description_
         :rtype: PlotEdits | DataAnalysis
-        """        
-        
+        """
 
         for ax, title in zip(self.axes_flat, titles):
             if not title is None:
@@ -386,7 +387,7 @@ class PlotEdits(PlotTool):
         params_KWS = {k: v for k, v in set_KWS.items() if k in ["pad"]}
 
         # == Rotate
-        for ax in self.axes.flatten():
+        for ax in self.axes_flat:
             obj = ax.get_xticklabels()  #' Retrieve ticks
             plt.setp(obj, **ticklabel_KWS)
             ax.tick_params(axis="x", **params_KWS)
@@ -396,11 +397,27 @@ class PlotEdits(PlotTool):
     #
     #' Grid ...................................................#
 
-    def edit_grid(self) -> "PlotEdits | DataAnalysis":
+    def edit_grid(
+        self,
+        y_major_kws: dict = None,
+        y_minor_kws: dict = None,
+        x_major_kws: dict = None,
+    ) -> "PlotEdits | DataAnalysis":
+        
+        ### Defaults
+        y_major_kwargs = dict(ls="-", linewidth=0.5, c="grey")
+        y_minor_kwargs = dict(ls="-", linewidth=0.2, c="grey")
+        x_major_kwargs = dict(ls="-", linewidth=0.3, c="grey")
+        ### Update user input
+        y_major_kwargs.update(**y_major_kws)
+        y_minor_kwargs.update(**y_minor_kws)
+        x_major_kwargs.update(**x_major_kws)
+        
+        
         for ax in self.axes_flat:
-            ax.yaxis.grid(True, which="major", ls="-", linewidth=0.5, c="grey")
-            ax.yaxis.grid(True, which="minor", ls="-", linewidth=0.2, c="grey")
-            ax.xaxis.grid(True, which="major", ls="-", linewidth=0.3, c="grey")
+            ax.yaxis.grid(True, which="major", **y_major_kwargs)
+            ax.yaxis.grid(True, which="minor", **y_minor_kwargs)
+            ax.xaxis.grid(True, which="major", **x_major_kwargs)
         return self
 
     #
@@ -438,7 +455,7 @@ class PlotEdits(PlotTool):
         ### Prevent legend duplication:
         if reset_legend:
             self.remove_legend()
-            
+
         ### An Alias for borderaxespad
         if not pad is None and borderaxespad == 4:
             borderaxespad = pad
