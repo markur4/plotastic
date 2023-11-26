@@ -1,15 +1,17 @@
 ; https://coverage.readthedocs.io/en/latest/config.html
 
-; [paths]
-; source =
-;     src
-;     */site-packages
+[paths]
+source =
+    src
+    ; */site-packages
 
-; [run]
+
+[run]
+parallel = true
+; omit = tests/*
 ; branch = true
 ; source =
 ;     sampleproject
-; parallel = true
 
 [report]
 show_missing = true

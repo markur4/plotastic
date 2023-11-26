@@ -15,13 +15,13 @@ home = os.path.join(
 #' Define a Memory object for different purposes
 MEMORY_UTILS = SubCache(
     location=home,
-    subcache_dir="plotastic_utils",
     assert_parent=".cache",
+    subcache_dir="plotastic_utils",
 )
 # MEMORY_PLOTTING = SubCache(
 #     location=home,
-#     subcache_dir="plotastic_plotting",
 #     assert_parent=".cache",
+#     subcache_dir="plotastic_plotting",
 # )
 
 ### Cache like this:

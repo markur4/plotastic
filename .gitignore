@@ -15,6 +15,7 @@ setup_env.ipynb
 joblib_cache
 
 # Folder for storing not to publish things
+GITIGNORE
 GIT_IGNORE
 Dont_Publish
 DEVELOPMENT

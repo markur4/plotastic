@@ -21,11 +21,13 @@ from plotastic.utils.subcache import SubCache
 
 # %%
 ### Cache it to speed up
+# !! Execute from within plotastic folder!
+# !! Makes a wrong cache folder if executed with interactive mode
 MEMORY_TESTCONFIGS = SubCache(
-    location="./tests",
+    location="../testing", #' Passed to joblib.Memory
+    assert_parent="testing",
+    subcache_dir="testconfigs", #' subfolder of location, overrides joblib
     verbose=True,
-    subcache_dir="testconfigs",
-    assert_parent="tests",
 )
 ### Clear cache if needed
 # MEMORY_TESTCONFIGS.clear()

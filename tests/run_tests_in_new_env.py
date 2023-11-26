@@ -1,3 +1,5 @@
+"""A helper script to execute tests in a new virtual environment. Not
+needed if tomltovenv is used to create the virtual environment."""
 #
 # %%
 import os

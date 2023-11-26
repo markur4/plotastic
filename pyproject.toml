@@ -103,10 +103,11 @@ dependencies = [
 dev = [
     "pytest",
     "ipytest",
-    "pytest-cov", # * Displays how much of code was covered by testing
-    "nbconvert",  # * For converting notebooks to markdown
-    "build",      # * For building the package into dist
-    "twine",      # * For uploading to PyPI
+    "pytest-cov",   # * Displays how much of code was covered by testing
+    "pytest-xdist", # * Parallel testing
+    "nbconvert",    # * For converting notebooks to markdown
+    "build",        # * For building the package into dist
+    "twine",        # * For uploading to PyPI
 ]
 
 

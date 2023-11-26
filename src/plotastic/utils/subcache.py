@@ -32,6 +32,7 @@ class SubCache(Memory):
     ):
         super().__init__(*args, **kwargs)
 
+        ### Subfolder of location, overrides default subfolder by joblib
         self.subcache_dir = subcache_dir
 
         ### self.location/joblib/subcache
@@ -45,7 +46,7 @@ class SubCache(Memory):
             parent = os.path.split(parent_full)[-1]
             assert (
                 parent == assert_parent
-            ), f"Cache location is not {assert_parent}, but {parent_full}"
+            ), f"When Initializing joblib.Memory, we expected cache to be in {assert_parent}, but we ended up in {parent_full}"
 
     def list_dirs(
         self, detailed: bool = False, max_depth: int = 3
