@@ -9,7 +9,7 @@ import plotastic.utils.utils as ut
 
 
 # %% .... Apply settings
-def set_style(settings: dict | str):
+def set_style(style: dict | str):
     """Iterates through settings dictionary and applies them to matplotlib rcParams via mpl.rcParams[setting] = value.
 
     Args:
@@ -21,20 +21,19 @@ def set_style(settings: dict | str):
     Returns:
         _type_: _description_
     """
-    if isinstance(settings, str):
-        if settings == "paper":
-            settings = STYLE_PAPER
-        elif settings in ("default", "defaults"):
+    styles = list(STYLES.keys())
+    styles.extend(["default", "defaults"])
+    assert style in styles, f"Unidentified style {style} Use one of: {styles}"
+    
+    if isinstance(style, str):
+        if style == "paper":
+            style = STYLE_PAPER
+        elif style in ("default", "defaults"):
             mpl.rcParams.update(mpl.rcParamsDefault)
             return None
-        else:
-            raise ValueError(
-                f"Unknown settings string {settings}. "
-                f"Use one of: {['plst_paper']}"
-            )
 
     ### Define settings
-    for setting, value in settings.items():
+    for setting, value in style.items():
         mpl.rcParams[setting] = value
 
 
@@ -116,6 +115,9 @@ STYLE_PAPER = {
     # 'scatter.marker': 'x',
 }
 
+STYLES = {
+    "paper":STYLE_PAPER,
+}
 
 ## !!!
 
