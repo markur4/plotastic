@@ -31,24 +31,25 @@ MEMORY_TESTCONFIGS = SubCache(
 # MEMORY_TESTCONFIGS.clear()
 
 
-# %% Datasets
-
-### Source of files is seaborn, markurutils just adds cut column
-
-# ==
-# == Load example data =================================================================
+# %% 
+# == Load Datasets =====================================================
+#' Source of files is seaborn, markurutils just adds cut column
 
 ### Cache function
 load_dataset = MEMORY_TESTCONFIGS.subcache(plst.load_dataset)
 
+### Load datasets
 DF_tips, dims_tips = load_dataset("tips", verbose=False)
 DF_fmri, dims_fmri = load_dataset("fmri", verbose=False)
 DF_qpcr, dims_qpcr = load_dataset("qpcr", verbose=False)
 
 
-# %% Arguments
+# %% 
+# == Arguments for plst.DataAnalysis ===================================
+#' Facet data such that it leads to presence of absence of empty groups
 
-### Args that make empty groups
+
+### Empty groups
 dims_withempty_tips = [
     dict(y="tip", x="day", hue="sex", col="smoker", row="time"),
     dict(y="tip", x="sex", hue="day", col="smoker", row="time"),
@@ -62,8 +63,7 @@ dims_withempty_tips = [
 ]
 
 
-### Args making sure they don't make empty groups
-# !! Don't add more, other tests assume 4 entries
+### Don't make empty groups
 dims_noempty_tips = [
     dict(y="tip", x="size-cut", hue="smoker", col="sex", row="time"),
     dict(y="tip", x="size-cut", hue="smoker", col="sex"),
@@ -87,12 +87,13 @@ dims_noempty_qpcr = [
     dict(y="FC", x="gene"),
 ]
 
-# %%  Combine for pytest.parametrize
+# %%  
+# == Make tuples (DF, dims) ============================================
+#' for pytest.parametrize
 
 zipped_noempty_tips = [(DF_tips, dim) for dim in dims_noempty_tips]
 zipped_noempty_fmri = [(DF_fmri, dim) for dim in dims_noempty_fmri]
 zipped_noempty_qpcr = [(DF_qpcr, dim) for dim in dims_noempty_qpcr]
-
 
 ### Paired Data (with subject)
 zipped_noempty_PAIRED = zipped_noempty_fmri + zipped_noempty_qpcr
@@ -104,10 +105,11 @@ zipped_noempty_ALL = (
 # len(zipped_noempty_ALL) # * -> 14 total tests
 
 
-# %% Dataanalysis objects
+# %% 
+# == Make Dataanalysis objects =========================================
 
 
-def get_DA_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
+def make_DA_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
     """Makes a DA object with every possible data stored in it
 
     :param dataset: "tips", "fmri", or "qpcr"
@@ -144,7 +146,7 @@ def get_DA_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
     return DA
 
 
-def get_DA_plot(dataset: str = "qpcr") -> plst.DataAnalysis:
+def make_DA_plot(dataset: str = "qpcr") -> plst.DataAnalysis:
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         ### Load example data
@@ -158,17 +160,18 @@ def get_DA_plot(dataset: str = "qpcr") -> plst.DataAnalysis:
         return DA
 
 
-def get_DA_all(dataset: str) -> plst.DataAnalysis:
+def make_DA_all(dataset: str) -> plst.DataAnalysis:
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
 
-        DA = get_DA_statistics(dataset)
+        DA = make_DA_statistics(dataset)
         DA.plot_box_swarm()
         plt.close()
         return DA
 
 
 # %%
+### Test make functions
 if __name__ == "__main__":
     pass
     # %%
@@ -186,17 +189,19 @@ if __name__ == "__main__":
 # %%
 
 ### Cache results of these functions to speed up testing
-get_DA_statistics = MEMORY_TESTCONFIGS.subcache(get_DA_statistics)
-get_DA_plot = MEMORY_TESTCONFIGS.subcache(get_DA_plot)
-get_DA_all = MEMORY_TESTCONFIGS.subcache(get_DA_all)
+make_DA_statistics = MEMORY_TESTCONFIGS.subcache(make_DA_statistics)
+make_DA_plot = MEMORY_TESTCONFIGS.subcache(make_DA_plot)
+make_DA_all = MEMORY_TESTCONFIGS.subcache(make_DA_all)
 
 ### Make DataAnalysis objects for testing
-DA_STATISTICS: plst.DataAnalysis = get_DA_statistics("qpcr")
-DA_PLOT: plst.DataAnalysis = get_DA_plot("qpcr")
-DA_ALL: plst.DataAnalysis = get_DA_all("qpcr")
+DA_STATISTICS: plst.DataAnalysis = make_DA_statistics("qpcr")
+DA_PLOT: plst.DataAnalysis = make_DA_plot("qpcr")
+DA_ALL: plst.DataAnalysis = make_DA_all("qpcr")
 
 
-# %% Utils
+# %% 
+# == Utils =============================================================
+
 ###  (DF, dims) -> (DF, dims, kwargs)
 def add_zip_column(zipped: list[tuple], column: list) -> list[tuple]:
     """Adds a column to a list of tuples. Useful for adding a list of arguments to a
