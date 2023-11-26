@@ -243,6 +243,7 @@ class PlotEdits(PlotTool):
             ax.yaxis.set_major_formatter(
                 mpl.ticker.PercentFormatter(xmax=1, decimals=decimals_major)
             )
+            # TODO: Not working
             ax.yaxis.set_minor_formatter(
                 mpl.ticker.PercentFormatter(xmax=1, decimals=decimals_minor)
             )

@@ -56,7 +56,6 @@ if __name__ == "__main__":
     ipytest.run()
 
 # %%
-
 titles_zip = [
     ["sdfsfd", None, "dd", None],
     [None, "aa"],
@@ -80,9 +79,8 @@ def test_edit_titles_replace(DF, dims, titles: dict):
 if __name__ == "__main__":
     ipytest.run()
 
+
 # %%
-
-
 @pytest.mark.parametrize("DF, dims", dac.zipped_ALL)
 def test_edit_xy_axis_labels(DF, dims):
     DA = plst.DataAnalysis(data=DF, dims=dims, verbose=False)
@@ -93,6 +91,39 @@ def test_edit_xy_axis_labels(DF, dims):
         y="Johannes",
         y_leftmost_col="Gertrude",
         y_notleftmost_col="Hä?",
+    )
+    if __name__ == "__main__":
+        plt.show()
+    else:
+        plt.close("all")
+
+
+if __name__ == "__main__":
+    ipytest.run()
+
+
+# %%
+@pytest.mark.parametrize("DF, dims", dac.zipped_ALL)
+def test_edit_y_scale_log(DF, dims):
+    DA = plst.DataAnalysis(data=DF, dims=dims, verbose=False)
+    DA.plot().edit_y_scale_log(base=2)
+    if __name__ == "__main__":
+        plt.show()
+    else:
+        plt.close("all")
+
+
+if __name__ == "__main__":
+    ipytest.run()
+
+
+# %%
+@pytest.mark.parametrize("DF, dims", dac.zipped_ALL)
+def test_edit_y_ticklabel_percentage(DF, dims):
+    DA = plst.DataAnalysis(data=DF, dims=dims, verbose=False)
+    DA.plot().edit_y_ticklabel_percentage(
+        decimals_major=1,
+        decimals_minor=1, # !! Not working
     )
     if __name__ == "__main__":
         plt.show()
