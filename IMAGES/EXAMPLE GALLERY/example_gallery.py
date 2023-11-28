@@ -1,0 +1,1 @@
+"""Script that draws all the images in the EXAMPLE GALLERY folder."""

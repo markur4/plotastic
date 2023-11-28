@@ -295,7 +295,7 @@ class PlotTool(DataFrameTool):
         Returns:
             tuple["mpl.figure.Figure", "mpl.axes.Axes"]: matplotlib figure and axes objects
         """
-
+        
         # == Handle kwargs
         ### Adds extra kwargs depending on kwargs already present
         if sharey and (wspace is None):

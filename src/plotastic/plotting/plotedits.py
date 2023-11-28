@@ -435,7 +435,7 @@ class PlotEdits(PlotTool):
         by_label = dict(zip(labels, handles))
         handles = by_label.values()
         labels = by_label.keys()
-        labels = [ut.capitalize(l) for l in labels]
+        # labels = [ut.capitalize(l) for l in labels]
         return handles, labels
 
     def edit_legend(

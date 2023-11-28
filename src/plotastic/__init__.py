@@ -9,7 +9,7 @@ __author__ = "markur4"
 
 
 # == Flatten module access  ============================================
-from .plotting.rc import set_style, set_palette
+from .plotting.rc_utils import set_style, print_styles, set_palette
 from .dataanalysis.dataanalysis import DataAnalysis
 from .example_data.load_dataset import load_dataset
 
@@ -18,6 +18,7 @@ from .example_data.load_dataset import load_dataset
 __all__ = [
     DataAnalysis,
     set_style,
+    print_styles,
     set_palette,
     load_dataset,
 ]

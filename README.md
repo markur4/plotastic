@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/Logo/plotastic_logo.png" width="400px" height="300px" alt="logo">
+  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/LOGO/plotastic_logo.png" width="400px" height="300px" alt="logo">
 </h1>
 
 <h1 align="center">
@@ -652,15 +652,18 @@ classDiagram
 
 
 
-# Documentation 📔
+# How To Use 📔
 
 [//]:<=========================================================================>
 
-## Docs 💡
+## Documentations 💡
 1. [Quick Example: FMRI Dataset](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/quick_example_fmri.ipynb)
 2. [Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
 3. [Plotting](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plotting.ipynb)
-4. [Plotting: MultiPlots](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plotting_multiplots.ipynb)
+   1. [Legends](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_legend.ipynb)
+   2. [MultiPlots](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_multiplots.ipynb)
+   3. [Editing Figures](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_editing.ipynb)
+   4. [Styles](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_styles.ipynb)
 
 ## Quick Example 💨
 

@@ -1,68 +1,18 @@
 #
-# %% Imports
+# %% 
+### Imports
 
 import matplotlib as mpl
-import seaborn as sns
-
-# import markurutils as ut
-import plotastic.utils.utils as ut
 
 
-# %% .... Apply settings
-def set_style(style: dict | str):
-    """Iterates through settings dictionary and applies them to matplotlib rcParams via mpl.rcParams[setting] = value.
-
-    Args:
-        settings (dict | str): _description_
-
-    Raises:
-        ValueError: _description_
-
-    Returns:
-        _type_: _description_
-    """
-    styles = list(STYLES.keys())
-    styles.extend(["default", "defaults"])
-    assert style in styles, f"Unidentified style {style} Use one of: {styles}"
-    
-    if isinstance(style, str):
-        if style == "paper":
-            style = STYLE_PAPER
-        elif style in ("default", "defaults"):
-            mpl.rcParams.update(mpl.rcParamsDefault)
-            return None
-
-    ### Define settings
-    for setting, value in style.items():
-        mpl.rcParams[setting] = value
-
-
-def set_palette(palette: str | list = "Paired", verbose=True):
-    """Sets the color palette via sns.set_theme(palette=palette).
-
-    Args:
-        palette (str | list, optional): _description_. Defaults to "Paired".
-        verbose (bool, optional): _description_. Defaults to True.
-    """
-    if verbose:
-        pal = sns.color_palette(palette, 8).as_hex()
-        print(f"#! You chose this color palette: {pal}")
-        if ut.is_notebook():
-            from IPython.display import display
-
-            display(pal)
-
-    # sns.set_theme(palette=palette) # !! resets rcParams
-    mpl.rcParams["axes.prop_cycle"] = mpl.cycler(
-        color=sns.color_palette(palette)
-    )
-
-
-# %% .... Style: Paper
-
+# %%
+# == Variables ro reuse ================================================
 FONTSIZE = 10
 
-STYLE_PAPER = {
+
+# %%
+# == STYLE PAPER =======================================================
+S_PAPER = {
     # == Figure
     "figure.dpi": 200,  #' Displaying figures doesn't need as much dpi as saving them
     "figure.figsize": (3, 3),  #' default is way too big
@@ -115,24 +65,20 @@ STYLE_PAPER = {
     # 'scatter.marker': 'x',
 }
 
+# == Collect STYLES ====================================================
+
+### Give styles a name and add them to STYLES_PLST
 STYLES = {
-    "paper":STYLE_PAPER,
+    "default": S_PAPER,
+    "paper": S_PAPER,
 }
 
-## !!!
+### Keys are the styles, values are the keys of the styles
+STYLENAMES = {
+    "plotastic": sorted(list(STYLES.keys())),
+    "seaborn": ["white", "dark", "whitegrid", "darkgrid", "ticks"],
+    "matplotlib": mpl.style.available,
+}
 
-# # %% Default Style
 
-# import plotastic as plst
-# df, dims = ut.load_dataset("fmri")
-# DA = plst.DataAnalysis(df, dims)
 
-# set_style("default")
-# g = DA.catplot()
-
-# # %% Apply settings
-
-# set_palette() #* defaults to "Paired"
-# g = DA.catplot()
-
-# %%

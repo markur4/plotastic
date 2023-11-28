@@ -138,6 +138,7 @@ class MultiPlot(PlotEdits):
             .fillaxes(kind="strip", **strip_KWS)
         )
 
+        ### Legend displaying labels of stripplot (since that was called last)
         if legend and self.dims.hue:
             self.edit_legend(**legend_kws)
 
@@ -218,6 +219,7 @@ class MultiPlot(PlotEdits):
             .fillaxes(kind="swarm", **swarm_KWS)
         )
 
+        ### Legend displaying labels of swarmplot (since that was called last)
         if legend and self.dims.hue:
             self.edit_legend(**legend_kws)
 
