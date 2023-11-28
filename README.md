@@ -659,7 +659,8 @@ classDiagram
 ## Docs 💡
 1. [Quick Example: FMRI Dataset](https://github.com/markur4/plotastic/blob/main/How_To_Use/quick_example_fmri.ipynb)
 2. [Switch Dimensions](https://github.com/markur4/plotastic/blob/main/How_To_Use/dimensions.ipynb)
-   
+3. [Plotting]((https://github.com/markur4/plotastic/blob/main/How_To_Use/plotting.ipynb))
+
 ## Quick Example 💨
 
 [//]:<=========================================================================>
