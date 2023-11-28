@@ -657,14 +657,15 @@ classDiagram
 [//]:<=========================================================================>
 
 ## Docs 💡
-1. [Quick Example: FMRI Dataset](https://github.com/markur4/plotastic/blob/main/How_To_Use/quick_example_fmri.ipynb)
-2. [Switch Dimensions](https://github.com/markur4/plotastic/blob/main/How_To_Use/dimensions.ipynb)
-3. [Plotting](https://github.com/markur4/plotastic/blob/main/How_To_Use/plotting.ipynb)
+1. [Quick Example: FMRI Dataset](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/quick_example_fmri.ipynb)
+2. [Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
+3. [Plotting](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plotting.ipynb)
+4. [Plotting: MultiPlots](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plotting_multiplots.ipynb)
 
 ## Quick Example 💨
 
 [//]:<=========================================================================>
-[//]:<.ipynb Notebooks taken from How_To_Use.ipynb>
+[//]:<.ipynb Notebooks taken from HOW_TO_USE.ipynb>
 [//]:<Converted using:>
 [//]:<jupyter nbconvert --to markdown your_notebook.ipynb>
 
@@ -745,7 +746,7 @@ DA.catplot(alpha=0.3) # Works with *kwargs of seaborn.catplot()
 
 
     
-![How_To_Use/quick_example_fmri_files/quick_example_fmri_7_0.png](https://raw.githubusercontent.com/markur4/plotastic/main/How_To_Use/quick_example_fmri_files/quick_example_fmri_7_0.png)
+![HOW_TO_USE/quick_example_fmri_files/quick_example_fmri_7_0.png](https://raw.githubusercontent.com/markur4/plotastic/main/HOW_TO_USE/quick_example_fmri_files/quick_example_fmri_7_0.png)
     
 
 
@@ -1034,7 +1035,7 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
     
-![How_To_Use/quick_example_fmri_files/example.png](https://raw.githubusercontent.com/markur4/plotastic/main/How_To_Use/quick_example_fmri_files/example.png)
+![HOW_TO_USE/quick_example_fmri_files/example.png](https://raw.githubusercontent.com/markur4/plotastic/main/HOW_TO_USE/quick_example_fmri_files/example.png)
     
 
 

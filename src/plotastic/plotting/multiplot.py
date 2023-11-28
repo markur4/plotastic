@@ -74,6 +74,7 @@ class MultiPlot(PlotEdits):
         subplot_kws: dict = dict(),
         box_kws: dict = dict(),
         strip_kws: dict = dict(),
+        legend_kws: dict = dict(),
     ) -> "MultiPlot | DataAnalysis":
         """A boxplot with a stripplott (scatter) on top
 
@@ -119,8 +120,8 @@ class MultiPlot(PlotEdits):
             jitter=0.2,  #' How far datapoints of one group scatter across the x-axis
             zorder=front,
             ### Marker Style
-            alpha=marker_alpha,
             size=marker_size,
+            alpha=marker_alpha,
             # color="none",
             edgecolor="white",
             linewidth=thin,  #' Edge width of the marker
@@ -138,7 +139,7 @@ class MultiPlot(PlotEdits):
         )
 
         if legend and self.dims.hue:
-            self.edit_legend()
+            self.edit_legend(**legend_kws)
 
         return self
 
@@ -150,6 +151,7 @@ class MultiPlot(PlotEdits):
         subplot_kws: dict = dict(),
         box_kws: dict = dict(),
         swarm_kws: dict = dict(),
+        legend_kws: dict = dict(),
     ) -> "MultiPlot | DataAnalysis":
         """A boxplot with a stripplott (scatter) on top
 
@@ -217,7 +219,7 @@ class MultiPlot(PlotEdits):
         )
 
         if legend and self.dims.hue:
-            self.edit_legend()
+            self.edit_legend(**legend_kws)
 
         return self
 
