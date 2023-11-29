@@ -276,7 +276,7 @@ class PlotTool(DataFrameTool):
 
     # ==
     # ==
-    # ==   PLOT  =======================================================================
+    # ==   PLOT  =======================================================
 
     def subplots(
         self,
@@ -322,7 +322,7 @@ class PlotTool(DataFrameTool):
         #' User args override defaults
         KWS = ut.update_dict_recursive(KWS, subplot_kws)
 
-        # == SUBPLOTS ===========
+        ### SUBPLOTS ===========
         self.fig: plt.Figure
         self.axes: plt.Axes | np.ndarray[plt.Axes]
         self.fig, self.axes = plt.subplots(
@@ -330,7 +330,7 @@ class PlotTool(DataFrameTool):
             **KWS,
         )
 
-        # == EDITS ==============
+        ### Edits
         ### Add titles to axes to provide basic orientation
         self.edit_axtitles_reset()
 
@@ -349,13 +349,15 @@ class PlotTool(DataFrameTool):
     def fillaxes(
         self, kind: str = "strip", **sns_kws: dict
     ) -> "PlotTool | DataAnalysis":
-        """Iterates through self.data and self.axes and plots data into axes using
-        seaborn plotting functions.
+        """Iterates through self.data and self.axes and plots data into
+        axes using seaborn plotting functions.
 
-        :param kind: Kind of plot, any seaborn plot should work ["bar", "box", "strip",
-            "swarm", "point", "violin", etc.]. , defaults to "strip"
+        :param kind: Kind of plot, any seaborn plot should work ["bar",
+            "box", "strip", "swarm", "point", "violin", etc.]. ,
+            defaults to "strip"
         :type kind: str, optional
-        :param sns_kws: Keyword arguments passed to seaborn function selected in kind.
+        :param sns_kws: Keyword arguments passed to seaborn function
+            selected in kind.
         :return: DataAnalysis object for method chaining
         :rtype: PlotTool | DataAnalysis
         """
@@ -411,14 +413,15 @@ class PlotTool(DataFrameTool):
 
     #
     #
-    # == Fig properties ================================================================
+    # == Fig properties ================================================
+    
     @property
     def figsize(self) -> tuple[int]:
         return self.fig.get_size_inches()
 
     #
     #
-    # == Small EDITS and those required to be set BEFORE seaborn plots =================
+    # == Small EDITS and those required to be set BEFORE seaborn plots =
     def edit_axtitles_reset(self) -> "PlotTool | DataAnalysis":
         for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))
@@ -429,8 +432,8 @@ class PlotTool(DataFrameTool):
             if ax.legend_:
                 ax.legend_.remove()
 
-    # == Save =========================================================================
-    # !! NOT WORKING, just use plt.savefig() manually, I couldn't figure this out
+    # == Save ==========================================================
+    # # !! NOT WORKING, just use plt.savefig() manually, I couldn't figure this out
 
     # def save_fig(self, **savefig_kwargs) -> "PlotTool | DataAnalysis":
     #     """Calls plt.figure.Figure.savefig(). Overridden by DataAnalysis.save_fig(), but
@@ -444,7 +447,7 @@ class PlotTool(DataFrameTool):
     #     # self.fig.savefig(**savefig_kwargs)
     #     return self
 
-    # == Buffer =======================================================================
+    # == Buffer ========================================================
     # !! Not used, can't get full control over matplotlib hidden objects
 
     # @staticmethod

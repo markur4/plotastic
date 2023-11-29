@@ -52,14 +52,11 @@ def set_style(style: dict | str) -> None:
         try:
             sns.set_style(style)
         except ValueError:
-            # styles_all_s = '\n'.join([str(s) for s in styles_all])
-            # ### Make a pretty printed string of styles_all dictionary
-
-            raise ValueError(
-                f"#! Style '{style}' not found. Choose one from these: {print_styles()}"
-            )
-
-
+            m = [
+                f"#! Style '{style}' not found. Choose one",
+                f"from these: {print_styles()}",
+            ]
+            raise ValueError(" ".join(m))
 
 
 # %%

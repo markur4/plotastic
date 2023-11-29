@@ -21,13 +21,17 @@ from IPython import get_ipython
 import numpy as np
 import pandas as pd
 
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+
 import plotastic.caches as caches
 
 if TYPE_CHECKING:
     pass
 
 
-# %% Types
+# %%
+# == Types =============================================================
 
 NUMERICAL_TYPES = [
     int,
@@ -38,7 +42,8 @@ NUMERICAL_TYPES = [
 ]
 
 
-# %% print
+# %%
+# == print =============================================================
 
 
 def get_terminal_width():
@@ -65,7 +70,8 @@ def print_separator(char="=", length=None):
     print(char * num_chars)
 
 
-# %% Builtins: ALL
+# %%
+# == Builtins: ALL =====================================================
 
 
 def get_type(o):
@@ -102,7 +108,8 @@ def check_unordered_identity(
         )
 
 
-# %% Builtins: Numbers
+# %%
+# == Builtins: Numbers =================================================
 
 
 def exponent_from_float(number: float):
@@ -114,7 +121,8 @@ def mantissa_from_float(number: float):
     return Decimal(number).scaleb(-exponent_from_float(number)).normalize()
 
 
-# %% Builtins: Strings
+# %%
+# == Builtins: Strings =================================================
 
 
 def capitalize(s: str) -> str:
@@ -263,7 +271,8 @@ if __name__ == "__main__":
     print(w)
 
 
-# %% Builtins: Lists
+# %%
+# == Builtins: Lists ===================================================
 
 
 def ensure_list(
@@ -324,7 +333,8 @@ def all_of_l1_in_l2(l1: list | tuple, l2: tuple | list) -> bool:
     return all(tuple(e in l2 for e in l1))
 
 
-# %% Builtins: Dicts
+# %%
+# == Builtins: Dicts ===================================================
 
 
 def get_key(q, dic):
@@ -394,7 +404,8 @@ def printable_dict(D, key_adjust=5, start_message=None, print_type=True):
 
 # %%
 
-# %% pandas
+# %%
+# == pandas ============================================================
 
 
 def pp(df, prec: int = None, ret: bool = False) -> DisplayObject:
@@ -499,7 +510,31 @@ def drop_columns_by_regex(DF: "pd.DataFrame", pattern: str):
     return DF
 
 
-# %% plotting
+# %%
+#
+# == Plotting ==========================================================
+
+
+def get_bbox_width(bbox: mpl.transforms.Bbox, in_inches=True):
+    if not isinstance(bbox, mpl.transforms.Bbox):
+        try:
+            # bbox = bbox.get_window_extent() # ?? same as get_tightbbox()
+            bbox = bbox.get_tightbbox()
+        except AttributeError:
+            raise TypeError(
+                f"#! bbox must be of type matplotlib.transforms.Bbox, not {type(bbox)}"
+            )
+
+    ### BBox is [[xmin, ymin], [xmax, ymax]]
+    xmin, xmax = bbox.extents[0], bbox.extents[2]
+    # ymin, ymax = bbox.extents[1], bbox.extents[3]
+
+    width_pixels = xmax - xmin
+    if in_inches:
+        width_inches = width_pixels / plt.rcParams["figure.dpi"]
+        return width_inches
+    else:
+        return width_pixels
 
 
 def make_cmap_saturation(
@@ -537,8 +572,63 @@ def make_cmap_saturation(
 # !! Cache it
 make_cmap_saturation = caches.MEMORY_UTILS.subcache(make_cmap_saturation)
 
+# %%
+# == MPL: Fonts ====================================================
 
-# %% I/O
+
+def mpl_font():
+    return mpl.font_manager.FontProperties().get_name()
+
+
+def mpl_fontpath():
+    """Returns path to the font used by matplotlib"""
+    from matplotlib.font_manager import findfont, FontProperties
+
+    family = mpl.rcParams["font.family"]
+    properties = FontProperties(family=family)
+    font = findfont(properties)
+    return font
+
+
+def mpl_fontsizes_get_all() -> dict:
+    ### Make dummy text object
+    _fig, ax = plt.subplots()
+    t = ax.text(0.5, 0.5, "Text")
+
+    ### These are scaled dependend on mpl.rcParams["font.size"]!
+    fonts = [
+        "xx-small",
+        "x-small",
+        "small",  #' if medium is 10, then this is 8.33
+        "medium",  #' = mpl.rcParams["font.size"]
+        "large",  #' if medium is 10, then this is 12.0
+        "x-large",
+        "xx-large",
+        "larger",
+        "smaller",
+    ]
+
+    fontsizes = {}
+    for font in fonts:
+        t.set_fontsize(font)
+        fontsizes[font] = round(t.get_fontsize(), 2)
+
+    plt.close()  #!!
+    return fontsizes
+
+
+def mpl_fontsize_from_rc(rc_param: str = "font.size") -> int:
+    """Returns fontsize from rcParams."""
+    fontsize = mpl.rcParams[rc_param]
+    if isinstance(fontsize, str):
+        return mpl_fontsizes_get_all()[fontsize]
+    elif isinstance(fontsize, (int, float)):
+        return fontsize
+
+
+# %%
+
+# == I/O ===============================================================
 
 
 def glob_searchfilename(path: "Path", filename: str, rettype="list"):

@@ -12,6 +12,7 @@ __author__ = "markur4"
 from .plotting.rc_utils import set_style, print_styles, set_palette
 from .dataanalysis.dataanalysis import DataAnalysis
 from .example_data.load_dataset import load_dataset
+from .utils import utils
 
 
 # == __all__ ===========================================================

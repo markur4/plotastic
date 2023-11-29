@@ -12,7 +12,7 @@ FONTSIZE = 10
 
 # %%
 # == STYLE PAPER =======================================================
-S_PAPER = {
+PAPER = {
     # == Figure
     "figure.dpi": 200,  #' Displaying figures doesn't need as much dpi as saving them
     "figure.figsize": (3, 3),  #' default is way too big
@@ -59,7 +59,7 @@ S_PAPER = {
     "legend.markerscale": 1.3,  #' size scaled of markers in legend
     "legend.handleheight": 0.7,  #' line distance between legend entries
     "legend.handletextpad": 0.1,  #' distance markers legend text
-    # 'legend.borderaxespad': 1, #' distance legend axes border
+    # 'legend.borderaxespad': 1, #' distance legend axes border, must be negative..?
     "legend.borderpad": 0.001,
     # 'text.usetex': True,
     # 'scatter.marker': 'x',
@@ -69,8 +69,8 @@ S_PAPER = {
 
 ### Give styles a name and add them to STYLES_PLST
 STYLES = {
-    "default": S_PAPER,
-    "paper": S_PAPER,
+    "default": PAPER,
+    "paper": PAPER,
 }
 
 ### Keys are the styles, values are the keys of the styles

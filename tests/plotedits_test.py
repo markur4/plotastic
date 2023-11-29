@@ -10,6 +10,9 @@ import plotastic as plst
 import _DA_configs as dac
 
 
+
+
+
 # %%
 titles_tips = [
     {("Lunch", "Male"): "blaa"},
@@ -238,7 +241,7 @@ def test_edit_legend(DF, dims):
             loc="upper right",
             bbox_to_anchor=(1.3, 1),
             borderaxespad=1,
-            pad=0.5,
+            # pad=0.5,
             frameon=True,
         )  #' To see minor ticks
 

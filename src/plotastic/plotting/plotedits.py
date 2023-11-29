@@ -1,10 +1,13 @@
 #
-# %% imports
+# %%
+# == imports ===========================================================
 from os import remove
 from typing import TYPE_CHECKING, Callable
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+import seaborn as sns
 
 # import pyperclip
 
@@ -21,7 +24,7 @@ if TYPE_CHECKING:
 
 class PlotEdits(PlotTool):
     #
-    # == __init__ .......................................................................
+    # == __init__ ======================================================
 
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
@@ -29,14 +32,7 @@ class PlotEdits(PlotTool):
         self._edit_y_scalechanged = False
 
     #
-    # == EDIT .........................................................................
-
-    #
-    #' Shapes & Sizes ........................................#
-    # TODO: Until now, stick with the arguments supplied to self.subplots
-
-    #
-    #' Titles of axes .........................................#
+    # == Titles of axes ================================================
 
     @staticmethod
     def _standard_axtitle(
@@ -202,7 +198,7 @@ class PlotEdits(PlotTool):
         return self
 
     #
-    #' Scale of x- & y-axis  ..................................#
+    # == Scale of x- & y-axis ==========================================
 
     def edit_y_scale_log(
         self, base=10, nonpositive="clip", subs=[2, 3, 4, 5, 6, 7, 8, 9]
@@ -211,13 +207,15 @@ class PlotEdits(PlotTool):
             ax.set_yscale(
                 value="log",  #' "symlog", "linear", "logit", ...
                 base=base,  #' Base of the logarithm
-                nonpositive=nonpositive,  #' "mask": masked as invalid, "clip": clipped to a very small positive number
+                #' "mask": masked as invalid, "clip": clipped to a very small positive number
+                nonpositive=nonpositive,
                 subs=subs,  #' Where to place subticks between major ticks ! not working
             )
 
             # ax.yaxis.sety_ticks()
 
-        ### Set the scaled flag to True, to warn user that annotations should be called after NOT before
+        ### Set the scaled flag to True, to warn user
+        #' that annotations should be called after NOT before
         self._edit_y_scalechanged = True
 
         return self
@@ -229,13 +227,14 @@ class PlotEdits(PlotTool):
             ax.set_xscale(
                 value="log",  #' "symlog", "linear", "logit", ...
                 base=base,  #' Base of the logarithm
-                nonpositive=nonpositive,  #' "mask": masked as invalid, "clip": clipped to a very small positive number
+                #' "mask": masked as invalid, "clip": clipped to a very small positive number
+                nonpositive=nonpositive,
                 subs=subs,  #' Where to place subticks between major ticks ! not working
             )
         return self
 
     #
-    #' Ticks and their Labels .................................#
+    # == Ticks and their Labels ========================================
 
     def edit_y_ticklabel_percentage(
         self, decimals_major: int = 0, decimals_minor: int = 0
@@ -251,10 +250,13 @@ class PlotEdits(PlotTool):
         return self
 
     def edit_y_ticklabels_log_minor(self, subs: list = [2, 3, 5, 7]):
-        """Displays minor ticklabels for log-scales. Only shows those ticks whose rounded mantissa (the digits from a float) is in subs
+        """Displays minor ticklabels for log-scales. Only shows those
+        ticks whose rounded mantissa (the digits from a float) is in
+        subs
 
         Args:
-            subs (list, optional): Mantissas (the digits from a float). Defaults to [2, 3, 5, 7].
+            subs (list, optional): Mantissas (the digits from a float).
+            Defaults to [2, 3, 5, 7].
 
         Returns:
             _type_: _description_
@@ -280,11 +282,12 @@ class PlotEdits(PlotTool):
 
     @staticmethod
     def _exchange_ticklabels(ax, labels: list | str) -> None:
-        """Exchange ticklabels iterating through labels and ticks. Works with labels having different length than labels
+        """Exchange ticklabels iterating through labels and ticks. Works
+        with labels having different length than labels
 
         Args:
-            ax (_type_): _description_
-            labels (list | str): _description_
+            ax (_type_): _description_ labels (list | str):
+            _description_
         """
 
         ### Retrieve xticks
@@ -300,7 +303,7 @@ class PlotEdits(PlotTool):
             old_labels[i] = labels[i]
             i += 1
 
-        # == Set new labels
+        ### Set new labels
         ax.set_xticklabels(labels=old_labels)
 
     def edit_x_ticklabels_exchange(
@@ -395,7 +398,7 @@ class PlotEdits(PlotTool):
         return self
 
     #
-    #' Grid ...................................................#
+    # == Grid ==========================================================
 
     def edit_grid(
         self,
@@ -403,7 +406,6 @@ class PlotEdits(PlotTool):
         y_minor_kws: dict = None,
         x_major_kws: dict = None,
     ) -> "PlotEdits | DataAnalysis":
-        
         ### Defaults
         y_major_kwargs = dict(ls="-", linewidth=0.5, c="grey")
         y_minor_kwargs = dict(ls="-", linewidth=0.2, c="grey")
@@ -412,8 +414,7 @@ class PlotEdits(PlotTool):
         y_major_kwargs.update(**y_major_kws)
         y_minor_kwargs.update(**y_minor_kws)
         x_major_kwargs.update(**x_major_kws)
-        
-        
+
         for ax in self.axes_flat:
             ax.yaxis.grid(True, which="major", **y_major_kwargs)
             ax.yaxis.grid(True, which="minor", **y_minor_kwargs)
@@ -421,67 +422,117 @@ class PlotEdits(PlotTool):
         return self
 
     #
-    #' Legend .................................................#
+    # == Legend ========================================================
+
+    ### Get Legend Object
+    @property
+    def legend(self) -> mpl.legend.Legend:
+        legends = [
+            c
+            for c in self.fig.get_children()
+            if isinstance(c, mpl.legend.Legend)
+        ]
+        if legends:
+            return legends[0]
+        else:
+            raise ValueError("No legend found")
 
     @property
-    def legend_handles_and_labels(self):
+    def legend_handles_and_labels(self) -> tuple[list, list]:
         if (
             self.factors_rowcol
-        ):  #' If we have row and col factors, we need to get the legend from the first axes
+        ):  #' If we have row and col factors, we need to get the legend
+            #' from the first axes
             handles, labels = self.axes.flatten()[0].get_legend_handles_labels()
         else:
             handles, labels = self.axes.get_legend_handles_labels()
         ### Remove duplicate handles from repeated plot layers
         by_label = dict(zip(labels, handles))
-        handles = by_label.values()
-        labels = by_label.keys()
+        handles = list(by_label.values())
+        labels = list(by_label.keys())
         # labels = [ut.capitalize(l) for l in labels]
         return handles, labels
+
+    @property
+    def _legend_width(self) -> float:
+        """Calculates the exact width of the legend in inches"""
+
+        bbox = self.legend.get_tightbbox()
+        return ut.get_bbox_width(bbox, in_inches=True)
+
+    def _adjust_fig_to_fit_legend(self, pad: float = 0.2) -> None:
+        width = self.figsize[0]
+
+        ### Adjust width to fit legend
+        leg_width = self._legend_width
+        leg_width += pad  #' Add some space so we don't need borderaxespad
+        new_width = width + leg_width
+        self.fig.set_figwidth(new_width, forward=True)
+        # DA.fig.set_size_inches(new_width, DA.figsize[1], forward=True)
+
+        ### That size increase stretched the axes, too, undo that!
+        width_fraction = width / new_width
+        plt.subplots_adjust(right=width_fraction)
 
     def edit_legend(
         self,
         reset_legend: bool = False,
         title: str = None,
+        pad: float | int = 0.2,
+        capitalize_title: bool = False,
+        capitalize_labels: bool = False,
+        fontsize: int = None,
+        frameon: bool = False,
         handles: list = None,
         labels: list = None,
-        loc: str = "center right",
-        bbox_to_anchor: tuple = (1.15, 0.50),
-        borderaxespad: float = 4,
-        pad: float = None,
-        frameon: bool = False,
-        **kws,
+        **mpl_kws,
     ) -> "PlotEdits | DataAnalysis":
-        """Adds standard legend to figure"""
+        """Calls on fig.legend(**mpl_kws) to make a legend."""
+
         ### Prevent legend duplication:
         if reset_legend:
             self.remove_legend()
 
-        ### An Alias for borderaxespad
-        if not pad is None and borderaxespad == 4:
-            borderaxespad = pad
+        ### Access borderaxespad via pad
+        # if not pad is None and borderaxespad == 4:
+        #     borderaxespad = pad
 
+        ### Get handles and labels from previous plots
+        h, l = self.legend_handles_and_labels
+        handles = h if handles is None else handles
+        labels = l if labels is None else labels
+        if capitalize_labels:
+            labels = [ut.capitalize(l) for l in labels]
+
+        ### Legend title
+        title = self.dims.hue if title is None else title
+        title = ut.capitalize(title) if capitalize_title else title
+
+        ### KWS
         KWS = dict(
-            title=ut.capitalize(self.dims.hue) if title is None else title,
-            handles=self.legend_handles_and_labels[0]
-            if handles is None
-            else handles,
-            labels=self.legend_handles_and_labels[1]
-            if labels is None
-            else labels,
-            loc=loc,
-            bbox_to_anchor=bbox_to_anchor,
-            borderaxespad=borderaxespad,
-            frameon=frameon,
-            # fontsize=10, # !! overrides entry from rcParams
-        )
-        KWS.update(**kws)
+            title=title,
+            handles=handles,
+            labels=labels,
+            frameon=frameon,  #' Border around legend
+            loc="center right",
+            # bbox_to_anchor=(1.0, 0.50),
+            #' Distance legend axes border in fontsize units
+            # borderaxespad=-0.5,
+            fontsize=fontsize, # !! overrides entry from rcParams
 
-        # == Set legend
+        )
+        KWS.update(**mpl_kws)
+
+        ### Set legend =============================
         self.fig.legend(**KWS)
+
+        ### Correct subplots for legend:
+        self._adjust_fig_to_fit_legend(pad=pad)
+
         return self
 
     #
-    #' fontsizes ..............................................#
+    # == Fontsizes =====================================================
 
     def edit_fontsizes(
         self, ticklabels=10, xylabels=10, axis_titles=10

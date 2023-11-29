@@ -10,7 +10,7 @@
 - Runtime config `plotting.rc`
   - `set_style()` now passes any known matplotlib style to
     `matplotlib.style.use()`
-  - bla
+- Legend is now outside of the plot no matter the figure width
 
 # 0.1.0
 - Initial release
