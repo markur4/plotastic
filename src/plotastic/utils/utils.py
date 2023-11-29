@@ -536,6 +536,27 @@ def get_bbox_width(bbox: mpl.transforms.Bbox, in_inches=True):
     else:
         return width_pixels
 
+def get_bbox_height(bbox: mpl.transforms.Bbox, in_inches=True):
+    if not isinstance(bbox, mpl.transforms.Bbox):
+        try:
+            # bbox = bbox.get_window_extent() # ?? same as get_tightbbox()
+            bbox = bbox.get_tightbbox()
+        except AttributeError:
+            raise TypeError(
+                f"#! bbox must be of type matplotlib.transforms.Bbox, not {type(bbox)}"
+            )
+
+    ### BBox is [[xmin, ymin], [xmax, ymax]]
+    # xmin, xmax = bbox.extents[0], bbox.extents[2]
+    ymin, ymax = bbox.extents[1], bbox.extents[3]
+
+    height_pixels = ymax - ymin
+    if in_inches:
+        height_inches = height_pixels / plt.rcParams["figure.dpi"]
+        return height_inches
+    else:
+        return height_pixels
+
 
 def make_cmap_saturation(
     undersat: tuple = (0.5, 0.0, 0.0),

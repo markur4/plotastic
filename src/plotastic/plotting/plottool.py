@@ -284,7 +284,7 @@ class PlotTool(DataFrameTool):
         y_scale: str = None,
         y_scale_kws: dict = dict(),
         wspace=None,
-        hspace=0.4,
+        hspace=.8,
         width_ratios: list[int] = None,
         height_ratios: list[int] = None,
         figsize: tuple[int] = None,
@@ -329,7 +329,9 @@ class PlotTool(DataFrameTool):
             # squeeze=False, # !! Always return 2D array. Don't use, requires unnecessary refactoring
             **KWS,
         )
-
+        
+        self.fig.subplots_adjust(hspace=1)
+        
         ### Edits
         ### Add titles to axes to provide basic orientation
         self.edit_axtitles_reset()
