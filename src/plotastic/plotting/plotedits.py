@@ -487,15 +487,33 @@ class PlotEdits(PlotTool):
         labels: list = None,
         **mpl_kws,
     ) -> "PlotEdits | DataAnalysis":
-        """Calls on fig.legend(**mpl_kws) to make a legend."""
+        """Calls on fig.legend(**mpl_kws) to make a legend.
 
+        :param reset_legend: _description_, defaults to False
+        :type reset_legend: bool, optional
+        :param title: _description_, defaults to None
+        :type title: str, optional
+        :param pad: Distance to axes, defaults to 0.2
+        :type pad: float | int, optional
+        :param capitalize_title: _description_, defaults to False
+        :type capitalize_title: bool, optional
+        :param capitalize_labels: _description_, defaults to False
+        :type capitalize_labels: bool, optional
+        :param fontsize: _description_, defaults to None
+        :type fontsize: int, optional
+        :param frameon: _description_, defaults to False
+        :type frameon: bool, optional
+        :param handles: _description_, defaults to None
+        :type handles: list, optional
+        :param labels: _description_, defaults to None
+        :type labels: list, optional
+        :return: _description_
+        :rtype: PlotEdits | DataAnalysis
+        """        
+        
         ### Prevent legend duplication:
         if reset_legend:
             self.remove_legend()
-
-        ### Access borderaxespad via pad
-        # if not pad is None and borderaxespad == 4:
-        #     borderaxespad = pad
 
         ### Get handles and labels from previous plots
         h, l = self.legend_handles_and_labels
