@@ -736,7 +736,7 @@ DA.save_statistics("example.xlsx")
      ) 
 )
 
-# Saving the plot requires 
+# Saving the plot like matplotlib!
 plt.savefig("example.png", dpi=200, bbox_inches="tight")
 ```
 
@@ -748,7 +748,7 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
 
-# 🧪 Testing
+## 🧪 Testing
 - Download/Clone repository
 - Install development tools `pip install .[dev]`
 - Run tests 
