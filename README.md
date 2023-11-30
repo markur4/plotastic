@@ -30,53 +30,29 @@ pip install git+https://github.com/markur4/plotastic.git
 *(click to unfold)*
 
 [//]:<------------------------------------------------------------------------->
-<details><summary> 🤔<b><i> Why use plotastic?  </i></b> </summary>
+<details><summary> 🤔<b><i> Summary  </i></b> </summary>
 <blockquote>
 <hr>
 
-#### Statistics made Posssible for EVERYONE:
-- Well-known and intuitive parameters used in `seaborn` (***x***,
-   ***y***, ***hue***, ***row***, ***col***) are 'translated' into terms
-  used for inferential statistics (*between*, *within*, *dv*, etc.) 
-  - **-> *If you know how to plot with seaborn, you can apply basic
-    statistical analyses!***
-- No need need to retype the same arguments of column names into all
-  different tests!
 
-#### Optimized Plotting with `matplotlib`:
-- Make multi-layered pre-configured plots in just one line!
-
-#### Sturdy:
-- plotastic doesn't re-invent the wheel: It's focused on using well
-  established classes, functions and libraries (`pd.DataFrame`,
-  `plt.subplots`, `sns.catplot`, pingouin, statannotations, etc). It's
-  just a wrapper that makes it easier to use them together!
-- plotastic provides feedback on how each step of data import,
-  transformation, formatting or categorization has affected your table,
-  giving beginners the confidence of knowing what they're doing!
-  
-#### Controllable:
-- plotastic outputs common matplotlib figures (`ax`, `fig`). You can
-  modify them like any other!
-- User keyword arguments are passed through plotastic to `seaborn` and
-  `pingouin`, so you can use all their options!
+`plotastic` addresses the challenges of transitioning from exploratory
+data analysis to hypothesis testing in Python's data science ecosystem.
+Bridging the gap between `seaborn` and `pingouin`, this library offers a
+unified environment for plotting and statistical analysis. It simplifies
+the workflow with a user-friendly syntax and seamless integration with
+familiar `seaborn` parameters (y, x, hue, row, col). Inspired by
+`seaborn`'s consistency, `plotastic` utilizes a `DataAnalysis` object to
+intelligently pass parameters to `pingouin` statistical functions. The
+library systematically groups the data according to the needs of
+statistical tests and plots, conducts visualisation, analyses and
+supports extensive customization options. In essence, `plotastic`
+establishes a protocol for configuring statical analyses through
+plotting parameters. This approach streamlines the process, translating
+`seaborn` parameters into statistical terms, providing researchers and
+data scientists with a cohesive and user-friendly solution in python.!
 
 
-<!-- #### Reviewable:
-- We provide snippets that demonstrate of what just happened under the hood, so you can
-  backcheck and thoroughly document your work! -->
-
-[//]:<-- end of 🤔 Why use plotastic? ----------------------------------------->
-</blockquote>
-</details>
-
-
-
-
-[//]:<------------------------------------------------------------------------->
-<details><summary> ⏳<b><i> Workflow Summary</b> </i>  </summary>
-<blockquote>
-<hr>
+### Main Features:
 
 1. **🧮 Import & Prepare your pandas DataFrame**
    - We require a long-format pandas dataframe with categorical columns
@@ -679,13 +655,13 @@ classDiagram
 
 
 
-### Import plotastic and example Data
+#### Import plotastic and example Data
 
 
 ```python
 import plotastic as plst
 
-# Import Example Data
+# Import Example Data (Long-Format)
 DF, _dims = plst.load_dataset("fmri", verbose = False)
 DF.head()
 ```
@@ -715,11 +691,7 @@ dims = dict(
 )
 ```
 
-### Initialize DataAnalysis Object
-- `DataAnalysis` will give you feedback on data
-- The `DataAnalysis` object contains every tool you need, from plotting
-  to statistics!
-
+#### Initialize DataAnalysis Object
 
 ```python
 DA = plst.DataAnalysis(
@@ -729,277 +701,19 @@ DA = plst.DataAnalysis(
     verbose=False,     # Print out info about the Data (optional)
 )
 ```
-*prints:*
-
-    ===============================================================================
-    #! Checking data integrity...
-    ✅ DATA COMPLETE: All combinations of levels from selected factors are present
-      in the Dataframe, including x.
-    ✅ GROUPS COMPLETE: No groups with NaNs.
-    ✅ GROUPS EQUAL: All groups (40 total) have the same samplesize n = 14.0.
-    🌳 LEVELS WELL CONNECTED: These Factors have levels that are always found
-      together: ['region', 'event'].
-      👉 Call .levels_combocount() or .levels_dendrogram() to see them all.
-    ===============================================================================
 
 
-#### Quick Preview Plot:
+
+#### Perform Statistics
 
 
 ```python
-DA.catplot(alpha=0.3) # Works with *kwargs of seaborn.catplot()
+DA.check_normality()  # Normal Distribution?
+DA.check_sphericity() # Sphericity?
+DA.omnibus_rm_anova() # Repeated Measures ANOVA
+DA.test_pairwise()    # Post-hoc tests
 ```
 
-
-    
-![HOW_TO_USE/quick_example_fmri_files/quick_example_fmri_7_0.png](https://raw.githubusercontent.com/markur4/plotastic/main/HOW_TO_USE/quick_example_fmri_files/quick_example_fmri_7_0.png)
-    
-
-
-
-
-
-### Perform Statistics
-
-#### Check Normality:
-
-
-```python
-DA.check_normality() # Results not shown here, table too long
-```
-
-
-#### Check Sphericity:
-
-
-```python
-DA.check_sphericity()
-```
-
-
-<!-- REMOVE FOR PYPI -->
-<!-- REMOVESTART -->
-<sub><sup>
-<div>
-<table border="1" class="dataframe" style="font-size: 12px;">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th></th>
-      <th>spher</th>
-      <th>W</th>
-      <th>chi2</th>
-      <th>dof</th>
-      <th>pval</th>
-      <th>group count</th>
-      <th>n per group</th>
-    </tr>
-    <tr>
-      <th>region</th>
-      <th>event</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th rowspan="2" valign="top">frontal</th>
-      <th>cue</th>
-      <td>True</td>
-      <td>3.260856e+20</td>
-      <td>-462.715239</td>
-      <td>44</td>
-      <td>1.0</td>
-      <td>10</td>
-      <td>[14, ...]</td>
-    </tr>
-    <tr>
-      <th>stim</th>
-      <td>True</td>
-      <td>2.456616e+17</td>
-      <td>-392.270460</td>
-      <td>44</td>
-      <td>1.0</td>
-      <td>10</td>
-      <td>[14, ...]</td>
-    </tr>
-    <tr>
-      <th rowspan="2" valign="top">parietal</th>
-      <th>cue</th>
-      <td>True</td>
-      <td>1.202935e+20</td>
-      <td>-452.946123</td>
-      <td>44</td>
-      <td>1.0</td>
-      <td>10</td>
-      <td>[14, ...]</td>
-    </tr>
-    <tr>
-      <th>stim</th>
-      <td>True</td>
-      <td>2.443175e+13</td>
-      <td>-301.989490</td>
-      <td>44</td>
-      <td>1.0</td>
-      <td>10</td>
-      <td>[14, ...]</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</sup></sub>
-<!-- REMOVE FOR PYPI -->
-
-
-#### Repeated Measures ANOVA:
-
-
-```python
-DA.omnibus_rm_anova()
-```
-
-<!-- REMOVE FOR PYPI -->
-<!-- REMOVESTART -->
-<sub><sup>
-<div>
-<table border="1" class="dataframe" style="font-size: 12px;">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th></th>
-      <th>Source</th>
-      <th>SS</th>
-      <th>ddof1</th>
-      <th>ddof2</th>
-      <th>MS</th>
-      <th>F</th>
-      <th>p-unc</th>
-      <th>stars</th>
-      <th>p-GG-corr</th>
-      <th>ng2</th>
-      <th>eps</th>
-    </tr>
-    <tr>
-      <th>region</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th rowspan="3" valign="top">parietal</th>
-      <th>0</th>
-      <td>timepoint</td>
-      <td>1.583420</td>
-      <td>9</td>
-      <td>117</td>
-      <td>0.175936</td>
-      <td>26.205536</td>
-      <td>3.402866e-24</td>
-      <td>****</td>
-      <td>5.834631e-07</td>
-      <td>0.542320</td>
-      <td>0.222299</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>event</td>
-      <td>0.770449</td>
-      <td>1</td>
-      <td>13</td>
-      <td>0.770449</td>
-      <td>85.316794</td>
-      <td>4.483881e-07</td>
-      <td>****</td>
-      <td>4.483881e-07</td>
-      <td>0.365706</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>timepoint * event</td>
-      <td>0.623532</td>
-      <td>9</td>
-      <td>117</td>
-      <td>0.069281</td>
-      <td>29.541730</td>
-      <td>3.262477e-26</td>
-      <td>****</td>
-      <td>3.521208e-06</td>
-      <td>0.318157</td>
-      <td>0.171882</td>
-    </tr>
-    <tr>
-      <th rowspan="3" valign="top">frontal</th>
-      <th>0</th>
-      <td>timepoint</td>
-      <td>0.686264</td>
-      <td>9</td>
-      <td>117</td>
-      <td>0.076252</td>
-      <td>15.988779</td>
-      <td>8.285677e-17</td>
-      <td>****</td>
-      <td>8.940660e-05</td>
-      <td>0.394411</td>
-      <td>0.190812</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>event</td>
-      <td>0.240461</td>
-      <td>1</td>
-      <td>13</td>
-      <td>0.240461</td>
-      <td>23.441963</td>
-      <td>3.218963e-04</td>
-      <td>***</td>
-      <td>3.218963e-04</td>
-      <td>0.185803</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>timepoint * event</td>
-      <td>0.242941</td>
-      <td>9</td>
-      <td>117</td>
-      <td>0.026993</td>
-      <td>13.031063</td>
-      <td>3.235739e-14</td>
-      <td>****</td>
-      <td>1.566020e-04</td>
-      <td>0.187360</td>
-      <td>0.213142</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</sup></sub>
-<!-- REMOVE FOR PYPI -->
-
-
-#### Post-hoc t-tests:
-
-
-```python
-DA.test_pairwise() # Results not shown here, table too long
-```
 
 
 
@@ -1012,20 +726,7 @@ Output is one excel file containing results of all performed tests
 DA.save_statistics("example.xlsx")
 ```
 
-### Plot with Statistical Annotations in Few Lines!
-
-
-#### OPTIONAL! Use matplotlib styles:
-
-
-```python
-from matplotlib import pyplot as plt
-plt.rcdefaults()        # Reset rc to default
-plt.style.use('ggplot') # Set styles as you're used to'
-```
-
-#### Chain multiple commands for plotting:
-
+#### Annotate post-hoc results into plot:
 
 ```python
 (DA
