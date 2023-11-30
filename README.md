@@ -87,7 +87,7 @@ data scientists with a cohesive and user-friendly solution in python.!
    - Use `DataAnalysis.save_statistics()` to save all results to
      different sheets collected in one .xlsx filesheet per test
 
-[//]:<-- end of ⏳ Workflow Summary -------------------------------------------->
+[//]:<-- end of 🤔  Summary -------------------------------------------->
 </blockquote>
 </details>
 
