@@ -18,8 +18,10 @@ black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://gith
 # Installation 📦
 
 ``` bash
+# Install from PyPi:
 pip install plotastic
-# or
+
+# For the latest version (check CHANGELOG.md!):
 pip install git+https://github.com/markur4/plotastic.git
 ```
 
@@ -1044,4 +1046,13 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
 
+
+# 🧪 Testing
+- Download/Clone repository
+- Install development tools `pip install .[dev]`
+- Run tests 
+  - Run `pytest ./tests`
+  - To include a coverage report run 
+    `pytest ./tests -cov--cov-report=html` and open
+    `./htmlcov/index.html` with your browser.
 
