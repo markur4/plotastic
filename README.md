@@ -705,7 +705,8 @@ DA = plst.DataAnalysis(
 
 
 #### Perform Statistics
-
+No arguments need to be passed, although `**kwargs`, are passed
+to respective `pingouin` functions.
 
 ```python
 DA.check_normality()  # Normal Distribution?
