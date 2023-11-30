@@ -7,6 +7,7 @@
 [![Code style:
 black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![codecov](https://codecov.io/gh/markur4/plotastic/graph/badge.svg?token=4L98QSPCU3)](https://codecov.io/gh/markur4/plotastic)
+[![status](https://joss.theoj.org/papers/e1e5d9b233aa16ba4916c6faffe4935b/status.svg)](https://joss.theoj.org/papers/e1e5d9b233aa16ba4916c6faffe4935b)
 
 </h1>
 
