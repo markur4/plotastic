@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/LOGO/plotastic_logo_3.png" width="400px" height="300px" alt="logo">
+  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/LOGO/plotastic_logo_3.png" width="700px" alt="logo">
 </h1>
 
 <h1 align="center">
