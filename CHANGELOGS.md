@@ -1,5 +1,5 @@
 
-# 0.1.1
+# 0.1.1 (not on PyPi, but on GitHub)
 - Legends
   - Added `legend_kws` parameter to all multiplots
     - It seems strange to enforce `.edit_legend()` in chain
