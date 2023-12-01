@@ -26,8 +26,26 @@ pip install git+https://github.com/markur4/plotastic.git
 ```
 
 [//]:<== Information ==========================================================>
-# Information 📚 
-*(click to unfold)*
+# Example Gallery 📷
+
+<details><summary> <b><i> (click to unfold)  </i></b> </summary>
+<blockquote>
+<hr>
+
+<h1 align="center">
+  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE%20GALLERY/qpcr1.png" alt="logo">
+</h1>
+
+
+
+[//]:<-- end of Example Gallery 📷 -------------------------------------------->
+</blockquote>
+</details>
+
+
+[//]:<== Information ==========================================================>
+# About plotastic 📚 
+
 
 [//]:<------------------------------------------------------------------------->
 <details><summary> 🤔<b><i> Summary  </i></b> </summary>
@@ -52,7 +70,7 @@ plotting parameters. This approach streamlines the process, translating
 data scientists with a cohesive and user-friendly solution in python.!
 
 
-### Main Features:
+### Workflow:
 
 1. **🧮 Import & Prepare your pandas DataFrame**
    - We require a long-format pandas dataframe with categorical columns
@@ -638,7 +656,7 @@ classDiagram
 ## Documentations 💡
 1. Examples:
    1. [Quick Example: FMRI Dataset](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/quick_example_fmri.ipynb)
-   2. [Example Gallery](https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE GALLERY/example_gallery.ipynb)
+   2. [Example Gallery](https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/example_gallery.ipynb)
 2. Data
    1. Transform Y
    2. [Set/Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
