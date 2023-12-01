@@ -76,7 +76,7 @@ class PostHoc(Assumptions):
 
     def test_pairwise(
         self,
-        paired=True,
+        paired=None,
         parametric=True,
         subject=None,
         # only_contrast=False,
@@ -85,15 +85,15 @@ class PostHoc(Assumptions):
         """Interface that sorts arguments, executes pairwise tests and adds extra features to PH table"""
 
         ### Gather Arguments
-        # *
         kwargs = dict(
             dv=self.dims.y,
             parametric=parametric,
             nan_policy="pairwise",
         )
-
         #' Paired or unpaired
-        if paired:
+        if paired is None and self.subject:
+            paired = True
+        if not paired is None:
             assert (self.subject is not None) or (
                 subject is not None
             ), "No subject column specified"
@@ -101,7 +101,6 @@ class PostHoc(Assumptions):
             kwargs["subject"] = self.subject if self.subject else subject
         else:
             kwargs["between"] = self.factors_xhue
-
         #' Add user kwargs
         kwargs.update(self.DEFAULT_KWS_PAIRWISETESTS)
         kwargs.update(user_kwargs)

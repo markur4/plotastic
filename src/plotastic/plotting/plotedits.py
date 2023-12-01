@@ -64,7 +64,7 @@ class PlotEdits(PlotTool):
 
     def edit_titles(
         self,
-        axtitles: dict = None,
+        axtitles: dict | list = None,
     ) -> "PlotEdits | DataAnalysis":
         """Replaces Titles by axes keys
 
@@ -73,7 +73,18 @@ class PlotEdits(PlotTool):
         :return: _description_
         :rtype: PlotEdits | DataAnalysis
         """
-
+        
+        ### If list
+        if isinstance(axtitles, list):
+            assert len(axtitles) == len(self.axes_flat), (
+                f"Length of list of titles ({len(axtitles)}) "
+                f"does not match number of axes ({len(self.axes_flat)})"
+            )
+            for ax, title in zip(self.axes_flat, axtitles):
+                ax.set_title(title)
+            return self
+        
+        ### If dict
         ### Assert correct input
         if not axtitles is None:
             keys = list(dict(self.axes_iter__keys_ax).keys())
