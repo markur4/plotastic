@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 
 import seaborn as sns
 
+import warnings
+
 # import pyperclip
 
 # import markurutils as ut
@@ -73,7 +75,7 @@ class PlotEdits(PlotTool):
         :return: _description_
         :rtype: PlotEdits | DataAnalysis
         """
-        
+
         ### If list
         if isinstance(axtitles, list):
             assert len(axtitles) == len(self.axes_flat), (
@@ -83,7 +85,7 @@ class PlotEdits(PlotTool):
             for ax, title in zip(self.axes_flat, axtitles):
                 ax.set_title(title)
             return self
-        
+
         ### If dict
         ### Assert correct input
         if not axtitles is None:
@@ -102,38 +104,44 @@ class PlotEdits(PlotTool):
 
     def edit_titles_with_func(
         self,
-        row_func: Callable = None,
         col_func: Callable = None,
+        row_func: Callable = None,
         connect="\n",
     ) -> "PlotEdits | DataAnalysis":
         """Applies formatting functions (e.g. lambda x: x.upper()) to
         row and col titles)
 
-        :param row_func: _description_, defaults to None
-        :type row_func: Callable, optional
         :param col_func: _description_, defaults to None
         :type col_func: Callable, optional
+        :param row_func: _description_, defaults to None
+        :type row_func: Callable, optional
         :param connect: _description_, defaults to "\n"
         :type connect: str, optional
         :return: _description_
         :rtype: PlotEdits | DataAnalysis
         """
-        ### Default functions
-        row_func = row_func or (lambda x: x)
+        ### Warn user to use row_func as well if row and col factors
+        # if self.dims.row and self.dims.col and row_func is None:
+        #     warnings.warn(
+        #         "When renaming axes titles and both row and col factors are present, remember to pass a function to row_func as well"
+        #     )
+        ### Default functions. Don't ask my why this works
         col_func = col_func or (lambda x: x)
+        row_func = row_func or (lambda x: x)
+        titles = {}
+        ### Collect and edit titles
+        for levelkey, _axes in self.axes_iter__keys_ax:
+            if isinstance(levelkey, tuple) and not self.factors_is_1_facet:
+                titles[levelkey] = (
+                    col_func(levelkey[0]) + connect + row_func(levelkey[1])
+                )
+            #' If just one function specified, assume
+            else:
+                titles[levelkey] = col_func(levelkey)
 
-        ### Don't use connect if only one facet
-        # if self.factors_is_1_facet:
-        #     connect=""
-
-        for rowkey, axes in self.axes_iter__row_axes:
-            for ax in axes:
-                title = row_func(rowkey)
-                ax.set_title(title)
-        for colkey, axes in self.axes_iter__col_axes:
-            for ax in axes:
-                title = ax.get_title() + connect + col_func(colkey)
-                ax.set_title(title)
+        ### Edit titles
+        self.edit_titles(titles)
+        
         return self
 
     def edit_titles_replace(self, titles: list) -> "PlotEdits | DataAnalysis":
@@ -520,8 +528,8 @@ class PlotEdits(PlotTool):
         :type labels: list, optional
         :return: _description_
         :rtype: PlotEdits | DataAnalysis
-        """        
-        
+        """
+
         ### Prevent legend duplication:
         if reset_legend:
             self.remove_legend()
@@ -547,8 +555,7 @@ class PlotEdits(PlotTool):
             # bbox_to_anchor=(1.0, 0.50),
             #' Distance legend axes border in fontsize units
             # borderaxespad=-0.5,
-            fontsize=fontsize, # !! overrides entry from rcParams
-
+            fontsize=fontsize,  # !! overrides entry from rcParams
         )
         KWS.update(**mpl_kws)
 
