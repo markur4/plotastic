@@ -13,7 +13,7 @@ FILES = dict(
 DIMS = dict(
     fmri=dict(y="signal", x="timepoint", hue="event", col="region"),
     tips=dict(y="tip", x="size-cut", hue="smoker", col="sex", row="time"),
-    qpcr=dict(y="FC", x="gene", hue="fraction", col="class", row="method"),
+    qpcr=dict(y="fc", x="gene", hue="fraction", col="method", row="class"),
 )
 
 

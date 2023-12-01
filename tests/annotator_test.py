@@ -147,38 +147,38 @@ def test_pairwiseannotations_fmri(DF, dims, annot_kwargs):
 QPCR_annot_pairwise_kwargs = [
     dict(
         include=["F1", "LOXL2", "SOST"],
-        exclude=["F2", {"IL2RG": ("F1", "F3")}],
+        exclude=["F2", {"MMP7": ("F1", "F3")}],
         include_in_facet={
-            "MMPs": ["IL2RG", {"CCL20": ("F1", "F2")}],
+            "MMPs": ["MMP7", {"MMP9": ("F1", "F2")}],
             "Bone Metabolism": ["SOST", "F2", {"TIMP1": ("F3", "F1")}],
         },
         exclude_in_facet={
-            "Wash": ["IL2RG", {"CCL20": ("F1", "F2")}],
+            "Wash": ["MMP7", {"MMP9": ("F1", "F2")}],
             "MACS": ["SOST", {"JAK2": ("F1", "F2")}],
         },
     ),
     dict(
         include=["F1", "LOXL2", "SOST"],
-        exclude=["F2", {"IL2RG": ("F1", "F3")}],
+        exclude=["F2", {"MMP7": ("F1", "F3")}],
         include_in_facet={
-            "MMPs": ["IL2RG", {"CCL20": ("F1", "F2")}],
+            "MMPs": ["MMP7", {"MMP9": ("F1", "F2")}],
             "Bone Metabolism": ["SOST", "F2", {"TIMP1": ("F3", "F1")}],
         },
         exclude_in_facet={
-            "Wash": ["IL2RG", {"CCL20": ("F1", "F2")}],
+            "Wash": ["MMP7", {"MMP9": ("F1", "F2")}],
             "MACS": ["SOST", {"JAK2": ("F1", "F2")}],
         },
     ),
     dict(
         include="__HUE",
-        exclude=["F2", {"IL2RG": ("F1", "F3")}],
+        exclude=["F2", {"MMP7": ("F1", "F3")}],
     ),
     dict(
         include="__X",
-        exclude=["F2", {"IL2RG": ("F1", "F3")}],
+        exclude=["F2", {"MMP7": ("F1", "F3")}],
     ),
     dict(
-        include=["Vimentin", "IL2RG"],
+        include=["Vimentin", "MMP7"],
         exclude=["FZD4"],
     ),
 ]

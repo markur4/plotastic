@@ -636,8 +636,12 @@ classDiagram
 [//]:<=========================================================================>
 
 ## Documentations 💡
-1. [Quick Example: FMRI Dataset](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/quick_example_fmri.ipynb)
-2. [Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
+1. Examples:
+   1. [Quick Example: FMRI Dataset](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/quick_example_fmri.ipynb)
+   2. [Example Gallery](https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE GALLERY/example_gallery.ipynb)
+2. Data
+   1. Transform Y
+   2. [Set/Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
 3. [Plotting](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plotting.ipynb)
    1. [Legends](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_legend.ipynb)
    2. [MultiPlots](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_multiplots.ipynb)

@@ -82,11 +82,11 @@ dims_noempty_fmri = [
 ]
 
 dims_noempty_qpcr = [
-    dict(y="FC", x="gene", hue="fraction", col="class", row="method"),
-    dict(y="FC", x="gene", hue="fraction", col="method", row="class"),
-    dict(y="FC", x="gene", hue="fraction", col="class"),
-    dict(y="FC", x="gene", hue="fraction"),
-    dict(y="FC", x="gene"),
+    dict(y="fc", x="gene", hue="fraction", col="class", row="method"),
+    dict(y="fc", x="gene", hue="fraction", col="method", row="class"),
+    dict(y="fc", x="gene", hue="fraction", col="class"),
+    dict(y="fc", x="gene", hue="fraction"),
+    dict(y="fc", x="gene"),
 ]
 
 # %%

@@ -246,23 +246,27 @@ class PlotTool(DataFrameTool):
     @property  #' ax11 >>> ax12 >>> ax21 >>> ax22 >>> ...
     def axes_iter_leftmost_col(self) -> Generator[plt.Axes, None, None]:
         """Returns: >> ax11 >> ax21 >> ax31 >> ax41 >> ..."""
-        for row in self.axes_nested:  #' Through rows
-            yield row[0]  #' Leftmost ax
+        if self.dims.col:
+            for row in self.axes_nested:  #' Through rows
+                yield row[0]  #' Leftmost ax
+        else:
+            for ax in self.axes_flat:
+                yield ax
 
     @property  #' >> axes excluding leftmost column
     def axes_iter_notleftmost_col(self) -> Generator[plt.Axes, None, None]:
         """Returns: >> axes excluding leftmost column"""
-        for row in self.axes_nested:  #' Through rows
-            for ax in row[1:]:  #' Through all columns except leftmost
-                yield ax
+        if self.dims.col:
+            for row in self.axes_nested:  #' Through rows
+                for ax in row[1:]:  #' Through all columns except leftmost
+                    yield ax
 
     @property  #' ax31 >>> ax32 >>> ax33 >>> ax34 >>> ...
     def axes_iter_lowest_row(self) -> Generator[plt.Axes, None, None]:
         """Returns: >> ax31 >> ax32 >> ax33 >> ax34 >> ..."""
-        if not self.dims.col is None:
-            for ax in self.axes_nested[
-                -1
-            ]:  #' Pick Last row, iterate through columns
+        if self.dims.col:
+            for ax in self.axes_nested[-1]:
+                #' Pick Last row, iterate through columns
                 yield ax
         else:
             yield self.axes_flat[-1]  #' If no col, return last
@@ -284,7 +288,7 @@ class PlotTool(DataFrameTool):
         y_scale: str = None,
         y_scale_kws: dict = dict(),
         wspace=None,
-        hspace=.8,
+        hspace=0.8,
         width_ratios: list[int] = None,
         height_ratios: list[int] = None,
         figsize: tuple[int] = None,
@@ -295,7 +299,7 @@ class PlotTool(DataFrameTool):
         Returns:
             tuple["mpl.figure.Figure", "mpl.axes.Axes"]: matplotlib figure and axes objects
         """
-        
+
         # == Handle kwargs
         ### Adds extra kwargs depending on kwargs already present
         if sharey and (wspace is None):
@@ -329,9 +333,9 @@ class PlotTool(DataFrameTool):
             # squeeze=False, # !! Always return 2D array. Don't use, requires unnecessary refactoring
             **KWS,
         )
-        
+
         self.fig.subplots_adjust(hspace=1)
-        
+
         ### Edits
         ### Add titles to axes to provide basic orientation
         self.edit_axtitles_reset()
@@ -416,7 +420,7 @@ class PlotTool(DataFrameTool):
     #
     #
     # == Fig properties ================================================
-    
+
     @property
     def figsize(self) -> tuple[int]:
         return self.fig.get_size_inches()

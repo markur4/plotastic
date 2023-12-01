@@ -402,14 +402,14 @@ class PlotEdits(PlotTool):
 
     def edit_grid(
         self,
-        y_major_kws: dict = None,
-        y_minor_kws: dict = None,
-        x_major_kws: dict = None,
+        y_major_kws: dict = dict(),
+        y_minor_kws: dict = dict(),
+        x_major_kws: dict = dict(),
     ) -> "PlotEdits | DataAnalysis":
         ### Defaults
-        y_major_kwargs = dict(ls="-", linewidth=0.5, c="grey")
-        y_minor_kwargs = dict(ls="-", linewidth=0.2, c="grey")
-        x_major_kwargs = dict(ls="-", linewidth=0.3, c="grey")
+        y_major_kwargs = dict(ls="-", linewidth=0.5, c="grey", zorder=0)
+        y_minor_kwargs = dict(ls=":", linewidth=0.1, c="grey", zorder=0)
+        x_major_kwargs = dict(ls=":", linewidth=0.1, c="grey", zorder=0)
         ### Update user input
         y_major_kwargs.update(**y_major_kws)
         y_minor_kwargs.update(**y_minor_kws)
