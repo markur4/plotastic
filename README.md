@@ -34,9 +34,9 @@ pip install git+https://github.com/markur4/plotastic.git
 
 <h1 align="center">
   <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/qpcr1.png" alt="logo">
-  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/tips1.png" width="400px" alt="logo">
+  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/tips1.png" width="350px" alt="logo">
   <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/iris1.png" width="400px" alt="logo">
-  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/mpg1.png" width="400px" alt="logo">
+  <img src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/cars1.png" alt="logo">
 </h1>
 
 
