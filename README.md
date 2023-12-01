@@ -58,7 +58,7 @@ pip install git+https://github.com/markur4/plotastic.git
   alt="attention"> 
   </a
  
-  <a href="https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/attention.ipynb"> 
+  <a href="https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/cars.ipynb"> 
   <img
   src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/cars1.png"
   alt="cars1">
