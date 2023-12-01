@@ -530,7 +530,7 @@ class DataFrameTool(DimsAndLevels):
                 NaNs. 👉 Call .get_rows_with_NaN() to see them all.
                 """
             )
-            M.append(self._wrap_text("These are the first 5 rows with NaNs:"))
+            M.append(ut.wrap_text("These are the first 5 rows with NaNs:"))
             df = hasNaN_df.head(5)  #' how df
         else:
             M.append("✅ GROUPS COMPLETE: No groups with NaNs.")

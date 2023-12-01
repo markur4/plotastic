@@ -93,7 +93,7 @@ class PostHoc(Assumptions):
         #' Paired or unpaired
         if paired is None and self.subject:
             paired = True
-        if not paired is None:
+        if paired:
             assert (self.subject is not None) or (
                 subject is not None
             ), "No subject column specified"
