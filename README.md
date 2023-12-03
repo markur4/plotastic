@@ -39,38 +39,33 @@ pip install git+https://github.com/markur4/plotastic.git
   src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/qpcr1.png"
   alt="qpcr1">
   </a>
-
   <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/fmri.ipynb>
   <img
   src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/fmri2.png"
   width="500px"
   alt="fmri2">
+  </a> 
+  <a href="https://github.com/markur4/plotastic/blob/main/EXAMPLES/attention.ipynb">
+  <img
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/attention1.png"
+  width="250px"
+  alt="attention"> 
   </a>
-  
   <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/tips.ipynb> 
   <img
   src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/tips1.png"
   width="350px" alt="tips1">
-  </a>
-  
- <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/iris.ipynb> 
+  </a> 
+  <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/iris.ipynb> 
   <img
   src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/iris1.png"
   width="400px" alt="iris1">
   </a>
-  
-   <a href="https://github.com/markur4/plotastic/blob/main/EXAMPLES/attention.ipynb">
-  <img
-  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/attention1.png"
-  alt="attention"> 
-  </a>
- 
   <a href="https://github.com/markur4/plotastic/blob/main/EXAMPLES/cars.ipynb"> 
   <img
   src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/cars1.png"
   alt="cars1">
-  </a> 
-  
+  </a>  
   <a href="https://github.com/markur4/plotastic/blob/main/EXAMPLES/diamonds.ipynb">
   <img
   src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/diamonds1.png"
