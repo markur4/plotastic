@@ -701,6 +701,7 @@ classDiagram
    4. [Diamonds (unpaired, non-parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/diamonds.ipynb)
    5. [Attention (paired/mixed, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/attention.ipynb)
    6. [Iris (unpaired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/iris.ipynb)
+   7. [Tips (unpaired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/tips.ipynb)
 2. Data
    1. Transform Y
    2. [Set/Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
