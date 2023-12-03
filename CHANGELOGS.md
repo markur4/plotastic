@@ -11,6 +11,7 @@
   - `set_style()` now passes any known matplotlib style to
     `matplotlib.style.use()`
 - Legend is now outside of the plot no matter the figure width!
+- Rewrote .edit_titles_with_func() becasue it didn't work
 
 # 0.1.0
 - Initial release

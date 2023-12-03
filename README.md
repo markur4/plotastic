@@ -34,42 +34,48 @@ pip install git+https://github.com/markur4/plotastic.git
 
 <h1 align="center">
 
-  <a href=https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/qpcr.ipynb>
+  <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/qpcr.ipynb>
   <img
-  src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/qpcr1.png"
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/qpcr1.png"
+  alt="qpcr1">
+  </a 
+
+  <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/qpcr.ipynb>
+  <img
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/qpcr1.png"
   alt="qpcr1">
   </a>
   
-  <a href=https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/tips.ipynb> 
+  <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/tips.ipynb> 
   <img
-  src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/tips1.png"
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/tips1.png"
   width="350px" alt="tips1">
   </a>
   
- <a href=https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/iris.ipynb> 
+ <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/iris.ipynb> 
   <img
-  src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/iris1.png"
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/iris1.png"
   width="400px" alt="iris1">
   </a>
   
-   <a href="https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/attention.ipynb">
+   <a href="https://github.com/markur4/plotastic/blob/main/EXAMPLES/attention.ipynb">
   <img
-  src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/attention1.png"
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/attention1.png"
   alt="attention"> 
-  </a
+  </a>
  
-  <a href="https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/cars.ipynb"> 
+  <a href="https://github.com/markur4/plotastic/blob/main/EXAMPLES/cars.ipynb"> 
   <img
-  src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/cars1.png"
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/cars1.png"
   alt="cars1">
   </a> 
   
-  <a href="https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/diamonds.ipynb">
+  <a href="https://github.com/markur4/plotastic/blob/main/EXAMPLES/diamonds.ipynb">
   <img
-  src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/diamonds1.png"
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/diamonds1.png"
   alt="diamonds1">  
   <img
-  src="https://raw.githubusercontent.com/markur4/plotastic/main/IMAGES/EXAMPLE_GALLERY/diamonds2.png"
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/diamonds2.png"
   alt="diamonds2"> 
   </a>
   
@@ -692,9 +698,13 @@ classDiagram
 [//]:<=========================================================================>
 
 ## Documentations 💡
-1. Examples:
-   1. [Quick Example: FMRI Dataset](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/quick_example_fmri.ipynb)
-   2. [Example Gallery](https://github.com/markur4/plotastic/blob/main/IMAGES/EXAMPLE_GALLERY/example_gallery.ipynb)
+1. Example Gallery
+   1. [Quick Example: FMRI](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/quick_example_fmri.ipynb)
+   2. [qPCR (paired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/qpcr.ipynb)
+   3. [Cars (unpaired, non-parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/cars.ipynb)
+   4. [Diamonds (unpaired, non-parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/diamonds.ipynb)
+   5. [Attention (paired/mixed, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/attention.ipynb)
+   6. [Iris (unpaired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/iris.ipynb)
 2. Data
    1. Transform Y
    2. [Set/Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
@@ -803,7 +813,7 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
     
-![HOW_TO_USE/quick_example_fmri_files/example.png](https://raw.githubusercontent.com/markur4/plotastic/main/HOW_TO_USE/quick_example_fmri_files/example.png)
+![HOW_TO_USE/quick_example_fmri_files/example.png](https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/fmri2.png)
     
 
 
