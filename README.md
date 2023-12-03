@@ -38,12 +38,13 @@ pip install git+https://github.com/markur4/plotastic.git
   <img
   src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/qpcr1.png"
   alt="qpcr1">
-  </a 
+  </a>
 
-  <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/qpcr.ipynb>
+  <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/fmri.ipynb>
   <img
-  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/qpcr1.png"
-  alt="qpcr1">
+  src="https://raw.githubusercontent.com/markur4/plotastic/main/EXAMPLES/fmri2.png"
+  width="500px"
+  alt="fmri2">
   </a>
   
   <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/tips.ipynb> 
