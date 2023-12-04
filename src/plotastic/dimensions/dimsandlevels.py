@@ -163,7 +163,17 @@ class DimsAndLevels:
         else:
             xhue = self.dims.x
         return xhue
-
+    
+    
+    @property  #' [row, col]; [row]; [col]; [""]
+    def factors_xhue_list(self) -> list[str]:
+        if self.dims.hue:
+            xhue = [self.dims.x, self.dims.hue]
+        else:
+            xhue = [self.dims.x]
+        return xhue
+    
+    
     # @property
     # def factors_huex(self) -> str | tuple[str]:
     #     """
