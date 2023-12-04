@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 
 class DataFrameTool(DimsAndLevels):
     # ==
-    # == __init__ ======================================================================
+    # == __init__ ======================================================
 
     def __init__(
         self,
@@ -95,7 +95,7 @@ class DataFrameTool(DimsAndLevels):
         #     self.check_inputlevels_with_data(input_lvls=levels_ignore, verbose=verbose)
 
     # ==
-    # ==  Make Levels Categorical ======================================================
+    # ==  Make Levels Categorical ======================================
 
     def _make_catdict_from_input(
         self, input_lvls: list[list[str]], skip_notfound=True
@@ -292,7 +292,7 @@ class DataFrameTool(DimsAndLevels):
         return self
 
     # ==
-    # == DESCRIBE DATA =========================================================
+    # == DESCRIBE DATA =================================================
 
     def catplot(self, kind="strip", **catplot_kws) -> sns.FacetGrid:
         """
@@ -383,7 +383,7 @@ class DataFrameTool(DimsAndLevels):
         return df
 
     # ==
-    # == COUNT GROUPS AND SAMPLESIZE ===========================================
+    # == COUNT GROUPS AND SAMPLESIZE ===================================
 
     def data_get_samplesizes(self) -> pd.Series:
         """Returns a DataFrame with samplesizes per group/facet"""
@@ -453,7 +453,7 @@ class DataFrameTool(DimsAndLevels):
         return count
 
     # ==
-    # == FIND MISSING DATA======================================================
+    # == FIND MISSING DATA==============================================
 
     def data_get_rows_with_NaN(self) -> pd.DataFrame:
         ### Make complete df with all possible groups/facets and with factors as index
@@ -705,7 +705,7 @@ class DataFrameTool(DimsAndLevels):
         ut.print_separator("=", length=width)  #' fresh new line
 
     # ==
-    # == FIND WELL CONNECTED FACTORS/LEVELS ====================================
+    # == FIND WELL CONNECTED FACTORS/LEVELS ============================
 
     def _levels_always_together(
         self,
@@ -768,7 +768,7 @@ class DataFrameTool(DimsAndLevels):
         return AT_levels, AT_factors
 
     # ==
-    # == Iterate through Data SKIPPING OF EMPTY GROUPS =================================
+    # == Iterate through Data SKIPPING OF EMPTY GROUPS =================
 
     # *def data_iterate_by_rowcol(
     #     self,
@@ -781,9 +781,9 @@ class DataFrameTool(DimsAndLevels):
     #         yield self.data_get_rowcol(key)
 
     # ==
-    # == Iterate through DATA ==========================================================
+    # == Iterate through DATA ==========================================
 
-    ### Iterate through FACETS =========================================================
+    ### Iterate through FACETS =========================================
 
     def data_ensure_allgroups(self, factors=None) -> pd.DataFrame:
         """df.groupby() skips empty groups, so we need to ensure that all groups are present in the data.
@@ -846,7 +846,9 @@ class DataFrameTool(DimsAndLevels):
                 yield key, df
 
     @property  #' >>> (R_l1, C_l1), df1 >>> (R_l1, C_l2), df2 >>> (R_l2, C_l1), df3 ...
-    def data_iter__key_facet_skip_empty(self) -> Generator:
+    def data_iter__key_facet_skip_empty(
+        self,
+    ) -> Generator[tuple[str | int, pd.DataFrame], None, None]:
         """Returns: >> (R_l1, C_l1), df1 >> (R_l1, C_l2), df2 >> (R_l2, C_l1), df3 ...
         Does not contain rows from empty groups"""
         if self.factors_rowcol is None:
@@ -868,7 +870,7 @@ class DataFrameTool(DimsAndLevels):
         return dict(self.data_iter__key_facet_skip_empty)
 
     #
-    ### Iterate through LISTS of groups ================================================
+    ### Iterate through LISTS of groups ================================
 
     @property  #' >>> (R_l1, C_l1, Hue_l1), df >>> (R_l1, C_l2, Hue_l1), df2 >>> ...
     def data_iter__key_groups(self):
@@ -895,7 +897,7 @@ class DataFrameTool(DimsAndLevels):
             yield None, self.data
 
     #
-    ### Iterate through GROUPS =========================================================
+    ### Iterate through GROUPS =========================================
 
     @property  #' >>> (R_l1, C_l1, X_l1, Hue_l1), df >>> (R_l1, C_l2, X_l1, Hue_l1), df2 >>> ...
     def data_iter__allkeys_group(self) -> Generator:
@@ -911,7 +913,7 @@ class DataFrameTool(DimsAndLevels):
             yield key, df
 
     #
-    # == TRANSFORM =====================================================================
+    # == TRANSFORM =====================================================
 
     @staticmethod
     def _rename_y(y: str, func: str) -> str:

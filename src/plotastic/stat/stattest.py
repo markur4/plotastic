@@ -9,7 +9,7 @@ class StatTest(DataFrameTool):
     # == Class Attribute ===============================================================
 
     #' Alpha
-    ALPHA = 0.05
+    ALPHA = 0.05 # TODO Why class variable?
     #' Alpha Tolerance: Will still print out result if it nearly crossed alpha level.
     ALPHA_TOLERANCE = 0.075
 
@@ -24,9 +24,23 @@ class StatTest(DataFrameTool):
     #
     #
     # == __init__=======================================================================
-    def __init__(self, **dataframetool_kwargs):
+    def __init__(
+        self,
+        single_factor: bool | str = False,
+        **dataframetool_kwargs,
+    ):
         super().__init__(**dataframetool_kwargs)
 
+        ### Singl-Factor Mode
+        #' Default is two-factor analysis
+        # TODO: Add single-factor mode to each funtion
+        assert single_factor in [
+            "hue",
+            "col",
+            False,
+        ], f"#! single_factor must be 'hue' or 'col', not {single_factor}"
+        self.single_factor = single_factor
+        
         ### Composition
         self.results = StatResults()
 

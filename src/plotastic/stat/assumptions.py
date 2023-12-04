@@ -21,7 +21,9 @@ class Assumptions(StatTest):
     # == __init__=======================================================================
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
-
+        
+        self.two_factor = True
+        
     # ==
     # ==
     # == Normality =====================================================================
@@ -151,6 +153,8 @@ class Assumptions(StatTest):
         :return: _description_
         :rtype: pd.DataFrame
         """
+        # TODO: Add option to use x or hue as within-factors
+        ### All
 
         ### Gather Arguments
         kwargs = dict(
