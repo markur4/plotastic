@@ -112,7 +112,7 @@ class PlotTool(DataFrameTool):
         "rel": "https://seaborn.pydata.org/generated/seaborn.relplot.html#seaborn.relplot",
     }
 
-    # ==__INIT__ =======================================================================
+    # ==__INIT__ =======================================================
 
     def __init__(self, **dataframetool_kws):
         """
@@ -143,8 +143,7 @@ class PlotTool(DataFrameTool):
     #
     #
 
-    # == ITERATORS =====================================================================
-
+    # == ITERATORS =====================================================
     #
     ### NESTED / FLAT....................................#
 

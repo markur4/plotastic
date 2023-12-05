@@ -353,7 +353,8 @@ class DimsAndLevels:
 
     @property  #' [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]
     def levels_tuples(self) -> list[tuple]:
-        """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (hue_lvl1, hue_lvl2), (x_lvl1, x_lvl2)]"""
+        """Returns: [(R_lvl1, R_lvl2), (C_lvl1, C_lvl2), (x_lvl1,
+        x_lvl2), (hue_lvl1, hue_lvl2)]"""
         return [
             tuple(l) for l in self.levels_dict_factor.values() if not l is None
         ]
