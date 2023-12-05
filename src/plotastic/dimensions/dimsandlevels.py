@@ -127,7 +127,7 @@ class DimsAndLevels:
 
     @property  #' [row, col, hue, x] (dims may be missing)
     def factors_all(self) -> list[str]:
-        F = (self.dims.row, self.dims.col, self.dims.hue, self.dims.x)
+        F = (self.dims.row, self.dims.col, self.dims.x, self.dims.hue)
         return [e for e in F if (not e is None)]
 
     @property  #' [row, col, hue]
