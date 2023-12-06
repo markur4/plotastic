@@ -115,9 +115,8 @@ DA.test_pairwise()     # Perform Posthoc Analysis
 ```
 
 
-![Example figure of `plotastic`. Image was generated using
-version 0.1](How_To_Use/quick_example_fmri_files/example.png){ width=90%
-label="fig:example"}
+![Example figure of `plotastic` (version 0.1). Image style was set by `plt.style.use("ggplot")`](EXAMPLES/fmri2.png){ width=90%
+label="fig:example_fmri"}
 
 
 :Results from `DA.check_sphericity()`. `plotastic` assesses sphericity
