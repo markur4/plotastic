@@ -110,7 +110,10 @@ zipped_noempty_ALL = (
 )
 
 zipped_ALL = (
-    zipped_noempty_tips + zipped_noempty_fmri + zipped_noempty_qpcr + zipped_withempty_tips
+    zipped_noempty_tips
+    + zipped_noempty_fmri
+    + zipped_noempty_qpcr
+    + zipped_withempty_tips
 )
 # len(zipped_noempty_ALL) #' -> 14 total tests
 

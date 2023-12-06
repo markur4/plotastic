@@ -57,7 +57,7 @@ class MultiPlot(PlotEdits):
         self.subplots(**subplot_kws)  #' Initialise Figure and Axes
         self.fillaxes(kind=kind, **sns_kws)  #' Fill axes with seaborn graphics
         if self.dims.hue:
-            self.edit_legend() #' Add legend to figure
+            self.edit_legend()  #' Add legend to figure
 
         plt.tight_layout()  #' Make sure everything fits nicely
 
