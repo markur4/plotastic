@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 
 
 class DataAnalysis(Annotator):
-    # == __init__ ====================================================================
+    # == __init__ ======================================================
     def __init__(
         self,
         data: pd.DataFrame,
@@ -59,7 +59,7 @@ class DataAnalysis(Annotator):
         # self.test = Test()
 
     # ==
-    # == TITLE =======================================================================
+    # == TITLE =========================================================
 
     @property
     def title(self) -> str:
@@ -97,7 +97,7 @@ class DataAnalysis(Annotator):
         return a
 
     # ==
-    # == Saving stuff ==================================================================
+    # == Saving stuff ==================================================
 
     @docstrings.subst(param_overwrite=docstrings.param_overwrite)
     def save_statistics(
