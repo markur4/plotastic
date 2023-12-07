@@ -11,7 +11,7 @@ from pathlib import Path
 
 import plotastic as plst
 
-import _DA_configs as dac
+import DA_configs as dac
 
 
 # %%

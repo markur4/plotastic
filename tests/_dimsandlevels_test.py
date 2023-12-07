@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import plotastic as plst
 
 # from . import configs as ct
-import _DA_configs as dac
+import DA_configs as dac
 
 
 # %%

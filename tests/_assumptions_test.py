@@ -11,7 +11,7 @@ import pytest
 # import plotastic as plst
 from plotastic import DataAnalysis
 
-import _DA_configs as dac
+import DA_configs as dac
 
 
 # %% Test per config

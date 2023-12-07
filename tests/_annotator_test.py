@@ -8,7 +8,7 @@ import plotastic as plst
 from plotastic.dataanalysis.annotator import Annotator
 
 
-import _DA_configs as dac
+import DA_configs as dac
 
 
 # %% testing for dataset TIPS

@@ -1,15 +1,13 @@
-
 #
-#%%
+# %%
 import matplotlib as mpl
 
 from plotastic import utils as ut
 
-import _DA_configs as dac
+import DA_configs as dac
 
 
-
-#%%
+# %%
 def test_font_functions():
     ut.mpl_font()
     ut.mpl_fontsizes_get_all()
@@ -25,7 +23,7 @@ if __name__ == "__main__":
     # print(mpl.rcParams["font.size"]) #' returns an integer
     # print(mpl.rcParams["legend.fontsize"]) #' returns mediu
     # m
-    
+
     ### Fontsizes
     d = ut.mpl_fontsizes_get_all()
     print(d)
@@ -33,7 +31,7 @@ if __name__ == "__main__":
     fs = ut.mpl_fontsize_from_rc()
     legend_fs = ut.mpl_fontsize_from_rc(rc_param="legend.fontsize")
     print(legend_fs)
-    
+
     ### Font
     # plst.set_style("paper")
     font = ut.mpl_font
@@ -44,7 +42,7 @@ if __name__ == "__main__":
         print("narrow")
 
 
-#%%
+# %%
 def test_get_bbox_width():
     DA = dac.DA_ALL
     # DA.legend.get_window_extent()
