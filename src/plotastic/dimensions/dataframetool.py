@@ -94,6 +94,7 @@ class DataFrameTool(DimsAndLevels):
         # if levels_ignore:
         #     self.check_inputlevels_with_data(input_lvls=levels_ignore, verbose=verbose)
 
+
     # ==
     # ==  Make Levels Categorical ======================================
 

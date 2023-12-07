@@ -466,12 +466,17 @@ classDiagram
       data_iter__key_facet(property) -> Generator
       ....()
    }
+   class Subjects{
+      ...
+      ....()
+   }
 
-   pd_DataFrame *-- DimsAndLevels
-   Dims *-- DimsAndLevels
-   DimsAndLevels <|-- DataFrameTool
-   DataFrameTool <|-- PlotTool
-   DataFrameTool <|-- StatTest
+  pd_DataFrame *-- DimsAndLevels
+  Dims *-- DimsAndLevels
+  DimsAndLevels <|-- DataFrameTool
+  DataFrameTool <|-- Subjects
+  Subjects <|-- PlotTool
+  Subjects <|-- StatTest
 
 
    %% == STATISTICS ============================================================

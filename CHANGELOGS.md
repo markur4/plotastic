@@ -1,5 +1,8 @@
 
-# 0.1.1 (not on PyPi yet, but on GitHub)
+# 0.1.1
+### Available on:
+- github
+
 ### New Features:
 - Plot Paired Data by Joining subjects with line for each facet/x/hue-level! 
   - To my knowledge, the solutions provided by matplolib or seaborn are
@@ -25,5 +28,7 @@
 - Added Documentation notebooks to Readme
 
 
-# 0.1.0
-- Initial release
+# 0.1.0 - Initial Release
+### Available on:
+- github
+- pypi

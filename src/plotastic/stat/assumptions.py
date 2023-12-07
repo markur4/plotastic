@@ -21,9 +21,9 @@ class Assumptions(StatTest):
     # == __init__=======================================================================
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
-        
+
         self.two_factor = True
-        
+
     # ==
     # ==
     # == Normality =====================================================================
@@ -54,6 +54,7 @@ class Assumptions(StatTest):
         #' Iterate over rows, cols, hue
         #' Skip empty groups
         normDF_dict = {}
+        # TODO: Use an iterator from hierarchical instead of one that omits x
         for key, df in self.data_iter__key_groups_skip_empty:
             #' key = (row, col, hue)
             normdf = pg.normality(df, **kwargs)
