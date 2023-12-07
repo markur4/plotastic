@@ -13,7 +13,8 @@ import matplotlib as mpl
 # import markurutils as ut
 import plotastic.utils.utils as ut
 
-from plotastic.plotting.plotedits import PlotEdits
+# from plotastic.plotting.plotedits import PlotEdits
+from plotastic.plotting.plot import Plot
 
 if TYPE_CHECKING:
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
@@ -24,44 +25,9 @@ if TYPE_CHECKING:
 # %% Class MultiPlot
 
 
-class MultiPlot(PlotEdits):
-    #
-
-    #
-    # == __init__ ======================================================
-
+class MultiPlot(Plot):
     def __init__(self, **dataframetool_kws):
         super().__init__(**dataframetool_kws)
-
-    def plot(
-        self, kind: str = "strip", subplot_kws: dict = None, **sns_kws
-    ) -> "MultiPlot | DataAnalysis":
-        """Quick plotting, combines self.subplots and self.fillaxes its axes with seaborn graphics
-
-        Args:
-            kind (str, optional): _description_. Defaults to "strip".
-            subplot_kws (dict, optional): _description_. Defaults to None.
-            sns_kws (dict, optional): _description_. Defaults to None.
-
-        Returns:
-            fig_and_axes: _description_
-        """
-        ### Handle kwargs
-        subplot_kws = subplot_kws or {}
-        sns_kws = sns_kws or {}
-
-        ### Standard kws for standard stripplot
-        if kind == "strip" and len(sns_kws) == 0:
-            sns_kws = dict(alpha=0.6, dodge=True)
-
-        self.subplots(**subplot_kws)  #' Initialise Figure and Axes
-        self.fillaxes(kind=kind, **sns_kws)  #' Fill axes with seaborn graphics
-        if self.dims.hue:
-            self.edit_legend()  #' Add legend to figure
-
-        plt.tight_layout()  #' Make sure everything fits nicely
-
-        return self
 
     #
     # == Boxplots ======================================================

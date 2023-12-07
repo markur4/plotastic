@@ -446,19 +446,28 @@ classDiagram
       data: pd.DataFrame
       dims: Dims
 
-      title.setter()
       %%_empty_groups(property)
-      factors_all(property) [x,y,hue,row,col]
-      factors_xhue(property) [x,hue]
-      factors_rowcol(property) [row,col]
-      levels_dict_factor(property) = dict(f1:[l1, l2, ...], f2:[...], ...)
-      levelkeys(property) = [(f1_l1, f2_l1), (f1_l1, f2_l2), ...]
+      factors_all(property) list[x,y,hue,row,col]
+      factors_xhue(property) list[x,hue]
+      factors_rowcol(property) list[row,col]
+      levels_dict_factor(property) dict[f1:[l1, l2, ...], f2:[...], ...]
+      levelkeys(property) list[tuple[l1, l2], ...]
       ....()
    }
+   class Subject{
+      subject: str
+      subjectlist(property): list[str]
+      ....()
+   }
+   class HierarchicalDims{
+      _factors_hierarchical(property)
+      ...
+      data_hierarchicize()
+      ....()
+    }
    class DataFrameTool{
-      levels: list[tuple[str]] =None
-      subject: str =None
       verbose: bool =False
+      levels: list[tuple[str]] =None
       catplot(kind="strip") -> sns.FacetGrid
       transform_y() -> self
       data_describe() -> pd.DataFrame
@@ -466,17 +475,20 @@ classDiagram
       data_iter__key_facet(property) -> Generator
       ....()
    }
-   class Subjects{
-      ...
+   class DataIntegrity{
+      data_check_integrity()
       ....()
    }
+   
 
   pd_DataFrame *-- DimsAndLevels
   Dims *-- DimsAndLevels
-  DimsAndLevels <|-- DataFrameTool
-  DataFrameTool <|-- Subjects
-  Subjects <|-- PlotTool
-  Subjects <|-- StatTest
+  DimsAndLevels <|-- Subject
+  Subject <|-- HierarchicalDims
+  HierarchicalDims <|-- DataFrameTool
+  DataFrameTool <|-- DataIntegrity
+  DataIntegrity <|-- SubPlot
+  DataIntegrity <|-- StatTest
 
 
    %% == STATISTICS ============================================================
@@ -571,7 +583,7 @@ classDiagram
       fig.legend()
       ....()
    }
-   class PlotTool{
+   class SubPlot{
       fig: mpl.figure.Figure
       axes: mpl.axes.Axes
       ...
@@ -586,21 +598,26 @@ classDiagram
       edit_titles(titles:dict) -> None
       edit_xy_axis_labels(labels:dict) -> None
       edit_yticklabels_log_minor(ticks:dict) -> None
-      ....()
+      ...()
+   }
+   class Plot{
+      plot()
+      plot_connect_subjects()
+      ...()
    }
    class MultiPlot{
       <<Library of pre-built Plots>>
-
       plot_box_strip()
       plot_bar_swarm()
       plot_qqplot()
-      ....()
+      ...()
    }
 
-   matplotlib *-- PlotTool
+   matplotlib *-- SubPlot
    matplotlib <.. rc: Configures
-   PlotTool <|-- PlotEdits
-   PlotEdits <|-- MultiPlot
+   SubPlot <|-- PlotEdits
+   PlotEdits <|-- Plot
+   Plot <|-- MultiPlot
 
 
    %% == DATAANALYSIS ==========================================================
@@ -645,6 +662,9 @@ classDiagram
    click Dims href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dims.py" 
    click DimsAndLevels href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dimsandlevels.py" 
    click DataFrameTool href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dataframetool.py" 
+   click HierarchicalDims href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/hierarchical_dims.py"
+   click Subject href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/subject.py"
+   click DataIntegrity href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dataintegrity.py"
 
    %% stat
    click StatResults href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/statresults.py"
@@ -655,7 +675,8 @@ classDiagram
 
    %% plotting
    click rc href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/rc.py"
-   click PlotTool href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/plottool.py"
+   click SubPlot href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/SubPlot.py"
+   click Plot href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/plot.py"
    click PlotEdits href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/plotedits.py"
    click MultiPlot href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/multiplot.py"
 

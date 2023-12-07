@@ -15,7 +15,7 @@ import warnings
 
 # import markurutils as ut
 import plotastic.utils.utils as ut
-from plotastic.plotting.plottool import PlotTool
+from plotastic.plotting.subplot import SubPlot
 
 if TYPE_CHECKING:
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 # %% Class PlotEdit:
 
 
-class PlotEdits(PlotTool):
+class PlotEdits(SubPlot):
     #
     # == __init__ ======================================================
 
@@ -141,7 +141,7 @@ class PlotEdits(PlotTool):
 
         ### Edit titles
         self.edit_titles(titles)
-        
+
         return self
 
     def edit_titles_replace(self, titles: list) -> "PlotEdits | DataAnalysis":

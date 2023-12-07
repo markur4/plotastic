@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 
-from plotastic.dimensions.dataframetool import DataFrameTool
+from plotastic.dimensions.dataintegrity import DataIntegrity
 from plotastic.stat.statresults import StatResults
 
 
-class StatTest(DataFrameTool):
+class StatTest(DataIntegrity):
     # == Class Attribute ===============================================================
 
     #' Alpha

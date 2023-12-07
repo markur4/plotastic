@@ -28,7 +28,7 @@ import seaborn as sns
 
 import plotastic.utils.utils as ut
 
-from plotastic.dimensions.dataframetool import DataFrameTool
+from plotastic.dimensions.dataintegrity import DataIntegrity
 
 if TYPE_CHECKING:
     from plotastic.dataanalysis.dataanalysis import DataAnalysis
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 # %% Class: PlotToolf
 
 
-class PlotTool(DataFrameTool):
+class SubPlot(DataIntegrity):
     _SNS_FUNCS = {
         "bar": sns.barplot,
         "point": sns.pointplot,
@@ -292,7 +292,7 @@ class PlotTool(DataFrameTool):
         height_ratios: list[int] = None,
         figsize: tuple[int] = None,
         **subplot_kws: dict,
-    ) -> "PlotTool | DataAnalysis":
+    ) -> "SubPlot | DataAnalysis":
         """Initialise matplotlib figure and axes objects
 
         Returns:
@@ -353,7 +353,7 @@ class PlotTool(DataFrameTool):
 
     def fillaxes(
         self, kind: str = "strip", **sns_kws: dict
-    ) -> "PlotTool | DataAnalysis":
+    ) -> "SubPlot | DataAnalysis":
         """Iterates through self.data and self.axes and plots data into
         axes using seaborn plotting functions.
 
@@ -427,7 +427,7 @@ class PlotTool(DataFrameTool):
     #
     #
     # == Small EDITS and those required to be set BEFORE seaborn plots =
-    def edit_axtitles_reset(self) -> "PlotTool | DataAnalysis":
+    def edit_axtitles_reset(self) -> "SubPlot | DataAnalysis":
         for key, ax in self.axes_iter__keys_ax:
             ax.set_title(self._standard_axtitle(key))
         return self
@@ -472,9 +472,3 @@ class PlotTool(DataFrameTool):
     #     return fig, axes
 
     ### Buffer to store plot intermediates
-
-
-# !! # end class
-# !!
-# !!
-# !!

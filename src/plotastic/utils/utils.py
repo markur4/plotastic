@@ -5,10 +5,10 @@ library
 # %% Imports: Just the re-used ones, special ones are imported in the functions
 
 
-from typing import TYPE_CHECKING, Hashable
 from decimal import Decimal
-
 import collections
+
+from pathlib import Path
 
 import warnings
 
@@ -25,6 +25,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 import plotastic.caches as caches
+
+from typing import TYPE_CHECKING, Hashable
 
 if TYPE_CHECKING:
     pass
@@ -302,6 +304,11 @@ def ensure_list(
         ]
 
 
+def index_of_matchelements(i1: list, i2: list):
+    """If i1 is ['F1', 'F2', 'F3'] and i2 is['F1', 'F3'], return [0, 2]"""
+    return [i1.index(i) for i in i2]
+
+
 def flatten(s: list | tuple, np=False) -> list:
     """
 
@@ -535,6 +542,7 @@ def get_bbox_width(bbox: mpl.transforms.Bbox, in_inches=True):
         return width_inches
     else:
         return width_pixels
+
 
 def get_bbox_height(bbox: mpl.transforms.Bbox, in_inches=True):
     if not isinstance(bbox, mpl.transforms.Bbox):
