@@ -402,7 +402,7 @@ class PlotTool(DataFrameTool):
         ):  # !! also: legend=False doesn't work with sns.barplot for some reason..
             self.remove_legend()
 
-        ### todo Save current plot as attribute, so that we can save mid-plot
+        ### TODO (Save current plot as attribute, so that we can save mid-plot
         # self.fig = plt.gcf() # !! Doesn't work, seems to overwrite self.axes to list
         # self.axes = self.fig.get_axes() # !! Doesn't work, always returns list, not 2D
         # array

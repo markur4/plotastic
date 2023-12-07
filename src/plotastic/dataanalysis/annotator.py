@@ -545,7 +545,7 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
         PH: "pd.DataFrame",
         only_sig="strict",
         **annot_KWS,
-    ):
+    ) -> None:
         """Annotates pairwise tests to current matplotlib plot
 
         Args:
