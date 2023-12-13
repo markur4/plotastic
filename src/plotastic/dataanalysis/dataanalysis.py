@@ -44,7 +44,10 @@ class DataAnalysis(Annotator):
         ### Inherit
         # !! verbosity set to False, since each subclass shouldn't test its own DataFrame
         dataframetool_kws = dict(
-            data=data, dims=dims, subject=subject, levels=levels, verbose=False
+            data=data,
+            dims=dims,
+            subject=subject,
+            levels=levels,
         )
         super().__init__(**dataframetool_kws)
 

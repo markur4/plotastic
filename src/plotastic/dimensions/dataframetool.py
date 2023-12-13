@@ -38,7 +38,6 @@ class DataFrameTool(HierarchicalDims):
     def __init__(
         self,
         levels: list[tuple[str]] = None,
-        verbose=True,
         **kws,
     ):
         """Adds pandas DataFrame related tools.
@@ -66,10 +65,10 @@ class DataFrameTool(HierarchicalDims):
         self.user_levels = levels  # TODO: Rework this
         if levels:
             self._check_inputlevels_with_data(
-                input_lvls=levels, verbose=verbose
+                input_lvls=levels, verbose=False
             )
             self.input_levels = levels
-            _ = self.data_categorize(verbose=verbose)
+            _ = self.data_categorize(verbose=False)
 
     # ==
     # ==  Make Levels Categorical ======================================

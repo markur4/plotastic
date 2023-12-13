@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pytest
 
 import plotastic as plst
-from plotastic.dataanalysis.annotator import Annotator
+# from plotastic.dataanalysis.annotator import Annotator
 
 
 import DA_configs as dac
@@ -58,10 +58,10 @@ zipped_tips: list[tuple] = dac.add_zip_column(
 
 @pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_tips)
 def test_pairwiseannotations_tips(DF, dims, annot_kwargs):
-    AN = Annotator(data=DF, dims=dims, verbose=True)
-    _ph = AN.test_pairwise(paired=False, padjust="none")
-    AN = (
-        AN.subplots()
+    DA = plst.DataAnalysis(data=DF, dims=dims, verbose=True)
+    _ph = DA.test_pairwise(paired=False, padjust="none")
+    DA = (
+        DA.subplots()
         .fillaxes(kind="box")
         .annotate_pairwise(
             **annot_kwargs,
@@ -123,12 +123,12 @@ zipped_fmri: list[tuple] = dac.add_zip_column(
 
 @pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_fmri)
 def test_pairwiseannotations_fmri(DF, dims, annot_kwargs):
-    AN = Annotator(
+    DA = plst.DataAnalysis(
         data=DF, dims=dims, verbose=True, subject="subject"
     )  # !! subject
-    _ph = AN.test_pairwise(paired=True, padjust="bonf")
-    AN = (
-        AN.subplots()
+    _ph = DA.test_pairwise(paired=True, padjust="bonf")
+    DA = (
+        DA.subplots()
         .fillaxes(kind="box")
         .annotate_pairwise(
             **annot_kwargs,
@@ -190,10 +190,10 @@ zipped_qpcr: list[tuple] = dac.add_zip_column(
 
 @pytest.mark.parametrize("DF, dims, annot_kwargs", zipped_qpcr)
 def test_pairwiseannotation_qpcr(DF, dims, annot_kwargs):
-    AN = Annotator(data=DF, dims=dims, verbose=True)
-    _ph = AN.test_pairwise(paired=False, padjust="none", subject="subject")
-    AN = (
-        AN.subplots(sharey=False, figsize=(10, 10))
+    DA = plst.DataAnalysis(data=DF, dims=dims, verbose=True)
+    _ph = DA.test_pairwise(paired=False, padjust="none", subject="subject")
+    DA = (
+        DA.subplots(sharey=False, figsize=(10, 10))
         .fillaxes(kind="box")
         .transform_y("log10")  # !! log transform
         .edit_y_scale_log(10)  # !! MUST be called before annotation!
