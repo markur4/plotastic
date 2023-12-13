@@ -20,11 +20,6 @@ class DataIntegrity(DataFrameTool):
     def __init__(self, **dataframetool_kws) -> None:
         super().__init__(**dataframetool_kws)
 
-        if self.verbose:
-            self.data_check_integrity()
-
-
-    
     # ==
     # == COUNT GROUPS AND SAMPLESIZE ===================================
 

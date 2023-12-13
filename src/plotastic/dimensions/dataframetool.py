@@ -55,9 +55,6 @@ class DataFrameTool(HierarchicalDims):
         ### Inherit
         super().__init__(**kws)
 
-        ### Verbose mode
-        self.verbose = verbose
-
         ### Transformations
         self.transformed = False
         self.transform_history = []  #' HISTORY OF TRANSFORMATIONS
