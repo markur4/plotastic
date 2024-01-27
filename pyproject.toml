@@ -78,6 +78,7 @@ dependencies = [
     # * Plotting
     "matplotlib",
     "seaborn<=0.12.2", #!! 0.13 has issues with hue
+    "Pillow>=10.2.0", #!! github security risk
     #* Statistics
     "scipy",
     # "statannot",   #' Superseded by statannotations

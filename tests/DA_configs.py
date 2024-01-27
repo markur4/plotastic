@@ -132,6 +132,8 @@ zipped_ALL = (
 
 # %%
 # == Make Dataanalysis objects =========================================
+
+
 def make_DA_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
     """Makes a DA object with every possible data stored in it
 
@@ -170,6 +172,7 @@ def make_DA_statistics(dataset: str = "qpcr") -> plst.DataAnalysis:
 
 
 def make_DA_plot(dataset: str = "qpcr") -> plst.DataAnalysis:
+    """A DA that has a plot"""
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         ### Load example data
@@ -184,6 +187,7 @@ def make_DA_plot(dataset: str = "qpcr") -> plst.DataAnalysis:
 
 
 def make_DA_all(dataset: str) -> plst.DataAnalysis:
+    """A DA with all possible statistics and a plot"""
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
 

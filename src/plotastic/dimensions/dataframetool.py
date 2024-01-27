@@ -494,7 +494,7 @@ class DataFrameTool(HierarchicalDims):
     # == TRANSFORM =====================================================
 
     @staticmethod
-    def _rename_y(y: str, func: str) -> str:
+    def _rename_y(y: str, func: str | Callable) -> str:
         """Renames the y column to reflect the transformation
 
         Args:
@@ -514,7 +514,7 @@ class DataFrameTool(HierarchicalDims):
         df: pd.DataFrame,
         y_raw: str,
         y_new: str,
-        func: str,
+        func: Callable,
     ) -> pd.DataFrame:
         """Adds a column to the dataframe that contains the transformed data
 
@@ -542,7 +542,7 @@ class DataFrameTool(HierarchicalDims):
         return df
 
     def transform_y(
-        self, func: str | Callable, inplace=True
+        self, func: str | Callable, inplace=False
     ) -> "DataFrameTool | DataAnalysis":
         """DOC: Transforms the data, changes dv property"""
 

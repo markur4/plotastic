@@ -154,6 +154,12 @@ class Assumptions(StatTest):
         :return: _description_
         :rtype: pd.DataFrame
         """
+        ### Make sure subject is specified
+        if self.subject is None:
+            raise ValueError(
+                "Testing sphericity requires a subject to be specified."
+            )
+        
         # TODO: Add option to use x or hue as within-factors
         ### All
 

@@ -24,23 +24,23 @@ class StatResults:
     # == INIT ==========================================================================
     def __init__(self):
         ### Data Tables
-        self.DF_normality: pd.DataFrame = self.DEFAULT_UNCHECKED
-        self.DF_homoscedasticity: pd.DataFrame = self.DEFAULT_UNCHECKED
-        self.DF_sphericity: pd.DataFrame = self.DEFAULT_UNCHECKED
+        self.DF_normality: pd.DataFrame | str = self.DEFAULT_UNCHECKED
+        self.DF_homoscedasticity: pd.DataFrame | str = self.DEFAULT_UNCHECKED
+        self.DF_sphericity: pd.DataFrame | str = self.DEFAULT_UNCHECKED
 
-        self.DF_omnibus_anova: pd.DataFrame = self.DEFAULT_UNTESTED
-        self.DF_omnibus_rmanova: pd.DataFrame = self.DEFAULT_UNTESTED
-        self.DF_omnibus_kruskal: pd.DataFrame = self.DEFAULT_UNTESTED
-        self.DF_omnibus_friedman: pd.DataFrame = self.DEFAULT_UNTESTED
-        self.DF_posthoc: pd.DataFrame = self.DEFAULT_UNTESTED
-        self.DF_bivariate: pd.DataFrame = self.DEFAULT_UNTESTED
+        self.DF_omnibus_anova: pd.DataFrame | str = self.DEFAULT_UNTESTED
+        self.DF_omnibus_rmanova: pd.DataFrame | str = self.DEFAULT_UNTESTED
+        self.DF_omnibus_kruskal: pd.DataFrame | str = self.DEFAULT_UNTESTED
+        self.DF_omnibus_friedman: pd.DataFrame | str = self.DEFAULT_UNTESTED
+        self.DF_posthoc: pd.DataFrame | str = self.DEFAULT_UNTESTED
+        self.DF_bivariate: pd.DataFrame | str = self.DEFAULT_UNTESTED
 
         ### Assessments = Summarizing results from multiple groups
-        self._normal: bool = self.DEFAULT_UNASSESSED
-        self._homoscedastic: bool = self.DEFAULT_UNASSESSED
-        self._spherical: bool = self.DEFAULT_UNASSESSED
+        self._normal: bool | str = self.DEFAULT_UNASSESSED
+        self._homoscedastic: bool | str = self.DEFAULT_UNASSESSED
+        self._spherical: bool | str = self.DEFAULT_UNASSESSED
 
-        self._parametric: bool = self.DEFAULT_UNASSESSED
+        self._parametric: bool | str = self.DEFAULT_UNASSESSED
 
     # ==
     # == Summarize Results =============================================================
@@ -116,7 +116,7 @@ class StatResults:
     # ==
     # == EXPORT ========================================================================
 
-    def save(self, fname: str = "plotastic_results") -> None:
+    def save(self, fname: str | Path = "plotastic_results", verbose=True) -> None:
         """Exports all statistics to one excel file. Different sheets for different
         tests
 
@@ -138,6 +138,10 @@ class StatResults:
 
         ### Save
         writer.close()
+        
+        ### Tell save location
+        if verbose:
+            print(f"Saved results to {fname.resolve()}")
 
 
 # !!
