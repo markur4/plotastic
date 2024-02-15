@@ -33,6 +33,9 @@ pip install git+https://github.com/markur4/plotastic.git
 <hr>
 
 <h1 align="center">
+<hr>
+🐁 Click on Images for Code! 🐁
+<hr>
 
   <a href=https://github.com/markur4/plotastic/blob/main/EXAMPLES/qpcr.ipynb>
   <img
