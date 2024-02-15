@@ -57,7 +57,8 @@ syntaxes.
 
 `seaborn` has become a popular choice for plotting in Python, offering
 an intuitive interface. Its statistical functionality focuses on
-descriptive plots and bootstrapped confidence intervals.
+descriptive plots and bootstrapped confidence intervals
+
 [@waskomSeabornStatisticalData2021]. The library `pingouin` offers an
 extensive set of statistical tests, but it lacks integration with common
 plotting capabilities [@vallatPingouinStatisticsPython2018].
@@ -74,7 +75,8 @@ visualization.
 
 # Example
 The following code demonstrates how `plotastic` analyzes the
-example dataset "fmri", similar to @waskomSeabornStatisticalData2021. 
+example dataset "fmri", similar to @waskomSeabornStatisticalData2021
+(\autoref{fig:examplefmri}). 
 
 ```python
 ### IMPORT PLOTASTIC
@@ -115,8 +117,8 @@ DA.test_pairwise()     # Perform Posthoc Analysis
 ```
 
 
-![Example figure of `plotastic` (version 0.1). Image style was set by `plt.style.use("ggplot")`](EXAMPLES/fmri2.png){ width=90%
-label="fig:example_fmri"}
+![Example figure of `plotastic` (version 0.1). Image style was set by
+`plt.style.use("ggplot")` \label{fig:examplefmri}](EXAMPLES/fmri2.png){width=90%} 
 
 
 :Results from `DA.check_sphericity()`. `plotastic` assesses sphericity
@@ -159,12 +161,13 @@ two-factor RM-ANOVAs. Within-factors are "timepoint" (x) and "event"
 
 The functionality of `plotastic` revolves around a seamless integration
 of statistical analysis and plotting, leveraging the capabilities of
-`pingouin`, `seaborn`, `matplotlib` and `statannotations`.
+`pingouin`, `seaborn`, `matplotlib` and `statannotations`
 [@vallatPingouinStatisticsPython2018; @waskomSeabornStatisticalData2021;
-@hunterMatplotlib2DGraphics2007, @charlierTrevismdStatannotationsV02022
-]. It utilizes long-format `pandas` `DataFrames` as its primary input,
-aligning with the conventions of `seaborn` and ensuring compatibility
-with existing data structures [@wickhamTidyData2014a;
+@hunterMatplotlib2DGraphics2007;
+@charlierTrevismdStatannotationsV02022]. It utilizes long-format
+`pandas` `DataFrames` as its primary input, aligning with the
+conventions of `seaborn` and ensuring compatibility with existing data
+structures [@wickhamTidyData2014a;
 @mckinneyPandasFoundationalPython2011].
 
 `plotastic` was inspired by `seaborn`'s intuitive and consistent usage
