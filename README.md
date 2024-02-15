@@ -417,11 +417,10 @@ well!*
 <blockquote>
 <hr>
 
-
 - 🛑 Not everything shown here is implemented and not everything that's
   implemented is shown here!
-- 🖱️ **Click** on a class to see its source code!
-
+- 🐁 **Click** on a class to see its source code!
+<hr>
 
 ```mermaid
 classDiagram
@@ -724,7 +723,7 @@ classDiagram
 
 ## Documentations 💡
 1. Example Gallery
-   1. [Quick Example: FMRI](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/quick_example_fmri.ipynb)
+   1. [Quick Example: FMRI](https://github.com/markur4/plotastic/blob/main/EXAMPLES/fmri.ipynb)
    2. [qPCR (paired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/qpcr.ipynb)
    3. [Cars (unpaired, non-parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/cars.ipynb)
    4. [Diamonds (unpaired, non-parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/diamonds.ipynb)
@@ -732,13 +731,13 @@ classDiagram
    6. [Iris (unpaired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/iris.ipynb)
    7. [Tips (unpaired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/tips.ipynb)
 2. Data
-   1. Transform Y
-   2. [Set/Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
+   <!-- 1. Transform Y -->
+   1. [Set/Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
 3. [Plotting](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plotting.ipynb)
    1. [Legends](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_legend.ipynb)
    2. [MultiPlots](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_multiplots.ipynb)
-   3. [Editing Figures](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_editing.ipynb)
-   4. [Styles](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_styles.ipynb)
+   <!-- 3. [Editing Figures](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_editing.ipynb) -->
+   3. [Styles](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_styles.ipynb)
 
 ## Quick Example 💨
 
@@ -755,6 +754,7 @@ classDiagram
 
 
 ```python
+import matplotlib.pyplot as plt
 import plotastic as plst
 
 # Import Example Data (Long-Format)
