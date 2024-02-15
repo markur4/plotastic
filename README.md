@@ -845,7 +845,7 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
 
-## 🧪 Testing
+## Testing 🧪 
 - Download/Clone repository
 - Install development tools `pip install .[dev]`
 - Run tests 
@@ -855,7 +855,7 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
     `./htmlcov/index.html` with your browser.
 
 
-## 🤝 Community Guidelines
+## Community Guidelines 🤝 
 When interacting with the community, you must adhere to the [Code of Conduct](https://github.com/markur4/plotastic/blob/main/CODE_OF_CONDUCT.md)
 
 ### Contribute
