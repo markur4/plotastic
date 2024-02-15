@@ -854,3 +854,20 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
     `pytest ./tests -cov--cov-report=html` and open
     `./htmlcov/index.html` with your browser.
 
+
+## 🤝 Community Guidelines
+When interacting with the community, you must adhere to the [Code of Conduct](https://github.com/markur4/plotastic/blob/main/CODE_OF_CONDUCT.md)
+
+### Contribute
+I am grateful for [pull
+requests](https://github.com/markur4/plotastic/pulls)!
+- Make sure to understand the code (e.g. see Class diagram in this Readme)
+- Run tests before submitting a pull request
+
+### Reporting Issues & Problems
+If you need help, please open an [issue](https://github.com/markur4/plotastic/issues) on this repository.
+- Please provide a minimal example to reproduce the problem.
+
+### Support
+If you need help, please open an
+[issue](https://github.com/markur4/plotastic/issues) on this repository.
