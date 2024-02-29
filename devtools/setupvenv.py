@@ -65,3 +65,9 @@ np.__version__
 import pytest
 
 pytest.__version__
+
+
+# %% 
+### Make a user venv
+import venv
+venv.create("venv_user", with_pip=True)
