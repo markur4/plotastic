@@ -44,7 +44,12 @@ statistical tests and plots, conducts visualisation, analyses and
 supports extensive customization options. In essence, `plotastic`
 establishes a protocol for configuring statical analyses through
 plotting parameters. This approach streamlines the process, translating
-`seaborn` parameters into statistical terms, providing researchers and
+`seaborn` parameters into statistical terms, allowing researchers to
+focus on correct statistical testing and less about specific syntax and
+implementations.
+
+
+and
 data scientists with a cohesive and user-friendly solution in python.
 
 # Statement of need
