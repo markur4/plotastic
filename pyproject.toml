@@ -68,9 +68,12 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Programming Language :: Python :: 3.11",
 ]
+### Python version
+#' Lower versions than 3.11 have not been tested
+requires-python = ">=3.11"
+
 ### Dependencies
 #' Specify version only if concrete incompatibilities exist
-requires-python = ">=3.11"
 dependencies = [
     #* Core
     "numpy",
