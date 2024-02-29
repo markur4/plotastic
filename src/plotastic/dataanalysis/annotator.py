@@ -600,8 +600,8 @@ class Annotator(MultiPlot, Omnibus, PostHoc, Bivariate):
 
     def annotate_pairwise(
         self,
-        include: dict | list = None,
-        exclude: dict | list = None,
+        include: dict | list | str = None,
+        exclude: dict | list | str = None,
         include_in_facet: dict = None,
         exclude_in_facet: dict = None,
         exclude_over_include=True,
