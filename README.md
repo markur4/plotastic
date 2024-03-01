@@ -25,6 +25,9 @@ pip install plotastic
 pip install git+https://github.com/markur4/plotastic.git
 ```
 
+### Requirements
+- Python >= 3.11 *(not tested with earlier versions)*
+
 [//]:<== Information ==========================================================>
 # Example Gallery 📷
 
