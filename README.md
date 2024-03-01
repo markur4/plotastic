@@ -27,6 +27,8 @@ pip install git+https://github.com/markur4/plotastic.git
 
 ### Requirements
 - Python >= 3.11 *(not tested with earlier versions)*
+- pandas == 1.5.3 *(pingouin needs this)*
+- seaborn <= 0.12.2 *(later versions reworked hue)*
 
 [//]:<== Information ==========================================================>
 # Example Gallery 📷
