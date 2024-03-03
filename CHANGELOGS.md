@@ -4,13 +4,17 @@
 - github
 
 ### New Features:
+- Runtime config `plotting.rc`
+  - `set_style()` now passes matplotlib styles to
+    `matplotlib.style.use()`
+
+### Experimental Features:
 - Plot Paired Data by Joining subjects with line for each facet/x/hue-level! 
   - To my knowledge, the solutions provided by matplolib or seaborn are
-    way too difficult
-    plot 
-- Runtime config `plotting.rc`
-  - `set_style()` now passes any known matplotlib style to
-    `matplotlib.style.use()`
+    way too difficult. 
+  - I implemented a solution that worked, but since I
+    found a case where it didn't, this feature is experimental
+
     
 ### Changes:
 - Legends
