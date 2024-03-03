@@ -15,13 +15,15 @@ black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://gith
 
 
 [//]:<== Installation =========================================================>
-# Installation 📦
+# 📦 Installation
 
+#### Install from PyPi:
 ``` bash
-# Install from PyPi:
 pip install plotastic
+```
 
-# For the latest version (check CHANGELOG.md!):
+#### Install from GitHub: (experimental, check CHANGELOG.md)
+``` bash
 pip install git+https://github.com/markur4/plotastic.git
 ```
 
@@ -31,7 +33,7 @@ pip install git+https://github.com/markur4/plotastic.git
 - seaborn <= 0.12.2 *(later versions reworked hue)*
 
 [//]:<== Information ==========================================================>
-# Example Gallery 📷
+#  📷 Example Gallery
 
 <details><summary> <b><i> (click to unfold)  </i></b> </summary>
 <blockquote>
@@ -92,7 +94,7 @@ pip install git+https://github.com/markur4/plotastic.git
 
 
 [//]:<== Information ==========================================================>
-# About plotastic 📚 
+# 🧑‍🏫 About `plotastic` 
 
 
 [//]:<------------------------------------------------------------------------->
@@ -294,7 +296,7 @@ data scientists with a cohesive and user-friendly solution in python.!
 
 
 [//]:<== Features =============================================================>
-## Features ⚙️
+
 
 
 <details><summary>  ✅ <b><i> Feature List </i></b> </summary>
@@ -704,30 +706,16 @@ classDiagram
 
 
 
-[//]:<=========================================================================>
-## Cite this! ✍🏻
-<details><summary> <i> Please cite the publications of seaborn, pingouin, etc. when using plotastic (click to unfold) </i> </summary>
-<blockquote>
-<hr>
-
-- *Vallat, R. (2018). Pingouin: statistics in Python. Journal of Open
-  Source Software, 3(31), 1026. <https://doi.org/10.21105/joss.01026>*
-- *Waskom, M. et al. (2021). mwaskom/seaborn: v0.11.1 (January 2021).
-  Zenodo. <http://doi.org/10.5281/zenodo.4547176>*
-
-[//]:<end Cite this! ✍🏻 =======================================================>
-</blockquote>
-</details>
 
 
 
 
-# How To Use 📔
+# 📔 How To Use
 
 [//]:<=========================================================================>
 
-## Documentations 💡
-1. Example Gallery
+## Documentations
+1. **Example Gallery**
    1. [Quick Example: FMRI](https://github.com/markur4/plotastic/blob/main/EXAMPLES/fmri.ipynb)
    2. [qPCR (paired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/qpcr.ipynb)
    3. [Cars (unpaired, non-parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/cars.ipynb)
@@ -735,16 +723,17 @@ classDiagram
    5. [Attention (paired/mixed, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/attention.ipynb)
    6. [Iris (unpaired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/iris.ipynb)
    7. [Tips (unpaired, parametric)](https://github.com/markur4/plotastic/blob/main/EXAMPLES/tips.ipynb)
-2. Data
+2. **Data**
    <!-- 1. Transform Y -->
    1. [Set/Switch Dimensions](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/dimensions.ipynb)
-3. [Plotting](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plotting.ipynb)
-   1. [Legends](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_legend.ipynb)
-   2. [MultiPlots](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_multiplots.ipynb)
+3. **Plotting**
+   1. [Quick & Simple: MultiPlots](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_multiplots.ipynb)
+   2. [Constructing Plots](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plotting.ipynb)
+   3. [Legends](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_legend.ipynb)
    <!-- 3. [Editing Figures](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_editing.ipynb) -->
-   3. [Styles](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_styles.ipynb)
+   4. [Styles](https://github.com/markur4/plotastic/blob/main/HOW_TO_USE/plot_styles.ipynb)
 
-## Quick Example 💨
+## Quick Example
 
 [//]:<=========================================================================>
 [//]:<.ipynb Notebooks taken from HOW_TO_USE.ipynb>
@@ -850,7 +839,10 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
 
 
 
-## Testing 🧪 
+## 🧪 Testing 
+<details><summary> <b><i> (click to unfold)  </i></b> </summary>
+<blockquote>
+
 - Download/Clone repository
 - Install development tools `pip install .[dev]`
 - Run tests 
@@ -858,9 +850,14 @@ plt.savefig("example.png", dpi=200, bbox_inches="tight")
   - To include a coverage report run 
     `pytest ./tests -cov--cov-report=html` and open
     `./htmlcov/index.html` with your browser.
+    
+</details>
 
 
-## Community Guidelines 🤝 
+## 🤝 Community Guidelines 
+<details><summary> <b><i> (click to unfold)  </i></b> </summary>
+<blockquote>
+
 When interacting with the community, you must adhere to the [Code of Conduct](https://github.com/markur4/plotastic/blob/main/CODE_OF_CONDUCT.md)
 
 ### Contribute
@@ -876,3 +873,47 @@ If you need help, please open an [issue](https://github.com/markur4/plotastic/is
 ### Support
 If you need help, please open an
 [issue](https://github.com/markur4/plotastic/issues) on this repository.
+</details>
+
+[//]:<=========================================================================>
+## ✍🏻 Cite These!
+<details><summary> <b><i> (click to unfold) </i></b> </summary>
+<blockquote>
+<hr>
+
+
+Vallat, R. (2018). Pingouin: statistics in Python. Journal of Open
+Source Software, 3(31), 1026, https://doi.org/10.21105/joss.01026
+
+Waskom, M. L., (2021). seaborn: statistical data visualization. Journal
+of Open Source Software, 6(60), 3021, https://doi.org/10.21105/joss.03021.
+
+```
+@article{Waskom2021,
+    doi = {10.21105/joss.03021},
+    url = {https://doi.org/10.21105/joss.03021},
+    year = {2021},
+    publisher = {The Open Journal},
+    volume = {6},
+    number = {60},
+    pages = {3021},
+    author = {Michael L. Waskom},
+    title = {seaborn: statistical data visualization},
+    journal = {Journal of Open Source Software}
+ }
+ 
+ @article{Vallat2018,
+  title    = "Pingouin: statistics in Python",
+  author   = "Vallat, Raphael",
+  journal  = "The Journal of Open Source Software",
+  volume   =  3,
+  number   =  31,
+  pages    = "1026",
+  month    =  nov,
+  year     =  2018
+}
+```
+
+[//]:<end Cite this! ✍🏻 =======================================================>
+</blockquote>
+</details>
