@@ -1,12 +1,20 @@
-
-# 0.1.1
+# 0.1.2
 ### Available on:
 - github
 
 ### New Features:
+- None yet
+
+
+
+# 0.1.1
+### Available on:
+- github
+- PyPi
+
+### New Features:
 - Runtime config `plotting.rc`
-  - `set_style()` now passes matplotlib styles to
-    `matplotlib.style.use()`
+  - `set_style()` now passes all available matplotlib styles to `matplotlib.style.use()`
 
 ### Experimental Features:
 - Plot Paired Data by Joining subjects with line for each facet/x/hue-level! 
