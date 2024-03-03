@@ -49,9 +49,6 @@ focus on correct statistical testing and less about specific syntax and
 implementations.
 
 
-and
-data scientists with a cohesive and user-friendly solution in python.
-
 # Statement of need
 
 Python's data science ecosystem provides powerful tools for both
