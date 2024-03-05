@@ -65,7 +65,7 @@ descriptive plots and bootstrapped confidence intervals
 extensive set of statistical tests, but it lacks integration with common
 plotting capabilities [@vallatPingouinStatisticsPython2018].
 `statannotations` integrates statistical testing with plot annotations, but
- uses a complex interface and is limited to pairwise comparisons.
+ uses a complex interface and is limited to pairwise comparisons
  [@charlierTrevismdStatannotationsV02022].
 
 `plotastic` addresses this gap by offering a unified environment for
