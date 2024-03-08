@@ -231,8 +231,9 @@ integration simplifies the interface and expands options for pair
 selection in multidimensional plots, enhancing both user experience and
 interpretability.
 
-`plotastic` also focuses on annotating statistical inside the plot. It integrates `statannotations` for annotating p-values
- from pairwise comparisons inside the plot
+`plotastic` also focuses on annotating statistical information inside
+ the plot. It integrates `statannotations` for annotating p-values from
+ pairwise comparisons inside the plot
  [@charlierTrevismdStatannotationsV02022], and simplifies the interface
  and offering further options for pair selection in multidimensional
  plots.
@@ -245,7 +246,7 @@ tests include two-factor RM-ANOVA, ANOVA, Friedman, and Kruskal-Wallis.
 Posthoc tests are implemented through `pingouin.pairwise_tests()`,
 offering (paired) t-tests, Wilcoxon, and Mann-Whitney-U.
 
-To sum up, plotastic stands as a unified and user-friendly solution
+To sum up, `plotastic` stands as a unified and user-friendly solution
 catering to the needs of researchers and data scientists, seamlessly
 integrating statistical analysis with the power of plotting in Python.
 It streamlines the workflow, translates `seaborn` parameters into
