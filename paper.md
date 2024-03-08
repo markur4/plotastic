@@ -139,7 +139,7 @@ four datasets. []{label="tab:sphericity"} \label{tab:sphericity}
 
 
 :Results of `DA.omnibus_rm_anova()`. `plotastic` performs one two-factor
-RM-ANOVA per axes (grouping the data by row and col dimensions) using x
+RM-ANOVA per axis (grouping the data by row and col dimensions) using x
 and hue as the within-factors. For this example, `DA.omnibus_rm_anova()`
 grouped the 'fmri' dataset by "region" (col), performing two subsequent
 two-factor RM-ANOVAs. Within-factors are "timepoint" (x) and "event"
@@ -186,8 +186,8 @@ decides to arrange the data in a plot. This approach also prevents code
 repetition and streamlines statistical analysis. For example, the
 subject keyword is specified only once during `DataAnalysis`
 initialisation, and `plotastic` selects the appropriate paired or
-unpaired version of the test. Using `pingouin` alone requires the user to
-manually pick the correct test and to repeatedly specify the subject
+unpaired version of the test. Using `pingouin` alone requires the user
+to manually pick the correct test and to repeatedly specify the subject
 keyword in each testing function.
 
 In essence, `plotastic` translates plotting parameters into their
@@ -219,7 +219,7 @@ returning a `DataAnalysis` object for method chaining. Axes are
 populated by `seaborn` plotting functions (e.g., `sns.boxplot()`),
 leveraging automated aggregation and error bar displays. Keyword
 arguments are passed to these `seaborn` functions, ensuring the same
-degree of customization as in seaborn. Users can further customize plots
+degree of customization. Users can further customize plots
 by chaining `DataAnalysis` methods or by applying common `matplotlib` code
 to override `plotastic` settings. Figures are exported using
 `plt.savefig()`. 
