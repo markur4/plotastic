@@ -7,7 +7,6 @@
 [![Code style:
 black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![codecov](https://codecov.io/gh/markur4/plotastic/graph/badge.svg?token=4L98QSPCU3)](https://codecov.io/gh/markur4/plotastic)
-<!-- [![status](https://joss.theoj.org/papers/e1e5d9b233aa16ba4916c6faffe4935b/status.svg)](https://joss.theoj.org/papers/e1e5d9b233aa16ba4916c6faffe4935b) -->
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.06304/status.svg)](https://doi.org/10.21105/joss.06304)
 
 </h1>
@@ -883,6 +882,9 @@ If you need help, please open an
 <blockquote>
 <hr>
 
+Kuric et al., (2024). plotastic: Bridging Plotting and Statistics in Python.
+Journal of Open Source Software, 9(95), 6304,
+https://doi.org/10.21105/joss.06304
 
 Vallat, R. (2018). Pingouin: statistics in Python. Journal of Open
 Source Software, 3(31), 1026, https://doi.org/10.21105/joss.01026
@@ -891,6 +893,18 @@ Waskom, M. L., (2021). seaborn: statistical data visualization. Journal
 of Open Source Software, 6(60), 3021, https://doi.org/10.21105/joss.03021.
 
 ```
+@article{Kuric2024, 
+  doi = {10.21105/joss.06304}, 
+  url = {https://doi.org/10.21105/joss.06304}, 
+  year = {2024}, publisher = {The Open Journal}, 
+  volume = {9}, 
+  number = {95}, 
+  pages = {6304}, 
+  author = {Martin Kuric and Regina Ebert}, 
+  title = {plotastic: Bridging Plotting and Statistics in Python}, 
+  journal = {Journal of Open Source Software} 
+} 
+
 @article{Waskom2021,
     doi = {10.21105/joss.03021},
     url = {https://doi.org/10.21105/joss.03021},
