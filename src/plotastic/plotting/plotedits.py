@@ -192,6 +192,7 @@ class PlotEdits(SubPlot):
         :return: DataAnalysis object
         :rtype: PlotEdits | DataAnalysis
         """
+        # todo: store sharey as an attribute and use it here, But leave the options for control?
 
         ### y-axis labels
         if not y is None:
@@ -203,7 +204,8 @@ class PlotEdits(SubPlot):
         if not y_notleftmost_col is None:
             for ax in self.axes_iter_notleftmost_col:
                 ax.set_ylabel(y_notleftmost_col)
-
+        
+        
         ### x-axis labels
         if not x is None:
             for ax in self.axes_flat:
