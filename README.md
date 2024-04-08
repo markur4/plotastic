@@ -430,6 +430,9 @@ well!*
 - 🐁 **Click** on a class to see its source code!
 <hr>
 
+<!-- ![Class Diagram](class_diagram.svg) -->
+<img src="class_diagram.svg">
+
 ```mermaid
 classDiagram
    
