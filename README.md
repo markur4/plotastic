@@ -663,7 +663,7 @@ classDiagram
 
    Filer *-- DataAnalysis
 
-   Annotator --|> DataAnalysis
+   Annotator <|-- DataAnalysis
 
 
    %% == Links =================================================================
