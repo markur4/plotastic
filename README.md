@@ -89,7 +89,7 @@ pip install git+https://github.com/markur4/plotastic.git
 </h1>
 
 
-[//]:<-- end of Example Gallery 📷 -------------------------------------------->
+[//]:<-- end of Example Gallery 📷 -->
 </blockquote>
 </details>
 
@@ -156,7 +156,7 @@ data scientists with a cohesive and user-friendly solution in python.!
    - Use `DataAnalysis.save_statistics()` to save all results to
      different sheets collected in one .xlsx filesheet per test
 
-[//]:<-- end of 🤔  Summary -------------------------------------------->
+[//]:<-- end of 🤔  Summary -->
 </blockquote>
 </details>
 
@@ -222,7 +222,7 @@ data scientists with a cohesive and user-friendly solution in python.!
   setting e.g. ***col*** as the third factor, or implementing another
   dimension (e.g. ***hue2***).
 
-[//]:<end of 📊 Translating Plots into Statistics! ---------------------------->
+[//]:<end of 📊 Translating Plots into Statistics! -->
 </blockquote>
 </details>
 
@@ -290,7 +290,7 @@ data scientists with a cohesive and user-friendly solution in python.!
   - *"Here is my data, here is my question, here is my analysis, here is
     my interpretation. What do you think?"*
 
-[//]:<end of ❗️ Disclaimer about Statistics------------------------------------>
+[//]:<end of ❗️ Disclaimer about Statistics -->
 </blockquote>
 </details>
 
@@ -341,7 +341,7 @@ data scientists with a cohesive and user-friendly solution in python.!
     even with re-drawing the figure with canvas. It's a mess and I
     wasted so much time already.*
 
-[//]:<end of Plotting --------------------------------------------------------->
+[//]:<end of Plotting -->
 </blockquote>
 </details>
 
@@ -355,7 +355,7 @@ data scientists with a cohesive and user-friendly solution in python.!
 - 👍 Box-plot + strip
 - 📆 Violin + swarm/strip
 
-[//]:<end of Multi-Layered Plotting ------------------------------------------->
+[//]:<end of Multi-Layered Plotting -->
 </blockquote>
 </details>
 
@@ -388,7 +388,7 @@ data scientists with a cohesive and user-friendly solution in python.!
       binning?*
   - 📆 Pearson, Spearman, Kendall
 
-[//]:<end of Statistics ------------------------------------------------------->
+[//]:<end of Statistics -->
 </blockquote>
 </details>
 
@@ -407,12 +407,12 @@ well!*
   t-tests (if Normality & Sphericity are given)
 - 🤷 `within_samples(parametric=False)`:    Friedman + multiple Wilcoxon
 
-[//]:<end of Analysis Pipelines ----------------------------------------------->
+[//]:<--end of Analysis Pipelines -->
 </blockquote>
 </details>
 
 
-[//]:<end of ✅ Feature List ==================================================>
+[//]:<==end of ✅ Feature List ==>
 </blockquote> 
 </details>
 
@@ -427,282 +427,13 @@ well!*
 
 - 🛑 Not everything shown here is implemented and not everything that's
   implemented is shown here!
-- 🐁 **Click** on a class to see its source code!
+- 🐁 Open the raw .svg in your browser and **click** on a class to see its source code!
 <hr>
 
-<!-- ![Class Diagram](class_diagram.svg) -->
+
 <img src="class_diagram.svg">
 
-```mermaid
-classDiagram
-   
 
-
-
-   %% == ANALYSIS ==============================================================
-   
-   class pd_DataFrame{
-      ...
-      ....()
-   }
-   class Dims {
-      x: str 
-      y: str
-      hue: str =None
-      row: str =None
-      col: str =None
-      set(**kwargs, inplace: bool =False)
-      switch(*keys, **kwargs inplace: bool =False)
-   }
-   class DimsAndLevels {
-
-      data: pd.DataFrame
-      dims: Dims
-
-      %%_empty_groups(property)
-      factors_all(property) list[x,y,hue,row,col]
-      factors_xhue(property) list[x,hue]
-      factors_rowcol(property) list[row,col]
-      levels_dict_factor(property) dict[f1:[l1, l2, ...], f2:[...], ...]
-      levelkeys(property) list[tuple[l1, l2], ...]
-      ....()
-   }
-   class Subject{
-      subject: str
-      subjectlist(property): list[str]
-      ....()
-   }
-   class HierarchicalDims{
-      _factors_hierarchical(property)
-      ...
-      data_hierarchicize()
-      ....()
-    }
-   class DataFrameTool{
-      verbose: bool =False
-      levels: list[tuple[str]] =None
-      catplot(kind="strip") -> sns.FacetGrid
-      transform_y() -> self
-      data_describe() -> pd.DataFrame
-      data_categorize() -> self
-      data_iter__key_facet(property) -> Generator
-      ....()
-   }
-   class DataIntegrity{
-      data_check_integrity()
-      ....()
-   }
-   
-
-  pd_DataFrame *-- DimsAndLevels
-  Dims *-- DimsAndLevels
-  DimsAndLevels <|-- Subject
-  Subject <|-- HierarchicalDims
-  HierarchicalDims <|-- DataFrameTool
-  DataFrameTool <|-- DataIntegrity
-  DataIntegrity <|-- SubPlot
-  DataIntegrity <|-- StatTest
-
-
-   %% == STATISTICS ============================================================
-
-   class pingouin{
-      <<Statistics Library>>
-      anova()
-      rm_anova()
-      pairwise_tests()
-      ....()
-   }
-   class StatResults{
-      <<Storage>>
-      DF_normality: pd.DataFrame = "not tested"
-      DF_homoscedasticity: pd.DataFrame = "not tested"
-      DF_sphericity: pd.DataFrame = "not tested"
-      DF_posthoc: pd.DataFrame = "not tested"
-      DF_omnibus: pd.DataFrame = "not tested"
-      DF_bivariate: pd.DataFrame = "not tested"
-      ...
-      normal(property):bool ="not assessed"
-      homoscedastic(property):bool ="unknown"
-      spherical(property):bool ="unknown"
-      parametric(property):bool =None
-      assess_normality()
-      save()
-      ....()
-   }
-   class StatTest{
-      <<BaseObject>>
-      ALPHA: float = 0.05
-      ALPHA_TOLERANCE: float = 0.075
-      results: StatResults 
-      ...
-      set_alpha()
-      set_alpha_tolerance()
-      _p_to_stars(p: float) -> str
-      _effectsize_to_words(effectsize: float) -> str
-      ....()
-   }
-   class Assumptions{
-      ...
-      check_normality()
-      check_sphericity()
-      check_homoscedasticity()
-      ....()
-   }
-   class Omnibus{
-      ...
-      omnibus_anova()
-      omnibus_rmanova()
-      omnibus_kruskal()
-      ....()
-   }
-   class PostHoc{
-      ...
-      test_pairwise(paired, parametric)
-      ....()
-   }
-   class Bivariate{
-      ...
-      test_pearson()
-      test_spearman()
-      test_kendall()
-      ....()
-   }
-
-   StatResults *-- StatTest
-   StatTest <|-- Assumptions
-
-   Assumptions  <|-- PostHoc
-   Assumptions  <|-- Omnibus
-   Assumptions  <|-- Bivariate
-   pingouin .. Assumptions: Uses
-
-
-   %% == PLOTTING ==============================================================
-
-   class rc{
-      <<Runtime Config>>
-      FONTSIZE
-      STYLE_PAPER
-      STYLE_PRESENTATION
-      set_style()
-      set_palette()
-   }
-   class matplotlib{
-      <<Plotting Objects>>
-      ...
-      Axes
-      Figure
-      fig.legend()
-      ....()
-   }
-   class SubPlot{
-      fig: mpl.figure.Figure
-      axes: mpl.axes.Axes
-      ...
-      subplots() -> (fig, axes)
-      fillaxes(kind="strip") -> (fig, axes)
-
-      axes_nested(property) -> np.ndarray(axes).shape(1,1)
-      axes_iter__key_ax(property) -> ax
-      
-   }
-   class PlotEdits{
-      edit_titles(titles:dict) -> None
-      edit_xy_axis_labels(labels:dict) -> None
-      edit_yticklabels_log_minor(ticks:dict) -> None
-      ...()
-   }
-   class Plot{
-      plot()
-      plot_connect_subjects()
-      ...()
-   }
-   class MultiPlot{
-      <<Library of pre-built Plots>>
-      plot_box_strip()
-      plot_bar_swarm()
-      plot_qqplot()
-      ...()
-   }
-
-   matplotlib *-- SubPlot
-   matplotlib <.. rc: Configures
-   SubPlot <|-- PlotEdits
-   PlotEdits <|-- Plot
-   Plot <|-- MultiPlot
-
-
-   %% == DATAANALYSIS ==========================================================
-
-   class Annotator{
-      _annotated: bool =False
-      ...
-      _check_include_exclude()
-      iter__key_df_ax(PH:pd.DataFrame) -> Generator
-      annotate_pairwise()
-      ....()
-   }
-   class Filer{
-      <<service>>
-      title: str ="untitled"
-      prevent_overwrite()
-   }
-   class DataAnalysis{
-      <<Interface>>
-      %% FIGURES DON'T NEED TITLES, WE EDIT THEM AFTERWARDS
-      title = "untitled" 
-      filer: Filer 
-      ...
-      title_add()
-      save_statistics()
-      ....()
-   }
-
-   MultiPlot <|-- Annotator
-   Omnibus <|-- Annotator
-   PostHoc <|-- Annotator
-   Bivariate <|-- Annotator
-
-   Filer *-- DataAnalysis
-
-   Annotator <|-- DataAnalysis
-
-
-   %% == Links =================================================================
-
-   %% dimensions 
-   click Dims href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dims.py" 
-   click DimsAndLevels href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dimsandlevels.py" 
-   click DataFrameTool href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dataframetool.py" 
-   click HierarchicalDims href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/hierarchical_dims.py"
-   click Subject href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/subject.py"
-   click DataIntegrity href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dimensions/dataintegrity.py"
-
-   %% stat
-   click StatResults href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/statresults.py"
-   click StatTest href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/stattest.py" 
-   click Assumptions href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/assumptions.py" 
-   click Omnibus href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/omnibus.py"
-   click PostHoc href "https://github.com/markur4/plotastic/blob/main/src/plotastic/stat/posthoc.py"
-
-   %% plotting
-   click rc href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/rc.py"
-   click SubPlot href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/SubPlot.py"
-   click Plot href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/plot.py"
-   click PlotEdits href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/plotedits.py"
-   click MultiPlot href "https://github.com/markur4/plotastic/blob/main/src/plotastic/plotting/multiplot.py"
-
-   %% dataanalysis
-   click Annotator href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dataanalysis/annotator.py"
-   click Filer href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dataanalysis/filer.py"
-   click DataAnalysis href "https://github.com/markur4/plotastic/blob/main/src/plotastic/dataanalysis/dataanalysis.py"
-
-
-
-```
-
-[//]:<end of 🌳 Class Diagram =================================================>
 </blockquote>
 </details>
 <!-- REMOVE FOR PYPI -->
