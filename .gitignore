@@ -1,9 +1,9 @@
 # Figures
 IMAGES/CLASS_DIAGRAMS
 
-# ezgi test
+# Examples
 EXAMPLES/Ezgitest
-
+EXAMPLES/qpcr.pdf
 
 # Readme for Pypi
 README_pypi.md
